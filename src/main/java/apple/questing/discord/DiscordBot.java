@@ -2,6 +2,7 @@ package apple.questing.discord;
 
 
 import apple.questing.QuestMain;
+import apple.questing.discord.commands.CommandQuest;
 import apple.questing.discord.commands.CommandTest;
 import apple.questing.discord.commands.CommandUpdate;
 import apple.questing.discord.commands.DoCommand;
@@ -9,7 +10,6 @@ import apple.questing.discord.reactions.DoReaction;
 import apple.questing.sheets.SheetsQuery;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -29,7 +29,6 @@ public class DiscordBot extends ListenerAdapter {
 
 
     private static final HashMap<String, DoCommand> commandMap = new HashMap<>();
-    private static final HashMap<String, DoCommand> opCommandMap = new HashMap<>();
     private static final HashMap<String, DoReaction> reactionMap = new HashMap<>();
     public static String discordToken; // my bot
     public static JDA client;
@@ -37,6 +36,7 @@ public class DiscordBot extends ListenerAdapter {
     public static final String PREFIX = "q!";
     public static final String TEST = "o/";
     private static final String UPDATE_COMMAND = "update";
+    private static final String QUEST_COMMAND = "quest";
 
     public DiscordBot() {
         List<String> list = Arrays.asList(QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
@@ -73,6 +73,7 @@ public class DiscordBot extends ListenerAdapter {
     public void onReady(@Nonnull ReadyEvent event) {
         commandMap.put(PREFIX + TEST, new CommandTest());
         commandMap.put(PREFIX + UPDATE_COMMAND, new CommandUpdate());
+        commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         try {
             SheetsQuery.update();
         } catch (IOException e) {

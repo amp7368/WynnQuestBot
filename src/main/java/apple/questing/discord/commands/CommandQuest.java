@@ -1,8 +1,10 @@
 package apple.questing.discord.commands;
 
+import apple.questing.data.WynncraftClass;
+import apple.questing.data.WynncraftPlayer;
+import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,6 +86,15 @@ public class CommandQuest implements DoCommand {
         }
         username = contentSplit.get(0);
         event.getChannel().sendMessage(String.format("isXpDesired: %b\ntimeToSpend: %d\namount desired:%d\nusername: %s", isXpDesired, timeToSpend, amountDesired, username)).queue();
-
+        WynncraftPlayer player = GetPlayerStats.get(username);
+        if (player == null) {
+            event.getChannel().sendMessage("Either the api is down, or '" + username + "' is not a player.").queue();
+            return;
+        }
+        for (WynncraftClass wynncraftClass : player.classes) {
+            System.out.println("level: " + wynncraftClass.level);
+            System.out.println("quests: " + String.join(" ", wynncraftClass.questsCompleted));
+            System.out.println("\n");
+        }
     }
 }

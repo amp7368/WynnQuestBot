@@ -1,6 +1,5 @@
 package apple.questing.data;
 
-import java.util.Collection;
 
 public class Quest {
     public String name;

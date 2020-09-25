@@ -86,9 +86,7 @@ public class DiscordBot extends ListenerAdapter {
 
         WynncraftPlayer player = GetPlayerStats.get("appleptr16");
         assert player != null;
-        System.out.println("starting");
-        List<Quest> questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), false, 100, 105, true);
-        System.out.println("ending");
+//        List<Quest> questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), false, 100, 105, true);
     }
 
     @Override

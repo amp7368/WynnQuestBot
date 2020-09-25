@@ -1,7 +1,6 @@
 package apple.questing;
 
 import apple.questing.data.*;
-import apple.questing.utils.Pair;
 
 import java.util.*;
 
@@ -16,8 +15,8 @@ public class QuestAlgorithm {
         return null;
     }
 
-    public static List<Quest> whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
-                                             int classLevel, boolean isIncludeCollection) {
+    public static FinalQuestOptions whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
+                                                   int classLevel, boolean isIncludeCollection) {
         // if class level is not specified, specify it
         if (classLevel == -1) classLevel = playerClass.level;
 
@@ -38,36 +37,72 @@ public class QuestAlgorithm {
                 }
             }
         }
-
+        List<Quest> singletonQuests = new ArrayList<>();
         List<Collection<QuestLinked>> questCombinations = new ArrayList<>();
         // find all quests that start quest chains
         for (QuestLinked quest : nameToQuestLinked.values()) {
             // if I don't require anyone, and at least somebody requires me and this quest isn't too long
-            if (quest.immediateRequirements.isEmpty() && !quest.reqMe.isEmpty() &&
-                    timeToSpend >= (isIncludeCollection ? quest.quest.time + quest.quest.collectionTime : quest.quest.time)) {
-                questCombinations.add(Collections.singletonList(quest));
+            if (quest.immediateRequirements.isEmpty() && !quest.reqMe.isEmpty()) {
+                if (timeToSpend >= (isIncludeCollection ? quest.quest.time + quest.quest.collectionTime : quest.quest.time)) {
+                    questCombinations.add(Collections.singletonList(quest));
+                }
+            } else if (quest.immediateRequirements.isEmpty()) {
+                // this is a singleton quest
+                singletonQuests.add(quest.quest);
             }
         }
-        ArrayList<Collection<QuestLinked>> finalList = new ArrayList<>(questCombinations);
+        // sort the singleton quests by order of amount/time
+        singletonQuests.sort((o1, o2) -> (int) Math.round((isXpDesired ? o2.xp : o2.emerald) / (isIncludeCollection ? o2.collectionTime + o2.time : o2.time) -
+                (isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time)));
+
+        // this is a set of collections of quest names
+        Set<String> finalList = new HashSet<>();
+        questCombinations.forEach(questsCombo -> {
+            Collection<String> questsComboString = new ArrayList<>();
+            questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+            finalList.add(String.join(",", questsComboString));
+        });
         addQuest(questCombinations, nameToQuestLinked, finalList, timeToSpend, isIncludeCollection);
-        printCombo(finalList);
 
+        // add singleton quests that stay under the limit of time
+        List<FinalQuestCombo> finalQuestCombos = new ArrayList<>();
+        for (String questComboStringAll : finalList) {
+            Collection<Quest> questCombo = new ArrayList<>();
+            for (String questComboString : questComboStringAll.split(",")) {
+                questCombo.add(nameToQuest.get(questComboString));
+            }
+            // time is a given
+            finalQuestCombos.add(new FinalQuestCombo(questCombo, isXpDesired, true, timeToSpend, isIncludeCollection));
+        }
+        finalQuestCombos.add(new FinalQuestCombo(new ArrayList<>(0), isXpDesired, true, timeToSpend, isIncludeCollection));
 
+        // add singleton quests to all the combos
+        for (FinalQuestCombo finalQuestCombo : finalQuestCombos) {
+            for (Quest singletonQuest : singletonQuests) {
+                if ((isIncludeCollection ? singletonQuest.collectionTime + singletonQuest.time : singletonQuest.time) > finalQuestCombo.getTimeToUse()) {
+                    // we're done with this combo
+                    if (!finalQuestCombo.isEmpty())
+                        break;
+                } else if (!finalQuestCombo.hasQuest(singletonQuest)) {
+                    // add this quest
+                    finalQuestCombo.addQuest(singletonQuest);
+                }
+            }
+        }
 
+        // remove any combos that are empty
+        finalQuestCombos.removeIf(FinalQuestCombo::isEmpty);
+
+        Optional<FinalQuestCombo> bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime())));
+        if (bestPerTime.isPresent()) {
+            return new FinalQuestOptions(bestPerTime.get(), null);
+        }
+        // it's possible that the person has done all quests
         return null;
     }
 
-    private static void printCombo(List<Collection<QuestLinked>> questCombinations) {
-        for (Collection<QuestLinked> questCombination : questCombinations) {
-            for (QuestLinked quest : questCombination) {
-                System.out.print(quest.quest.name + " ");
-            }
-            System.out.println();
-        }
-    }
-
     private static void addQuest(List<Collection<QuestLinked>> questCombinations, HashMap<String, QuestLinked> nameToQuestLinked,
-                                 List<Collection<QuestLinked>> finalList, long timeToSpend, boolean isIncludeCollection) {
+                                 Set<String> finalList, long timeToSpend, boolean isIncludeCollection) {
         // for each collection, add a quest as a new combination
         for (Collection<QuestLinked> questCombination : questCombinations) {
             // make a list of combinations that we will add to the final list later
@@ -110,7 +145,11 @@ public class QuestAlgorithm {
             }
             // do the next layer of recursion
             addQuest(subQuestCombinations, nameToQuestLinked, finalList, timeToSpend, isIncludeCollection);
-            finalList.addAll(subQuestCombinations);
+            subQuestCombinations.forEach(questsCombo -> {
+                Collection<String> questsComboString = new ArrayList<>();
+                questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+                finalList.add(String.join(",", questsComboString));
+            });
         }
     }
 }

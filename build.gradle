@@ -8,6 +8,7 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 jar {
     manifest {
@@ -22,5 +23,6 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compile fileTree(dir: 'libs', include: ['JDA.jar'])
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.mockito:mockito-core:2.7.22'
 }
 project.buildDir("C:\\Users\\Aaron\\Desktop\\questBot")

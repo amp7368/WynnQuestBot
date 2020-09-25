@@ -25,8 +25,8 @@ import java.util.List;
 
 
 public class QuestMain {
-    private static final String APPLICATION_NAME = "CreditBot";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    static final String APPLICATION_NAME = "CreditBot";
+    static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     public static Sheets service;
 
@@ -44,7 +44,7 @@ public class QuestMain {
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
      */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
         InputStream in = apple.questing.QuestMain.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
@@ -64,9 +64,6 @@ public class QuestMain {
         return user;
     }
 
-    /**
-     * new: https://docs.google.com/spreadsheets/d/1hyzbaOZVq0dD_AAYnY1q24_mF52u-nYM4BteGAtqZcc/edit
-     */
     public static void main(String... args) throws IOException, GeneralSecurityException {
         System.out.println("Starting QuestBot");
 

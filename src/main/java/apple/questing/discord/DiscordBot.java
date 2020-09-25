@@ -1,13 +1,17 @@
 package apple.questing.discord;
 
 
+import apple.questing.QuestAlgorithm;
 import apple.questing.QuestMain;
+import apple.questing.data.Quest;
+import apple.questing.data.WynncraftPlayer;
 import apple.questing.discord.commands.CommandQuest;
 import apple.questing.discord.commands.CommandTest;
 import apple.questing.discord.commands.CommandUpdate;
 import apple.questing.discord.commands.DoCommand;
 import apple.questing.discord.reactions.DoReaction;
 import apple.questing.sheets.SheetsQuery;
+import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -79,6 +83,12 @@ public class DiscordBot extends ListenerAdapter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        WynncraftPlayer player = GetPlayerStats.get("appleptr16");
+        assert player != null;
+        System.out.println("starting");
+        List<Quest> questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), false, 100, 105, true);
+        System.out.println("ending");
     }
 
     @Override

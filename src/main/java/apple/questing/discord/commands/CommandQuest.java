@@ -1,20 +1,22 @@
 package apple.questing.discord.commands;
 
+import apple.questing.QuestAlgorithm;
+import apple.questing.data.Quest;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.WynncraftPlayer;
+import apple.questing.sheets.SheetsQuery;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CommandQuest implements DoCommand {
     /**
-     * q!quest <player_name> [-x] [-t <how much that wants to be spent questing> | -e <how many emeralds or raw xp that player wants>]</how>
+     * q!quest <player_name> [-x] [-c] [-t <how much that wants to be spent questing> | -e <how many emeralds or raw xp that player wants>]
      * <p>
      * player_name - name of the player who you're trying to decide which quests to do
      * -x - optional flag to specify that the player wants to maximize xp from quests
+     * -c - optional flag to specify that the player doesn't want to include collection time
      * -t # - default is not used. this optional argument overrides how much time the player wants to spend doing quests
      * -e # - default is 75% of the max the player can earn
      * <p>
@@ -25,6 +27,7 @@ public class CommandQuest implements DoCommand {
     @Override
     public void dealWithCommand(MessageReceivedEvent event) {
         boolean isXpDesired = false;
+        boolean isCollection = true;
         long timeToSpend = -1;
         long amountDesired = -1;
         String username;
@@ -36,6 +39,10 @@ public class CommandQuest implements DoCommand {
         //find -x if it exists
         if (contentSplit.remove("-x")) {
             isXpDesired = true;
+        }
+        //find -c if it exists
+        if (contentSplit.remove("-c")) {
+            isCollection = false;
         }
         int size = contentSplit.size();
         for (int i = 0; i < size; i++) {
@@ -91,10 +98,40 @@ public class CommandQuest implements DoCommand {
             event.getChannel().sendMessage("Either the api is down, or '" + username + "' is not a player.").queue();
             return;
         }
+        /*for (Quest quest : SheetsQuery.allQuests) {
+            System.out.println("'" + quest.name + "'");
+        }
+        System.out.println("\n\n-----------------------------------------------\n\n");
+
+        // quests that are in the class that aren't in all quests
         for (WynncraftClass wynncraftClass : player.classes) {
-            System.out.println("level: " + wynncraftClass.level);
-            System.out.println("quests: " + String.join(" ", wynncraftClass.questsCompleted));
+            ArrayList<String> questsNotRegistered = new ArrayList<>(wynncraftClass.questsCompleted);
+            SheetsQuery.allQuests.forEach(quest -> questsNotRegistered.remove(quest.name));
+            System.out.println(String.join("\n", "'" + questsNotRegistered + "'"));
+
             System.out.println("\n");
         }
+        System.out.println("\n\n-----------------------------------------------\n\n");
+
+        // quests the player has not completed
+        for (WynncraftClass wynncraftClass : player.classes) {
+            HashMap<String, Quest> questsNotDone = new HashMap<>();
+            SheetsQuery.allQuests.forEach(quest -> questsNotDone.put(quest.name, quest));
+            for (String quest : wynncraftClass.questsCompleted) {
+                questsNotDone.remove(quest);
+            }
+            ArrayList<Quest> questsNotDoneList = new ArrayList<>();
+            questsNotDone.forEach((questName, quest) -> questsNotDoneList.add(quest));
+            questsNotDoneList.sort((o1, o2) -> o2.emerald - o1.emerald);
+            System.out.println(wynncraftClass.level);
+            for (Quest quest : questsNotDoneList) {
+                System.out.println("'" + quest.name + "'");
+            }
+            System.out.println("\n");
+        }*/
+        //todo switch this for what the actual command does
+        System.out.println("starting");
+        List<Quest> questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(0), isXpDesired, timeToSpend, -1, true);
+        System.out.println("done");
     }
 }

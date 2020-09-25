@@ -28,16 +28,7 @@ public class FinalQuestCombo {
     }
 
     public double amountPerTime() {
-        double time = 0;
-        if (isIncludeCollection) {
-            for (Quest quest : quests) {
-                time += quest.collectionTime + quest.time;
-            }
-        } else {
-            for (Quest quest : quests) {
-                time += quest.time;
-            }
-        }
+        double time = getTime();
         if (isXpDesired) {
             double xp = 0;
             for (Quest quest : quests) {
@@ -76,5 +67,33 @@ public class FinalQuestCombo {
             questNames.add(quest.name);
         }
         return String.join(", ", questNames);
+    }
+
+    public long getAmount() {
+        long amount = 0;
+        if (isXpDesired) {
+            for (Quest quest : quests) {
+                amount += quest.xp;
+            }
+        } else {
+            for (Quest quest : quests) {
+                amount += quest.emerald;
+            }
+        }
+        return amount;
+    }
+
+    public double getTime() {
+        double time = 0;
+        if (isIncludeCollection) {
+            for (Quest quest : quests) {
+                time += quest.collectionTime + quest.time;
+            }
+        } else {
+            for (Quest quest : quests) {
+                time += quest.time;
+            }
+        }
+        return time;
     }
 }

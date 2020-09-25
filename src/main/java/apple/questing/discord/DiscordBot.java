@@ -1,15 +1,11 @@
 package apple.questing.discord;
 
 
-import apple.questing.QuestAlgorithm;
 import apple.questing.QuestMain;
-import apple.questing.data.Quest;
 import apple.questing.data.WynncraftPlayer;
-import apple.questing.discord.commands.CommandQuest;
-import apple.questing.discord.commands.CommandTest;
-import apple.questing.discord.commands.CommandUpdate;
-import apple.questing.discord.commands.DoCommand;
+import apple.questing.discord.commands.*;
 import apple.questing.discord.reactions.DoReaction;
+import apple.questing.discord.reactions.ReactionClassChoice;
 import apple.questing.sheets.SheetsQuery;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.JDA;
@@ -41,6 +37,7 @@ public class DiscordBot extends ListenerAdapter {
     public static final String TEST = "o/";
     private static final String UPDATE_COMMAND = "update";
     private static final String QUEST_COMMAND = "quest";
+    private static final String QUEST_SPECIFIC_COMMAND = "squest";
 
     public DiscordBot() {
         List<String> list = Arrays.asList(QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
@@ -78,6 +75,11 @@ public class DiscordBot extends ListenerAdapter {
         commandMap.put(PREFIX + TEST, new CommandTest());
         commandMap.put(PREFIX + UPDATE_COMMAND, new CommandUpdate());
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
+        commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());
+
+        reactionMap.put("\uD83C\uDDE9", new ReactionClassChoice());
+
+
         try {
             SheetsQuery.update();
         } catch (IOException e) {
@@ -120,7 +122,6 @@ public class DiscordBot extends ListenerAdapter {
         for (String reaction : reactionMap.keySet()) {
             if (emojiName.equals(reaction)) {
                 reactionMap.get(emojiName).dealWithReaction(event);
-                break;
             }
         }
     }

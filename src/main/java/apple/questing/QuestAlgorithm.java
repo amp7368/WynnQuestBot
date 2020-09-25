@@ -93,12 +93,21 @@ public class QuestAlgorithm {
         // remove any combos that are empty
         finalQuestCombos.removeIf(FinalQuestCombo::isEmpty);
 
-        Optional<FinalQuestCombo> bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime())));
-        if (bestPerTime.isPresent()) {
-            return new FinalQuestOptions(bestPerTime.get(), null);
+        FinalQuestCombo bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(null);
+
+        // add singleton quests to all the combos
+        for (FinalQuestCombo finalQuestCombo : finalQuestCombos) {
+            for (Quest singletonQuest : singletonQuests) {
+                if (!finalQuestCombo.hasQuest(singletonQuest) && !((isIncludeCollection ? singletonQuest.collectionTime + singletonQuest.time : singletonQuest.time) > finalQuestCombo.getTimeToUse())) {
+                    // add this quest
+                    finalQuestCombo.addQuest(singletonQuest);
+                }
+            }
         }
-        // it's possible that the person has done all quests
-        return null;
+        FinalQuestCombo bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(null);
+
+
+        return new FinalQuestOptions(bestPerTime, bestUtilization);
     }
 
     private static void addQuest(List<Collection<QuestLinked>> questCombinations, HashMap<String, QuestLinked> nameToQuestLinked,

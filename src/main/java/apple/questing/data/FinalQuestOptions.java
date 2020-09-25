@@ -10,8 +10,14 @@ public class FinalQuestOptions {
     }
 
     public void print() {
-        System.out.println(bestAmountPerTime.amountPerTime());
+        System.out.printf("bestAmountPerTime: A/T: %f ||| A: %d T: %f\n", bestAmountPerTime.amountPerTime(),bestAmountPerTime.getAmount(),bestAmountPerTime.getTime());
         for (Quest quest : bestAmountPerTime.getQuests()) {
+            System.out.print(quest.name + ", ");
+        }
+        System.out.println();
+
+        System.out.printf("bestUtilization: A/T: %f ||| A: %d T: %f\n", bestUtilization.amountPerTime(),bestUtilization.getAmount(),bestUtilization.getTime());
+        for (Quest quest : bestUtilization.getQuests()) {
             System.out.print(quest.name + ", ");
         }
         System.out.println();

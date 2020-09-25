@@ -6,7 +6,9 @@ import apple.questing.data.WynncraftClass;
 import apple.questing.data.WynncraftPlayer;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.reactions.ReactionClassChoice;
 import apple.questing.wynncraft.GetPlayerStats;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -124,11 +126,25 @@ public class CommandQuestSpecific implements DoCommand {
             return;
         }
 
+        EmbedBuilder embedClassChoice = new EmbedBuilder();
+        StringBuilder classChoiceDescription = new StringBuilder();
         List<String> classes = new ArrayList<>();
-        for(WynncraftClass wynncraftClass:player.classes){
+        int countClass = 0;
+        for (WynncraftClass wynncraftClass : player.classes) {
             classes.add(wynncraftClass.name);
+            classChoiceDescription.append(ClassChoiceMessage.emojiAlphabet.get(countClass++));
+            classChoiceDescription.append('`');
+            classChoiceDescription.append(ReactionClassChoice.getSingleClassMessage(wynncraftClass));
+            classChoiceDescription.append("`\n");
         }
-        Message message = event.getChannel().sendMessage("hello").complete();
+
+        embedClassChoice.setTitle("React according to which class you want analyzed");
+        embedClassChoice.setDescription(classChoiceDescription);
+
+        Message message = event.getChannel().sendMessage(embedClassChoice.build()).complete();
+        for (int i = 0; i < countClass; i++)
+            message.addReaction(ClassChoiceMessage.emojiAlphabet.get(i)).queue();
+
         AllReactableClassChoices.addMessage(
                 new ClassChoiceMessage(
                         message.getId(),
@@ -138,17 +154,9 @@ public class CommandQuestSpecific implements DoCommand {
                         timeToSpend,
                         amountDesired,
                         classLevel,
-                        classes
+                        classes,
+                        player
                 )
         );
-        //todo switch this for what the actual command does
-        System.out.println("starting");
-        if (timeToSpend != -1) {
-            FinalQuestOptions questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), isXpDesired, timeToSpend, classLevel, isCollection);
-
-
-            questsToDo.print();
-        }
-        System.out.println("done");
     }
 }

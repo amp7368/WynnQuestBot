@@ -23,6 +23,7 @@ public class AllReactableClassChoices {
         for (ClassChoiceMessage rememberedMessageId : messageIds) {
             if (rememberedMessageId.id.equals(messageId)) {
                 // we found our message
+                messageIds.remove(rememberedMessageId);
                 return rememberedMessageId;
             }
         }

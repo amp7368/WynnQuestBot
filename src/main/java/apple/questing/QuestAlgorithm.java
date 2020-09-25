@@ -9,16 +9,13 @@ import static apple.questing.sheets.SheetsQuery.nameToQuest;
 
 public class QuestAlgorithm {
     public static List<Quest> which(WynncraftPlayer player, boolean isXpDesired, long timeToSpend, long amountDesired) {
-        for (Quest quest : allQuests) {
-
-        }
         return null;
     }
 
     public static FinalQuestOptions whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
                                                    int classLevel, boolean isIncludeCollection) {
         // if class level is not specified, specify it
-        if (classLevel == -1) classLevel = playerClass.level;
+        if (classLevel == -1) classLevel = playerClass.combatLevel;
 
         // make a map of all the quest names to the quest requirements and quests that require itself
         HashMap<String, QuestLinked> nameToQuestLinked = new HashMap<>();

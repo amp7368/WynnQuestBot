@@ -3,6 +3,7 @@ package apple.questing.discord;
 
 import apple.questing.QuestMain;
 import apple.questing.data.WynncraftPlayer;
+import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.commands.*;
 import apple.questing.discord.reactions.DoReaction;
 import apple.questing.discord.reactions.ReactionClassChoice;
@@ -77,18 +78,14 @@ public class DiscordBot extends ListenerAdapter {
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());
 
-        reactionMap.put("\uD83C\uDDE9", new ReactionClassChoice());
-
-
+        for (String alphabet : ClassChoiceMessage.emojiAlphabet) {
+            reactionMap.put(alphabet, new ReactionClassChoice());
+        }
         try {
             SheetsQuery.update();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        WynncraftPlayer player = GetPlayerStats.get("appleptr16");
-        assert player != null;
-//        List<Quest> questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), false, 100, 105, true);
     }
 
     @Override

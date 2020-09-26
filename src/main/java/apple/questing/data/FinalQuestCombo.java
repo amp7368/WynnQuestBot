@@ -1,20 +1,16 @@
 package apple.questing.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class FinalQuestCombo {
-    private Collection<Quest> quests;
-    private boolean isXpDesired;  // alternative is emerald is desired
-    private boolean isTimeDriven; // alternative is emerald threshold
-    private long timeToSpend;
-    private boolean isIncludeCollection;
+    final Collection<Quest> quests;
+    final boolean isXpDesired;  // alternative is emerald is desired
+    final boolean isIncludeCollection;
 
-    public FinalQuestCombo(Collection<Quest> quests, boolean isXpDesired, boolean isTimeDriven, long timeToSpend, boolean isIncludeCollection) {
+
+    public FinalQuestCombo(Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
         this.quests = quests;
         this.isXpDesired = isXpDesired;
-        this.isTimeDriven = isTimeDriven;
-        this.timeToSpend = timeToSpend;
         this.isIncludeCollection = isIncludeCollection;
     }
 
@@ -44,29 +40,26 @@ public class FinalQuestCombo {
         }
     }
 
-    public long getTimeToUse() {
-        long timeToUse = timeToSpend;
-        for (Quest quest : quests) {
-            timeToUse -= isIncludeCollection ? quest.time + quest.collectionTime : quest.time;
+    public double getTime() {
+        double time = 0;
+        if (isIncludeCollection) {
+            for (Quest quest : quests) {
+                time += quest.collectionTime + quest.time;
+            }
+        } else {
+            for (Quest quest : quests) {
+                time += quest.time;
+            }
         }
-        return timeToUse;
-    }
-
-    public Collection<Quest> getQuests() {
-        return quests;
+        return time;
     }
 
     public boolean isEmpty() {
         return quests.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        Collection<String> questNames = new ArrayList<>();
-        for (Quest quest : quests) {
-            questNames.add(quest.name);
-        }
-        return String.join(", ", questNames);
+    public Collection<Quest> getQuests() {
+        return quests;
     }
 
     public long getAmount() {
@@ -83,17 +76,4 @@ public class FinalQuestCombo {
         return amount;
     }
 
-    public double getTime() {
-        double time = 0;
-        if (isIncludeCollection) {
-            for (Quest quest : quests) {
-                time += quest.collectionTime + quest.time;
-            }
-        } else {
-            for (Quest quest : quests) {
-                time += quest.time;
-            }
-        }
-        return time;
-    }
 }

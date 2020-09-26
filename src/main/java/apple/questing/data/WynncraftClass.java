@@ -26,7 +26,7 @@ public class WynncraftClass {
             questsCompleted.add(questCompleted.toString());
         }
         SheetsQuery.allQuests.forEach(quest -> {
-            if (questsCompleted.contains(quest.name)) questsNotCompleted.add(quest);
+            if (!questsCompleted.contains(quest.name)) questsNotCompleted.add(quest);
         });
     }
 }

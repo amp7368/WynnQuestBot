@@ -1,5 +1,7 @@
 package apple.questing.data;
 
+import apple.questing.data.combo.FinalQuestCombo;
+
 public class FinalQuestOptions {
     public FinalQuestCombo bestAmountPerTime;
     public FinalQuestCombo bestUtilization;

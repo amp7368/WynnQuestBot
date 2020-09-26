@@ -6,6 +6,7 @@ import apple.questing.data.Quest;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.pageable.QuestRecommendationMessage;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,23 +53,7 @@ public class ReactionClassChoice implements DoReaction {
                 questOptions = QuestAlgorithm.whichGivenPercentageAmount(wynncraftClass, classChoiceMessage.isXpDesired,
                         DEFAULT_PERCENTAGE_AMOUNT, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
             }
-
-            // print the results
-            StringBuilder messageText = new StringBuilder();
-            messageText.append(String.format("**Options for %s, Lvl: %d/%d, Dungeons: %d**", wynncraftClass.name, wynncraftClass.combatLevel, wynncraftClass.totalLevel, wynncraftClass.dungeonsWon));
-            messageText.append("```md\n# Optimize Amount/minute\n");
-            messageText.append(String.format("[Amount][%d] <|> [Time][%d] <|> [Quests][%d] <|> [Amount/minute][%d]\n",
-                    questOptions.bestAmountPerTime.getAmount(), (int) questOptions.bestAmountPerTime.getTime(),
-                    questOptions.bestAmountPerTime.getQuests().size(), (int) questOptions.bestAmountPerTime.amountPerTime()));
-            messageText.append("\n");
-            messageText.append(String.format("#    %-26s| <Amount>\n", "Quests to do"));
-
-            int i = 0;
-            for (Quest quest : questOptions.bestAmountPerTime.getQuests()) {
-                messageText.append(String.format("%-31s| <%d>\n", String.format("<%-3s %s>", i++ + ".", quest.name), classChoiceMessage.isXpDesired ? quest.xp : quest.emerald));
-            }
-            messageText.append("\n```");
-            event.getChannel().sendMessage(messageText.toString()).queue();
+            new QuestRecommendationMessage(wynncraftClass, questOptions, event.getChannel(),classChoiceMessage);
 
         } else {
             //todo

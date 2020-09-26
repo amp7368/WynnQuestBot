@@ -1,17 +1,22 @@
-package apple.questing.data;
+package apple.questing.data.combo;
 
+import apple.questing.data.Quest;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class FinalQuestCombo {
-    final Collection<Quest> quests;
+    final List<Quest> quests;
     final boolean isXpDesired;  // alternative is emerald is desired
     final boolean isIncludeCollection;
 
 
     public FinalQuestCombo(Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
-        this.quests = quests;
+        this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
+        // todo sort quests
     }
 
     public boolean hasQuest(Quest quest) {
@@ -58,7 +63,7 @@ public class FinalQuestCombo {
         return quests.isEmpty();
     }
 
-    public Collection<Quest> getQuests() {
+    public List<Quest> getQuests() {
         return quests;
     }
 

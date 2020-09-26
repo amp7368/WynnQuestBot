@@ -1,6 +1,8 @@
 package apple.questing;
 
 import apple.questing.data.*;
+import apple.questing.data.combo.FinalQuestComboAmount;
+import apple.questing.data.combo.FinalQuestComboTime;
 
 import java.util.*;
 

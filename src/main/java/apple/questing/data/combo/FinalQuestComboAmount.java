@@ -1,4 +1,6 @@
-package apple.questing.data;
+package apple.questing.data.combo;
+
+import apple.questing.data.Quest;
 
 import java.util.Collection;
 

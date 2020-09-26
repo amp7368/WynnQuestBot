@@ -53,7 +53,9 @@ public class ReactionClassChoice implements DoReaction {
                 questOptions = QuestAlgorithm.whichGivenPercentageAmount(wynncraftClass, classChoiceMessage.isXpDesired,
                         DEFAULT_PERCENTAGE_AMOUNT, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
             }
-            new QuestRecommendationMessage(wynncraftClass, questOptions, event.getChannel(),classChoiceMessage);
+            event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
+            AllReactableClassChoices.removeMessage(event.getMessageId());
+            new QuestRecommendationMessage(wynncraftClass, questOptions, event.getChannel(), classChoiceMessage);
 
         } else {
             //todo

@@ -45,7 +45,9 @@ public class QuestRecommendationMessage implements Pageable {
         int lower = page * ENTRIES_PER_PAGE;
         int upper = Math.min(quests.size(), (page + 1) * ENTRIES_PER_PAGE);
         for (int i = lower; i < upper; i++) {
-            messageText.append(String.format("%-31s| <%d>\n", String.format("<%-3s %s>", i + 1 + ".", quests.get(i).name), classChoiceMessage.isXpDesired ? quests.get(i).xp : quests.get(i).emerald));
+            final String name = quests.get(i).name;
+            messageText.append(String.format("%-31s| <%d>\n", String.format("<%-3s %s>", i + 1 + ".",
+                    name.length() > 25 ? name.substring(0, 22) + "..." : name), classChoiceMessage.isXpDesired ? quests.get(i).xp : quests.get(i).emerald));
         }
         messageText.append("\n```");
         return messageText.toString();

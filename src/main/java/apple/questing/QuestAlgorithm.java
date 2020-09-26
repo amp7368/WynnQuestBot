@@ -43,7 +43,8 @@ public class QuestAlgorithm {
                 }
             } else if (quest.immediateRequirements.isEmpty()) {
                 // this is a singleton quest
-                singletonQuests.add(quest.quest);
+                if (!isXpDesired && quest.quest.emerald > 0)
+                    singletonQuests.add(quest.quest);
             }
         }
         // sort the singleton quests by order of amount/time
@@ -147,7 +148,8 @@ public class QuestAlgorithm {
                     questCombinations.add(Collections.singletonList(quest));
                 } else {
                     // this is a singleton quest
-                    singletonQuests.add(quest.quest);
+                    if (!isXpDesired && quest.quest.emerald > 0)
+                        singletonQuests.add(quest.quest);
                 }
             }
         }

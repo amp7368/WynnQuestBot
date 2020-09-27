@@ -1,17 +1,18 @@
 package apple.questing.discord.reactions;
 
-import apple.questing.QuestAlgorithm;
+import apple.questing.SpecificQuestAlgorithm;
 import apple.questing.data.FinalQuestOptions;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.pageable.QuestRecommendationMessage;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class ReactionClassChoice implements DoReaction {
+
+    public static final double DEFAULT_PERCENTAGE_AMOUNT = 0.5;
+
     @Override
     public void dealWithReaction(MessageReactionAddEvent event) {
         ClassChoiceMessage classChoiceMessage;
@@ -34,26 +35,24 @@ public class ReactionClassChoice implements DoReaction {
                 // todo send an error message about how there was an internal error
                 return;
             }
+
+            // get the results
+            FinalQuestOptions questOptions;
             if (classChoiceMessage.timeToSpend != -1) {
-                FinalQuestOptions questOptions = QuestAlgorithm.whichGivenTime(wynncraftClass, classChoiceMessage.isXpDesired,
+                questOptions = SpecificQuestAlgorithm.whichGivenTime(wynncraftClass, classChoiceMessage.isXpDesired,
                         classChoiceMessage.timeToSpend, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
-                StringBuilder messageText = new StringBuilder();
-                messageText.append("Options for \n");
-                messageText.append(getSingleClassMessage(wynncraftClass));
-                messageText.append("\n----------------------------------------------------------------------------\n");
-                messageText.append("Optimize amount/minute: ");
-                messageText.append(String.format("Amount: %d | Time: %d | Quests: %d | Amount/minute: %d\n",
-                        questOptions.bestAmountPerTime.getAmount(), (int) questOptions.bestAmountPerTime.getTime(),
-                        questOptions.bestAmountPerTime.getQuests().size(), (int) questOptions.bestAmountPerTime.amountPerTime()));
-                Collection<String> quests = new ArrayList<>();
-                questOptions.bestAmountPerTime.getQuests().forEach(quest -> quests.add(quest.name));
-                messageText.append(String.join(", ", quests));
-                messageText.append('\n');
-                messageText.append("Optimize amount given time constraint");
-                event.getChannel().sendMessage(messageText.toString()).queue();
+            } else if (classChoiceMessage.amountDesired != -1) {
+                questOptions = SpecificQuestAlgorithm.whichGivenRawAmount(wynncraftClass, classChoiceMessage.isXpDesired,
+                        classChoiceMessage.amountDesired, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
+
             } else {
-                //todo do the other QuestAlgorithm
+                questOptions = SpecificQuestAlgorithm.whichGivenPercentageAmount(wynncraftClass, classChoiceMessage.isXpDesired,
+                        DEFAULT_PERCENTAGE_AMOUNT, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
             }
+            event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
+            AllReactableClassChoices.removeMessage(event.getMessageId());
+            new QuestRecommendationMessage(wynncraftClass, questOptions, event.getChannel(), classChoiceMessage);
+
         } else {
             //todo
         }
@@ -68,6 +67,6 @@ public class ReactionClassChoice implements DoReaction {
         if (!Character.isAlphabetic(name.charAt(name.length() - 1))) {
             name = name.substring(0, name.length() - 1);
         }
-        return String.format("Class: %-11s | Combat/Total: %-10s | Dungeons: %d", name, wynncraftClass.combatLevel + "/" + wynncraftClass.totalLevel, wynncraftClass.dungeonsWon);
+        return String.format("Class: %-11s | Combat/Total: %-10s | Dungeons: %-4d", name, wynncraftClass.combatLevel + "/" + wynncraftClass.totalLevel, wynncraftClass.dungeonsWon);
     }
 }

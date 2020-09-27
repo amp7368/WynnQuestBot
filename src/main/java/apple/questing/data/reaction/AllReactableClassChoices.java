@@ -35,4 +35,10 @@ public class AllReactableClassChoices {
             messageIds.add(classChoiceMessage);
         }
     }
+
+    public static void removeMessage(String messageId) {
+        synchronized (syncObject) {
+            messageIds.removeIf(classChoiceMessage -> classChoiceMessage.id.equals(messageId));
+        }
+    }
 }

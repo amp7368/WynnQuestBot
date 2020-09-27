@@ -1,25 +1,13 @@
 package apple.questing.data;
 
+import apple.questing.data.combo.FinalQuestCombo;
+
 public class FinalQuestOptions {
-    public FinalQuestCombo bestAmountPerTime;
-    public FinalQuestCombo bestUtilization;
+    public FinalQuestCombo answer1;
+    public FinalQuestCombo answer2;
 
-    public FinalQuestOptions(FinalQuestCombo bestAmountPerTime, FinalQuestCombo bestUtilization) {
-        this.bestAmountPerTime = bestAmountPerTime;
-        this.bestUtilization = bestUtilization;
-    }
-
-    public void print() {
-        System.out.printf("bestAmountPerTime: A/T: %f ||| A: %d T: %f\n", bestAmountPerTime.amountPerTime(),bestAmountPerTime.getAmount(),bestAmountPerTime.getTime());
-        for (Quest quest : bestAmountPerTime.getQuests()) {
-            System.out.print(quest.name + ", ");
-        }
-        System.out.println();
-
-        System.out.printf("bestUtilization: A/T: %f ||| A: %d T: %f\n", bestUtilization.amountPerTime(),bestUtilization.getAmount(),bestUtilization.getTime());
-        for (Quest quest : bestUtilization.getQuests()) {
-            System.out.print(quest.name + ", ");
-        }
-        System.out.println();
+    public FinalQuestOptions(FinalQuestCombo answer1, FinalQuestCombo answer2) {
+        this.answer1 = answer1;
+        this.answer2 = answer2;
     }
 }

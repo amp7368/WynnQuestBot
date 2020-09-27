@@ -5,12 +5,13 @@ import apple.questing.QuestMain;
 import apple.questing.data.WynncraftPlayer;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.commands.*;
-import apple.questing.discord.reactions.DoReaction;
-import apple.questing.discord.reactions.ReactionClassChoice;
+import apple.questing.discord.reactions.*;
 import apple.questing.sheets.SheetsQuery;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -69,6 +70,8 @@ public class DiscordBot extends ListenerAdapter {
         JDABuilder builder = new JDABuilder(discordToken);
         builder.addEventListeners(this);
         client = builder.build();
+        client.getPresence().setPresence(Activity.playing("Quest bot soon? O.o"),true);
+        client.getPresence().setStatus(OnlineStatus.IDLE);
     }
 
     @Override
@@ -78,6 +81,10 @@ public class DiscordBot extends ListenerAdapter {
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());
 
+        reactionMap.put("\u2B05", new ReactionLeft());
+        reactionMap.put("\u27A1", new ReactionRight());
+        reactionMap.put("\u21A9",new ReactionTop());
+
         for (String alphabet : ClassChoiceMessage.emojiAlphabet) {
             reactionMap.put(alphabet, new ReactionClassChoice());
         }
@@ -86,6 +93,7 @@ public class DiscordBot extends ListenerAdapter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override

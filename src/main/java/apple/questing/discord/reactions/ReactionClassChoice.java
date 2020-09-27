@@ -1,17 +1,13 @@
 package apple.questing.discord.reactions;
 
-import apple.questing.QuestAlgorithm;
+import apple.questing.SpecificQuestAlgorithm;
 import apple.questing.data.FinalQuestOptions;
-import apple.questing.data.Quest;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.pageable.QuestRecommendationMessage;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class ReactionClassChoice implements DoReaction {
 
@@ -43,14 +39,14 @@ public class ReactionClassChoice implements DoReaction {
             // get the results
             FinalQuestOptions questOptions;
             if (classChoiceMessage.timeToSpend != -1) {
-                questOptions = QuestAlgorithm.whichGivenTime(wynncraftClass, classChoiceMessage.isXpDesired,
+                questOptions = SpecificQuestAlgorithm.whichGivenTime(wynncraftClass, classChoiceMessage.isXpDesired,
                         classChoiceMessage.timeToSpend, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
             } else if (classChoiceMessage.amountDesired != -1) {
-                questOptions = QuestAlgorithm.whichGivenRawAmount(wynncraftClass, classChoiceMessage.isXpDesired,
+                questOptions = SpecificQuestAlgorithm.whichGivenRawAmount(wynncraftClass, classChoiceMessage.isXpDesired,
                         classChoiceMessage.amountDesired, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
 
             } else {
-                questOptions = QuestAlgorithm.whichGivenPercentageAmount(wynncraftClass, classChoiceMessage.isXpDesired,
+                questOptions = SpecificQuestAlgorithm.whichGivenPercentageAmount(wynncraftClass, classChoiceMessage.isXpDesired,
                         DEFAULT_PERCENTAGE_AMOUNT, classChoiceMessage.classLevel, classChoiceMessage.isCollection);
             }
             event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();

@@ -5,10 +5,7 @@ import apple.questing.QuestMain;
 import apple.questing.data.WynncraftPlayer;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.commands.*;
-import apple.questing.discord.reactions.DoReaction;
-import apple.questing.discord.reactions.ReactionClassChoice;
-import apple.questing.discord.reactions.ReactionLeft;
-import apple.questing.discord.reactions.ReactionRight;
+import apple.questing.discord.reactions.*;
 import apple.questing.sheets.SheetsQuery;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.JDA;
@@ -86,6 +83,7 @@ public class DiscordBot extends ListenerAdapter {
 
         reactionMap.put("\u2B05", new ReactionLeft());
         reactionMap.put("\u27A1", new ReactionRight());
+        reactionMap.put("\u21A9",new ReactionTop());
 
         for (String alphabet : ClassChoiceMessage.emojiAlphabet) {
             reactionMap.put(alphabet, new ReactionClassChoice());

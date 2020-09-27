@@ -30,6 +30,7 @@ public class QuestRecommendationMessage implements Pageable {
         PageableMessages.add(this);
         message.addReaction("\u2B05").queue();
         message.addReaction("\u27A1").queue();
+        message.addReaction("\u21A9").queue();
     }
 
     private String makeMessage() {
@@ -96,7 +97,7 @@ public class QuestRecommendationMessage implements Pageable {
                 messageText.append(String.format("|%-31s| %-10s| %-11s",
                         String.format("<%-3s %s>", lower1 + ".", name1.length() > 25 ? name1.substring(0, 22) + "..." : name1),
                         String.format("<%d>", classChoiceMessage.isXpDesired ? quest1.xp : quest1.emerald),
-                        String.format("<%d mins>", (int) (Math.ceil(quest1.time)))));
+                        String.format("<%d mins>", (int) (Math.ceil(classChoiceMessage.isCollection ? quest1.time + quest1.collectionTime : quest1.time)))));
 
             }
             messageText.append("|");
@@ -107,7 +108,7 @@ public class QuestRecommendationMessage implements Pageable {
                 messageText.append(String.format("%-31s| %-10s| %-11s",
                         String.format("<%-3s %s>", lower2 + ".", name2.length() > 25 ? name2.substring(0, 22) + "..." : name2),
                         String.format("<%d>", classChoiceMessage.isXpDesired ? quest2.xp : quest2.emerald),
-                        String.format("<%d mins>", (int) (Math.ceil(quest2.time)))));
+                        String.format("<%d mins>", (int) (Math.ceil(classChoiceMessage.isCollection ? quest2.time + quest2.collectionTime : quest2.time)))));
             }
             messageText.append("|");
             messageText.append("\n");
@@ -136,6 +137,13 @@ public class QuestRecommendationMessage implements Pageable {
     }
 
     @Override
+    public void top() {
+        page1 = 0;
+        page2 = 0;
+        message.editMessage(makeMessage()).queue();
+    }
+
+    @Override
     public Long getId() {
         return message.getIdLong();
     }
@@ -144,4 +152,5 @@ public class QuestRecommendationMessage implements Pageable {
     public long getLastUpdated() {
         return lastUpdated;
     }
+
 }

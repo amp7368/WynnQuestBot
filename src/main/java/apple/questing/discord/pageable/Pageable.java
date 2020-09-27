@@ -5,4 +5,5 @@ public interface Pageable {
     void backward();
     Long getId();
     long getLastUpdated();
+    void top();
 }

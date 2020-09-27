@@ -1,6 +1,6 @@
 package apple.questing.discord.commands;
 
-import apple.questing.QuestAlgorithm;
+import apple.questing.SpecificQuestAlgorithm;
 import apple.questing.data.FinalQuestOptions;
 import apple.questing.data.WynncraftPlayer;
 import apple.questing.wynncraft.GetPlayerStats;
@@ -129,7 +129,7 @@ public class CommandQuest implements DoCommand {
         }*/
         //todo switch this for what the actual command does
         System.out.println("starting");
-        FinalQuestOptions questsToDo = QuestAlgorithm.whichGivenTime(player.classes.get(13), isXpDesired, timeToSpend, 105, true);
+        FinalQuestOptions questsToDo = SpecificQuestAlgorithm.whichGivenTime(player.classes.get(13), isXpDesired, timeToSpend, 105, true);
         System.out.println("done");
     }
 }

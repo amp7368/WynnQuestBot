@@ -40,6 +40,19 @@ public class PageableMessages {
         return false;
     }
 
+    public static boolean top(long id) {
+        synchronized (mapSyncObject) {
+            Pageable message = pageableMessages.getOrDefault(id, null);
+            if (message != null) {
+                message.top();
+                trimOldMessages();
+                return true;
+            }
+            trimOldMessages();
+        }
+        return false;
+    }
+
     private static void trimOldMessages() {
         synchronized (mapSyncObject) {
             boolean tryAgain = true;

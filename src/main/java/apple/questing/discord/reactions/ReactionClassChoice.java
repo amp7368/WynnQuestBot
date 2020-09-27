@@ -15,7 +15,7 @@ import java.util.Collection;
 
 public class ReactionClassChoice implements DoReaction {
 
-    public static final double DEFAULT_PERCENTAGE_AMOUNT = 0.8;
+    public static final double DEFAULT_PERCENTAGE_AMOUNT = 0.5;
 
     @Override
     public void dealWithReaction(MessageReactionAddEvent event) {

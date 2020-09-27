@@ -100,7 +100,7 @@ public class QuestAlgorithm {
                 }
             }
         }
-        FinalQuestComboTime bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(null);
+        FinalQuestComboTime bestUtilization = finalQuestCombos.stream().max((o1, o2) -> Math.round((o1.getAmount() - o2.getAmount()))).orElse(null);
 
 
         return new FinalQuestOptions(bestPerTime, bestUtilization);
@@ -173,7 +173,7 @@ public class QuestAlgorithm {
             for (String questComboString : questComboStringAll.split(",")) {
                 questCombo.add(nameToQuest.get(questComboString));
             }
-            // time is a given
+            // amount is a given
             finalQuestCombos.add(new FinalQuestComboAmount(questCombo, isXpDesired, amountDesired, isIncludeCollection));
         }
         finalQuestCombos.add(new FinalQuestComboAmount(new ArrayList<>(0), isXpDesired, amountDesired, isIncludeCollection));

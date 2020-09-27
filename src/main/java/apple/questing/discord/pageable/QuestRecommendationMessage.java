@@ -17,7 +17,8 @@ public class QuestRecommendationMessage implements Pageable {
     private final FinalQuestOptions questOptions;
     private final Message message;
     private final ClassChoiceMessage classChoiceMessage;
-    private int page = 0;
+    private int page1 = 0; // separate pages in case it changes where we want to scroll individually
+    private int page2 = 0;
 
     public QuestRecommendationMessage(WynncraftClass wynncraftClass, FinalQuestOptions questOptions, MessageChannel channel, ClassChoiceMessage classChoiceMessage) {
         this.lastUpdated = System.currentTimeMillis();
@@ -34,20 +35,82 @@ public class QuestRecommendationMessage implements Pageable {
     private String makeMessage() {
         StringBuilder messageText = new StringBuilder();
         messageText.append(String.format("**Options for %s, Lvl: %d/%d, Dungeons: %d**", wynncraftClass.name, wynncraftClass.combatLevel, wynncraftClass.totalLevel, wynncraftClass.dungeonsWon));
-        messageText.append("```md\n# Optimize Amount/minute\n");
-        messageText.append(String.format("[Amount][%d] <|> [Time][%d] <|> [Quests][%d] <|> [Amount/minute][%d]\n",
-                questOptions.bestAmountPerTime.getAmount(), (int) questOptions.bestAmountPerTime.getTime(),
-                questOptions.bestAmountPerTime.getQuests().size(), (int) questOptions.bestAmountPerTime.amountPerTime()));
-        messageText.append("\n");
-        messageText.append(String.format("#    %-26s| <Amount>\n", "Quests to do"));
+        messageText.append("```md\n");
+        messageText.append(String.format("#%-56s", "# Optimize Amount/minute"));
+        messageText.append(String.format("|%-56s\n", "# Optimize Amount"));
 
-        List<Quest> quests = questOptions.bestAmountPerTime.getQuests();
-        int lower = page * ENTRIES_PER_PAGE;
-        int upper = Math.min(quests.size(), (page + 1) * ENTRIES_PER_PAGE);
-        for (int i = lower; i < upper; i++) {
-            final String name = quests.get(i).name;
-            messageText.append(String.format("%-31s| <%d>\n", String.format("<%-3s %s>", i + 1 + ".",
-                    name.length() > 25 ? name.substring(0, 22) + "..." : name), classChoiceMessage.isXpDesired ? quests.get(i).xp : quests.get(i).emerald));
+
+        messageText.append(String.format("|%-56s",
+                String.format(" [Total Amount][%s]",
+                        questOptions.answer1.getAmountPretty())));
+        messageText.append("|");
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Amount][%s]",
+                        questOptions.answer2.getAmountPretty())));
+
+        messageText.append("\n|");
+
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Time][%s]",
+                        questOptions.answer1.getTimePretty())));
+        messageText.append("|");
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Time][%s]",
+                        questOptions.answer2.getTimePretty())));
+
+        messageText.append("\n|");
+
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Quests][%d]",
+                        questOptions.answer1.getQuests().size())));
+        messageText.append("|");
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Quests][%d]",
+                        questOptions.answer1.getQuests().size())));
+
+        messageText.append("\n|");
+
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Amount/minute][%s]",
+                        questOptions.answer1.amountPerTimePretty())));
+        messageText.append("|");
+        messageText.append(String.format("%-56s",
+                String.format(" [Total Amount/minute][%s]",
+                        questOptions.answer2.amountPerTimePretty())));
+
+        messageText.append("\n\n");
+        messageText.append(String.format("##    %-26s| <Amount>  | %-11s|", "Quests to do", "<Time>"));
+        messageText.append(String.format("#    %-26s| <Amount>  | %-11s|\n", "Quests to do", "<Time>"));
+
+        List<Quest> quests1 = questOptions.answer1.getQuests();
+        List<Quest> quests2 = questOptions.answer2.getQuests();
+        int lower1 = page1 * ENTRIES_PER_PAGE;
+        int lower2 = page2 * ENTRIES_PER_PAGE;
+        for (int i = 0; i < ENTRIES_PER_PAGE; i++) {
+            final Quest quest1 = quests1.size() > lower1 ? quests1.get(lower1++) : null;
+            final Quest quest2 = quests2.size() > lower2 ? quests2.get(lower2++) : null;
+            if (quest1 == null) {
+                messageText.append(String.format("|%-31s  %-10s  %-11s", "", "", ""));
+            } else {
+                final String name1 = quest1.name;
+                messageText.append(String.format("|%-31s| %-10s| %-11s",
+                        String.format("<%-3s %s>", lower1 + ".", name1.length() > 25 ? name1.substring(0, 22) + "..." : name1),
+                        String.format("<%d>", classChoiceMessage.isXpDesired ? quest1.xp : quest1.emerald),
+                        String.format("<%d mins>", (int) (Math.ceil(quest1.time)))));
+
+            }
+            messageText.append("|");
+            if (quest2 == null) {
+                messageText.append(String.format("%-31s  %-10s  %-11s", "", "", ""));
+            } else {
+                final String name2 = quest2.name;
+                messageText.append(String.format("%-31s| %-10s| %-11s",
+                        String.format("<%-3s %s>", lower2 + ".", name2.length() > 25 ? name2.substring(0, 22) + "..." : name2),
+                        String.format("<%d>", classChoiceMessage.isXpDesired ? quest2.xp : quest2.emerald),
+                        String.format("<%d mins>", (int) (Math.ceil(quest2.time)))));
+            }
+            messageText.append("|");
+            messageText.append("\n");
         }
         messageText.append("\n```");
         return messageText.toString();
@@ -55,16 +118,19 @@ public class QuestRecommendationMessage implements Pageable {
 
     @Override
     public void forward() {
-        if ((page + 1) * ENTRIES_PER_PAGE < questOptions.bestAmountPerTime.getQuests().size()) {
-            ++page;
+        if ((page1 + 1) * ENTRIES_PER_PAGE < questOptions.answer1.getQuests().size() ||
+                (page2 + 1) * ENTRIES_PER_PAGE < questOptions.answer2.getQuests().size()) {
+            ++page1;
+            ++page2;
             message.editMessage(makeMessage()).queue();
         }
     }
 
     @Override
     public void backward() {
-        if (page - 1 != -1) {
-            --page;
+        if (page1 - 1 != -1) {
+            --page1;
+            --page2;
             message.editMessage(makeMessage()).queue();
         }
     }

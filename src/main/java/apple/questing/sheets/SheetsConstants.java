@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SheetsConstants {
     public static String spreadsheetId;
-    public static Sheets.Spreadsheets.Values sheets = QuestMain.service.spreadsheets().values();
+    public static Sheets.Spreadsheets.Values sheets = QuestMain.serviceSheets.spreadsheets().values();
 
     static {
         List<String> list = Arrays.asList(apple.questing.QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));

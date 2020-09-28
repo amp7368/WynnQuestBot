@@ -6,6 +6,7 @@ import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.sheets.write.SheetsWriteData;
 import apple.questing.sheets.write.SheetsWriteOverview;
+import com.google.api.services.drive.model.Permission;
 import com.google.api.services.sheets.v4.model.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static apple.questing.QuestMain.service;
+import static apple.questing.QuestMain.serviceDrive;
+import static apple.questing.QuestMain.serviceSheets;
 
 public class SheetsWrite {
     private static final String SHEET_IDS_FILE_PATH;
@@ -51,7 +53,7 @@ public class SheetsWrite {
         requests.add(SheetsWriteData.write(questOptions.answerTimeAPT, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.TIME_APT));
         requests.add(SheetsWriteData.write(questOptions.answerTimeAmount, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.TIME_AMOUNT));
 
-        service.spreadsheets().batchUpdate(sheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
+        serviceSheets.spreadsheets().batchUpdate(sheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
 
     }
 
@@ -82,8 +84,9 @@ public class SheetsWrite {
                     )
                     )
             );
-            Spreadsheet spreadSheet = service.spreadsheets().create(spreadsheet).execute();
+            Spreadsheet spreadSheet = serviceSheets.spreadsheets().create(spreadsheet).execute();
             final String spreadsheetId = spreadSheet.getSpreadsheetId();
+            serviceDrive.permissions().create(spreadsheetId, new Permission().setRole("reader").setType("anyone")).execute();
             System.out.println(spreadsheetId);
             JSONObject sheetToAdd = new JSONObject();
             sheetToAdd.put("discord", discordId);

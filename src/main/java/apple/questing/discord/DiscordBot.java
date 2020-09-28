@@ -2,12 +2,10 @@ package apple.questing.discord;
 
 
 import apple.questing.QuestMain;
-import apple.questing.data.WynncraftPlayer;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.commands.*;
 import apple.questing.discord.reactions.*;
 import apple.questing.sheets.SheetsQuery;
-import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FinalQuestCombo {
     final List<Quest> quests;
-    final boolean isXpDesired;  // alternative is emerald is desired
+    public final boolean isXpDesired;  // alternative is emerald is desired
     final boolean isIncludeCollection;
 
 

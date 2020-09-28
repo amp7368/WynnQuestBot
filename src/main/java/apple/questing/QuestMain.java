@@ -1,6 +1,7 @@
 package apple.questing;
 
 import apple.questing.discord.DiscordBot;
+import apple.questing.sheets.SheetsConstants;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -13,8 +14,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 
 import javax.security.auth.login.LoginException;
 import java.io.FileNotFoundException;
@@ -30,7 +29,6 @@ public class QuestMain {
     static final String APPLICATION_NAME = "CreditBot";
     static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    public static Sheets service;
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -38,6 +36,7 @@ public class QuestMain {
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    public static Sheets service;
 
     /**
      * Creates an authorized Credential object.

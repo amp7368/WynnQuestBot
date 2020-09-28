@@ -1,5 +1,6 @@
 package apple.questing.sheets;
 
+import apple.questing.QuestMain;
 import com.google.api.services.sheets.v4.Sheets;
 
 import java.io.BufferedReader;
@@ -10,7 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SheetsConstants {
-    public static String spreadsheetId = "";
+    public static String spreadsheetId;
+    public static Sheets.Spreadsheets.Values sheets = QuestMain.service.spreadsheets().values();
 
     static {
         List<String> list = Arrays.asList(apple.questing.QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
@@ -34,5 +36,4 @@ public class SheetsConstants {
         }
     }
 
-    public static Sheets.Spreadsheets.Values sheets = apple.questing.QuestMain.service.spreadsheets().values();
 }

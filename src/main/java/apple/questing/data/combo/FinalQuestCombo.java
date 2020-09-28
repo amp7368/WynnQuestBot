@@ -14,7 +14,7 @@ public class FinalQuestCombo {
     final boolean isIncludeCollection;
 
 
-    public FinalQuestCombo(Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
+    public FinalQuestCombo(@NotNull Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
         this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
@@ -65,6 +65,7 @@ public class FinalQuestCombo {
         return quests.isEmpty();
     }
 
+    @NotNull
     public List<Quest> getQuests() {
         return quests;
     }
@@ -116,7 +117,7 @@ public class FinalQuestCombo {
         }
     }
 
-    public String amountPerTimePretty() {
+    public String getAmountPerTimePretty() {
         double amountPerTime = amountPerTime();
         if (isXpDesired) {
             return Pretty.commas((long) amountPerTime);

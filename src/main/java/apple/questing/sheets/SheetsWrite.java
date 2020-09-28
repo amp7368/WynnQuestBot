@@ -4,6 +4,7 @@ import apple.questing.QuestMain;
 import apple.questing.data.FinalQuestOptionsAll;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.sheets.write.SheetsWriteOverview;
 import com.google.api.services.sheets.v4.model.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,11 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static apple.questing.QuestMain.service;
 
 public class SheetsWrite {
     private static final String SHEET_IDS_FILE_PATH;
@@ -36,7 +40,10 @@ public class SheetsWrite {
         }
     }
 
-    private static void writeData(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String sheetId) {
+    private static void writeData(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String sheetId) throws IOException {
+        List<Request> requests = new ArrayList<>();
+        requests.add(SheetsWriteOverview.writeOverview(questOptions, wynncraftClass, classChoiceMessage, sheetId));
+        service.spreadsheets().batchUpdate(sheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
 
     }
 
@@ -51,23 +58,24 @@ public class SheetsWrite {
                     new SpreadsheetProperties().set("title", "Quests (Wynncraft)")
             ).setSheets(Arrays.asList(
                     new Sheet().setProperties(
-                            new SheetProperties().setTitle("Overview")
+                            new SheetProperties().setTitle("Overview").setSheetId(0)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("% | Emerald")
+                            new SheetProperties().setTitle("% | Emerald").setSheetId(1)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("% | Xp")
+                            new SheetProperties().setTitle("% | Xp").setSheetId(2)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Amount | Emerald")
+                            new SheetProperties().setTitle("Amount | Emerald").setSheetId(3)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Amount | Xp")
+                            new SheetProperties().setTitle("Amount | Xp").setSheetId(5)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Time | Emerald")
+                            new SheetProperties().setTitle("Time | Emerald").setSheetId(6)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Time | Xp")
+                            new SheetProperties().setTitle("Time | Xp").setSheetId(7)
                     )
                     )
             );
-            Spreadsheet spreadSheet = QuestMain.service.spreadsheets().create(spreadsheet).execute();
+            Spreadsheet spreadSheet = service.spreadsheets().create(spreadsheet).execute();
+            List<Sheet> sheets = spreadSheet.getSheets();
             final String spreadsheetId = spreadSheet.getSpreadsheetId();
             System.out.println(spreadsheetId);
             JSONObject sheetToAdd = new JSONObject();

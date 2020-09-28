@@ -156,11 +156,11 @@ public class QuestRecommendationMessage implements Pageable {
 
         messageText.append(String.format("%-56s",
                 String.format(" [Total Amount/minute][%s]",
-                        answer1.amountPerTimePretty())));
+                        answer1.getAmountPerTimePretty())));
         messageText.append("|");
         messageText.append(String.format("%-56s",
                 String.format(" [Total Amount/minute][%s]",
-                        answer2.amountPerTimePretty())));
+                        answer2.getAmountPerTimePretty())));
 
         messageText.append("\n\n");
         messageText.append(String.format("##    %-26s| <Amount>  | %-11s|", "Quests to do", "<Time>"));

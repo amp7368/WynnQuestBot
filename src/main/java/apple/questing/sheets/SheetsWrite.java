@@ -4,6 +4,7 @@ import apple.questing.QuestMain;
 import apple.questing.data.FinalQuestOptionsAll;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.sheets.write.SheetsWriteData;
 import apple.questing.sheets.write.SheetsWriteOverview;
 import com.google.api.services.sheets.v4.model.*;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public class SheetsWrite {
 
     public static void writeSheet(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, long discordId) {
         try {
-            String sheetId = addSheet(discordId);
+            String sheetId = tryAddSheet(discordId);
             writeData(questOptions, wynncraftClass, classChoiceMessage, sheetId);
         } catch (IOException | ParseException e) {
             e.printStackTrace();// todo deal with error
@@ -43,12 +44,19 @@ public class SheetsWrite {
     private static void writeData(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String sheetId) throws IOException {
         List<Request> requests = new ArrayList<>();
         requests.add(SheetsWriteOverview.writeOverview(questOptions, wynncraftClass, classChoiceMessage, sheetId));
+        requests.add(SheetsWriteData.write(questOptions.answerPercAPT, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.PERC_APT));
+        requests.add(SheetsWriteData.write(questOptions.answerPercTime, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.PERC_TIME));
+        requests.add(SheetsWriteData.write(questOptions.answerAmountAPT, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.AMOUNT_APT));
+        requests.add(SheetsWriteData.write(questOptions.answerAmountTime, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.AMOUNT_TIME));
+        requests.add(SheetsWriteData.write(questOptions.answerTimeAPT, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.TIME_APT));
+        requests.add(SheetsWriteData.write(questOptions.answerTimeAmount, wynncraftClass, classChoiceMessage, sheetId, SheetsWriteData.SheetName.TIME_AMOUNT));
+
         service.spreadsheets().batchUpdate(sheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
 
     }
 
     @NotNull
-    private static String addSheet(long discordId) throws IOException, ParseException {
+    private static String tryAddSheet(long discordId) throws IOException, ParseException {
         synchronized (syncObject) {
             String id = getSheetId(discordId);
             if (id != null)
@@ -60,22 +68,21 @@ public class SheetsWrite {
                     new Sheet().setProperties(
                             new SheetProperties().setTitle("Overview").setSheetId(0)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("% | Emerald").setSheetId(1)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("% | Emerald").setSheetId(1)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("% | Xp").setSheetId(2)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("% | Xp").setSheetId(2)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Amount | Emerald").setSheetId(3)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Amount | Emerald").setSheetId(3)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Amount | Xp").setSheetId(5)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Amount | Xp").setSheetId(4)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Time | Emerald").setSheetId(6)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Time | Emerald").setSheetId(5)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setTitle("Time | Xp").setSheetId(7)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Time | Xp").setSheetId(6)
                     )
                     )
             );
             Spreadsheet spreadSheet = service.spreadsheets().create(spreadsheet).execute();
-            List<Sheet> sheets = spreadSheet.getSheets();
             final String spreadsheetId = spreadSheet.getSpreadsheetId();
             System.out.println(spreadsheetId);
             JSONObject sheetToAdd = new JSONObject();

@@ -3,7 +3,6 @@ package apple.questing.sheets.write;
 import apple.questing.data.FinalQuestOptions;
 import apple.questing.data.FinalQuestOptionsAll;
 import apple.questing.data.WynncraftClass;
-import apple.questing.data.combo.FinalQuestCombo;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import com.google.api.services.sheets.v4.model.*;
 
@@ -38,14 +37,7 @@ public class SheetsWriteOverview {
         row.add("exclude collection");
         data.add(row);
         int i = 0;
-        for (FinalQuestOptions answer : Arrays.asList(
-                questOptions.answerPercAPT,
-                questOptions.answerPercTime,
-                questOptions.answerAmountAPT,
-                questOptions.answerAmountTime,
-                questOptions.answerTimeAPT,
-                questOptions.answerTimeAmount
-        )) {
+        for (FinalQuestOptions answer : questOptions.getList()) {
             switch (i++) {
                 case 0:
                     row = new ArrayList<>();
@@ -115,16 +107,8 @@ public class SheetsWriteOverview {
             row.add(String.valueOf(answer.ncx.getAmountPerTimePretty()));
             data.add(row);
         }
-        List<RowData> rowDatas = new ArrayList<>();
-        for (List<String> rowIter : data) {
-            RowData rowData = new RowData();
-            List<CellData> cells = new ArrayList<>();
-            for (String cellIter : rowIter) {
-                cells.add(new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(cellIter)));
-            }
-            rowData.setValues(cells);
-            rowDatas.add(rowData);
-        }
-        return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(rowDatas).setStart(new GridCoordinate().setSheetId(OVERVIEW_SHEET_ID).setColumnIndex(0).setRowIndex(0)));
+        return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(SheetsWriteUtils.convertToRowData(data)).
+                setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(32)));
     }
+
 }

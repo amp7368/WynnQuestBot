@@ -2,6 +2,9 @@ package apple.questing.data;
 
 import apple.questing.data.combo.FinalQuestCombo;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class FinalQuestOptionsAll {
     public FinalQuestOptions answerPercAPT;
     public FinalQuestOptions answerPercTime;
@@ -19,5 +22,16 @@ public class FinalQuestOptionsAll {
         this.answerAmountTime = answerAmountTime;
         this.answerTimeAPT = answerTimeAPT;
         this.answerTimeAmount = answerTimeAmount;
+    }
+
+    public List<FinalQuestOptions> getList() {
+        return Arrays.asList(
+                answerPercAPT,
+                answerPercTime,
+                answerAmountAPT,
+                answerAmountTime,
+                answerTimeAPT,
+                answerTimeAmount
+        );
     }
 }

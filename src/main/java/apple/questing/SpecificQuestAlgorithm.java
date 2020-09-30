@@ -1,8 +1,10 @@
 package apple.questing;
 
 import apple.questing.data.*;
+import apple.questing.data.combo.FinalQuestCombo;
 import apple.questing.data.combo.FinalQuestComboAmount;
 import apple.questing.data.combo.FinalQuestComboTime;
+import apple.questing.utils.Pair;
 
 import java.util.*;
 
@@ -10,8 +12,8 @@ import static apple.questing.sheets.SheetsQuery.allQuests;
 import static apple.questing.sheets.SheetsQuery.nameToQuest;
 
 public class SpecificQuestAlgorithm {
-    public static FinalQuestOptions whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
-                                                   int classLevel, boolean isIncludeCollection) {
+    public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
+                                                                        int classLevel, boolean isIncludeCollection) {
         // if class level is not specified, specify it
         if (classLevel == -1) classLevel = playerClass.combatLevel;
 
@@ -89,7 +91,8 @@ public class SpecificQuestAlgorithm {
         // remove any combos that are empty
         finalQuestCombos.removeIf(FinalQuestComboTime::isEmpty);
 
-        FinalQuestComboTime bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(null);
+        FinalQuestComboTime bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(
+                new FinalQuestComboTime(new ArrayList<>(), isXpDesired, timeToSpend, isIncludeCollection));
 
         // add singleton quests to all the combos
         for (FinalQuestComboTime finalQuestCombo : finalQuestCombos) {
@@ -100,13 +103,15 @@ public class SpecificQuestAlgorithm {
                 }
             }
         }
-        FinalQuestComboTime bestUtilization = finalQuestCombos.stream().max((o1, o2) -> Math.round((o1.getAmount() - o2.getAmount()))).orElse(null);
+        FinalQuestComboTime bestUtilization = finalQuestCombos.stream().max((o1, o2) -> Math.round((o1.getAmount() - o2.getAmount()))).orElse(
+                new FinalQuestComboTime(new ArrayList<>(), isXpDesired, timeToSpend, isIncludeCollection)
+        );
 
 
-        return new FinalQuestOptions(bestPerTime, bestUtilization);
+        return new Pair<>(bestPerTime, bestUtilization);
     }
 
-    public static FinalQuestOptions whichGivenPercentageAmount(WynncraftClass playerClass, boolean isXpDesired, double percentageAmount, int classLevel, boolean isCollection) {
+    public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenPercentageAmount(WynncraftClass playerClass, boolean isXpDesired, double percentageAmount, int classLevel, boolean isCollection) {
         // if class level is not specified, specify it
         if (classLevel == -1) classLevel = playerClass.combatLevel;
         long amountPossible = 0;
@@ -117,7 +122,7 @@ public class SpecificQuestAlgorithm {
         return whichGivenRawAmount(playerClass, isXpDesired, (int) (amountPossible * percentageAmount), classLevel, isCollection);
     }
 
-    public static FinalQuestOptions whichGivenRawAmount(WynncraftClass playerClass, boolean isXpDesired, long amountDesired, int classLevel, boolean isIncludeCollection) {
+    public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenRawAmount(WynncraftClass playerClass, boolean isXpDesired, long amountDesired, int classLevel, boolean isIncludeCollection) {
         // if class level is not specified, specify it
         if (classLevel == -1) classLevel = playerClass.combatLevel;
 
@@ -194,10 +199,12 @@ public class SpecificQuestAlgorithm {
         // remove any combos that are empty
         finalQuestCombos.removeIf(FinalQuestComboAmount::isEmpty);
 
-        FinalQuestComboAmount bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(null);
-        FinalQuestComboAmount bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.getTime() - o2.getTime()))).orElse(null);
+        FinalQuestComboAmount bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(
+                new FinalQuestComboAmount(new ArrayList<>(), isXpDesired, amountDesired, isIncludeCollection));
+        FinalQuestComboAmount bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o2.getTime() - o1.getTime()))).orElse(
+                new FinalQuestComboAmount(new ArrayList<>(), isXpDesired, amountDesired, isIncludeCollection));
 
-        return new FinalQuestOptions(bestPerTime, bestUtilization);
+        return new Pair<>(bestPerTime, bestUtilization);
     }
 
     private static void addQuestGivenAmount(List<Collection<QuestLinked>> questCombinations, HashMap<String, QuestLinked> nameToQuestLinked, Set<String> finalList, long amountDesired, boolean isXpDesired, boolean isIncludeCollection) {

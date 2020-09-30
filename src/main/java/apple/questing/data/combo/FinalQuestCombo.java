@@ -10,11 +10,11 @@ import java.util.List;
 
 public class FinalQuestCombo {
     final List<Quest> quests;
-    final boolean isXpDesired;  // alternative is emerald is desired
-    final boolean isIncludeCollection;
+    public final boolean isXpDesired;  // alternative is emerald is desired
+    public final boolean isIncludeCollection;
 
 
-    public FinalQuestCombo(Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
+    public FinalQuestCombo(@NotNull Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
         this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
@@ -65,6 +65,7 @@ public class FinalQuestCombo {
         return quests.isEmpty();
     }
 
+    @NotNull
     public List<Quest> getQuests() {
         return quests;
     }
@@ -112,42 +113,16 @@ public class FinalQuestCombo {
         if (isXpDesired) {
             return Pretty.commas(amount);
         } else {
-            return getMon(amount);
+            return Pretty.getMon(amount);
         }
     }
 
-    public String amountPerTimePretty() {
+    public String getAmountPerTimePretty() {
         double amountPerTime = amountPerTime();
         if (isXpDesired) {
             return Pretty.commas((long) amountPerTime);
         } else {
-            return getMon(amountPerTime);
+            return Pretty.getMon(amountPerTime);
         }
-    }
-
-    @NotNull
-    private String getMon(double amount) {
-        int le = (int) (amount / 4096);
-        int eb = (int) ((amount / 64) % 64);
-        int e = (int) (amount % 64);
-        StringBuilder mon = new StringBuilder();
-        if (le != 0) {
-            mon.append(le);
-            mon.append(" le");
-            if (eb != 0)
-                mon.append(' ');
-        }
-        if (eb != 0) {
-            mon.append(eb);
-            mon.append(" eb");
-        }
-        if (le == 0 && eb == 0 && e == 0) {
-            mon.append("0 e");
-        } else if (le == 0 || eb == 0) {
-            mon.append(" ");
-            mon.append(e);
-            mon.append(" e");
-        }
-        return mon.toString();
     }
 }

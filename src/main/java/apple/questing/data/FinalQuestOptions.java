@@ -2,12 +2,28 @@ package apple.questing.data;
 
 import apple.questing.data.combo.FinalQuestCombo;
 
-public class FinalQuestOptions {
-    public FinalQuestCombo answer1;
-    public FinalQuestCombo answer2;
+import java.util.Arrays;
+import java.util.List;
 
-    public FinalQuestOptions(FinalQuestCombo answer1, FinalQuestCombo answer2) {
-        this.answer1 = answer1;
-        this.answer2 = answer2;
+public class FinalQuestOptions {
+    public FinalQuestCombo ncnx;
+    public FinalQuestCombo cnx;
+    public FinalQuestCombo ncx;
+    public FinalQuestCombo cx;
+
+    public FinalQuestOptions(FinalQuestCombo ncnx, FinalQuestCombo cnx, FinalQuestCombo ncx, FinalQuestCombo cx) {
+        this.ncnx = ncnx;
+        this.cnx = cnx;
+        this.ncx = ncx;
+        this.cx = cx;
+    }
+
+    public List<FinalQuestCombo> getList() {
+        return Arrays.asList(
+                ncnx,
+                cnx,
+                ncx,
+                cx
+        );
     }
 }

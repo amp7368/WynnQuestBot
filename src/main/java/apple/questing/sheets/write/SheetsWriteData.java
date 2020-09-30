@@ -17,6 +17,10 @@ import static apple.questing.sheets.SheetsConstants.BANDS_PER_SHEET;
 
 public class SheetsWriteData {
 
+    public static final Color FIRST_BAND_COLOR = makeColor(255f, 255f, 255f, 255f);
+    public static final Color SECOND_BAND_COLOR = makeColor(255f, 231, 249, 239);
+    public static final Color HEADER_COLOR = makeColor(255f, 99, 210, 151);
+
     public static List<Request> write(FinalQuestOptions questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String spreadSheetId, SheetName sheetName, int order) throws IOException {
         Integer sheetId = -1;
         switch (sheetName) {
@@ -95,10 +99,9 @@ public class SheetsWriteData {
 
         List<RowData> rows = SheetsWriteUtils.convertToRowData(data);
         int i = 0;
-        final Color headerColor = makeColor(255f, 99, 210, 151);
         for (FinalQuestCombo finalQuestCombo : questOptions.getList()) {
-            SheetsWriteUtils.setRowFormat(rows.get(i++), true, headerColor);
-            SheetsWriteUtils.setRowFormat(rows.get(i), true, headerColor);
+            SheetsWriteUtils.setRowFormat(rows.get(i++), false, HEADER_COLOR);
+            SheetsWriteUtils.setRowFormat(rows.get(i), true, HEADER_COLOR);
             SheetsWriteUtils.setRowFormat(rows.get(i + 2), true, null);
             i += finalQuestCombo.getQuests().size() + 5;
         }
@@ -110,13 +113,12 @@ public class SheetsWriteData {
         int finalQuestComboI = order * BANDS_PER_SHEET;
         for (FinalQuestCombo finalQuestCombo : questOptions.getList()) {
             final int size = finalQuestCombo.getQuests().size();
-            System.out.println(finalQuestComboI);
             requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(finalQuestComboI++).
                     setRange(new GridRange().setSheetId(sheetId).setStartColumnIndex(0).setEndColumnIndex(7).setStartRowIndex(row + 3).setEndRowIndex(row + size + 4)).
                     setRowProperties(new BandingProperties().
-                            setHeaderColor(headerColor).
-                            setFirstBandColor(makeColor(255f, 255f, 255f, 255f)).
-                            setSecondBandColor(makeColor(255f, 231, 249, 239))
+                            setHeaderColor(HEADER_COLOR).
+                            setFirstBandColor(FIRST_BAND_COLOR).
+                            setSecondBandColor(SECOND_BAND_COLOR)
                     ))));
             row += size + 6;
         }

@@ -23,14 +23,27 @@ public class SheetsWriteUtils {
     }
 
     public static void setRowFormat(RowData rowData, boolean bold, Color color) {
-        if (color == null)
-            for (CellData cell : rowData.getValues()) {
-                cell.setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(bold)).setBackgroundColor(color));
-            }
-        else
+        if (color == null) {
             for (CellData cell : rowData.getValues()) {
                 cell.setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(bold)));
             }
+        } else {
+            for (CellData cell : rowData.getValues()) {
+                cell.setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(bold)).setBackgroundColor(color));
+            }
+        }
+    }
+
+    public static void setColumnFormat(List<RowData> rows, int column, boolean bold, Color color) {
+        for (RowData row : rows) {
+            List<CellData> cells = row.getValues();
+            if (cells.size() > column) {
+                if(color==null)
+                    cells.get(column).setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(bold)));
+                else
+                    cells.get(column).setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(bold)).setBackgroundColor(color));
+            }
+        }
     }
 
     public static Color makeColor(float a, float r, float g, float b) {

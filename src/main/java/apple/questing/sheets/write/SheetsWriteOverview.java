@@ -146,7 +146,10 @@ public class SheetsWriteOverview {
             row.add(String.valueOf(answer.ncx.getAmountPerTimePretty()));
             data.add(row);
         }
-        return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(SheetsWriteUtils.convertToRowData(data)).
+        List<RowData> rows = SheetsWriteUtils.convertToRowData(data);
+        SheetsWriteUtils.setColumnFormat(rows,0,true,null);
+        SheetsWriteUtils.setColumnFormat(rows,1,true,null);
+        return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(rows).
                 setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(45)));
     }
 

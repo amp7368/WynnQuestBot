@@ -13,7 +13,7 @@ import java.util.List;
 public class SheetsConstants {
     public static String spreadsheetId;
     public static Sheets.Spreadsheets.Values sheets = QuestMain.serviceSheets.spreadsheets().values();
-
+    public static final int BANDS_PER_SHEET = 4;
     static {
         List<String> list = Arrays.asList(apple.questing.QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
         String SHEET_ID_FILE_PATH = String.join("/", list.subList(0, list.size() - 1)) + "/data/sheetId.data";

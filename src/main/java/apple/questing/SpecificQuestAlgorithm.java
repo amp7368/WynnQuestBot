@@ -201,7 +201,7 @@ public class SpecificQuestAlgorithm {
 
         FinalQuestComboAmount bestPerTime = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.amountPerTime() - o2.amountPerTime()))).orElse(
                 new FinalQuestComboAmount(new ArrayList<>(), isXpDesired, amountDesired, isIncludeCollection));
-        FinalQuestComboAmount bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o1.getTime() - o2.getTime()))).orElse(
+        FinalQuestComboAmount bestUtilization = finalQuestCombos.stream().max((o1, o2) -> (int) Math.round((o2.getTime() - o1.getTime()))).orElse(
                 new FinalQuestComboAmount(new ArrayList<>(), isXpDesired, amountDesired, isIncludeCollection));
 
         return new Pair<>(bestPerTime, bestUtilization);

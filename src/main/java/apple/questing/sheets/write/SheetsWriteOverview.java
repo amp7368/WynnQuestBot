@@ -8,7 +8,6 @@ import com.google.api.services.sheets.v4.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static apple.questing.sheets.SheetsRanges.OVERVIEW_SHEET_ID;
@@ -21,8 +20,8 @@ public class SheetsWriteOverview {
         List<String> row = new ArrayList<>();
         row.add("");
         row.add("");
-        row.add("xp is not wanted");
-        row.add("xp is not wanted");
+        row.add("emeralds wanted");
+        row.add("emeralds wanted");
         row.add("xp is wanted");
         row.add("xp is wanted");
         data.add(row);
@@ -32,8 +31,8 @@ public class SheetsWriteOverview {
         row.add("");
         row.add("");
         row.add("include collection");
-        row.add("include collection");
         row.add("exclude collection");
+        row.add("include collection");
         row.add("exclude collection");
         data.add(row);
         int i = 0;
@@ -43,34 +42,74 @@ public class SheetsWriteOverview {
                     row = new ArrayList<>();
                     row.add("% | Amount/Time");
                     data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated by default regardless of -t and -e arguments");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to reach 50% of rewards possible and maximize Reward/Time");
+                    data.add(row);
                     break;
                 case 1:
                     row = new ArrayList<>();
                     row.add("% | Time");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated by default regardless of -t and -e arguments");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to reach 50% of rewards possible and minimize the time");
                     data.add(row);
                     break;
                 case 2:
                     row = new ArrayList<>();
                     row.add("Amount | Amount/Time");
                     data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated if the -e argument is provided");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to reach the reward given and maximize Reward/Time");
+                    data.add(row);
                     break;
                 case 3:
                     row = new ArrayList<>();
                     row.add("Amount | Time");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated if the -e argument is provided");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to reach the reward given and minimize Time");
                     data.add(row);
                     break;
                 case 4:
                     row = new ArrayList<>();
                     row.add("Time | Amount/Time");
                     data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated if the -t argument is provided");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to maximize Amount/Time while Time is below the provided limit");
+                    data.add(row);
                     break;
                 case 5:
                     row = new ArrayList<>();
                     row.add("Time | Amount");
                     data.add(row);
+                    row = new ArrayList<>();
+                    row.add("This is calculated if the -t argument is provided");
+                    data.add(row);
+                    row = new ArrayList<>();
+                    row.add("The goal of this calculation is to maximize Amount while Time is below the provided limit");
+                    data.add(row);
                     break;
             }
-
+            if (answer == null) {
+                row.add("");
+                row.add("Enter more arguments to get this page");
+                continue;
+            }
             row = new ArrayList<>();
             row.add("");
             row.add("Quest Count");
@@ -108,7 +147,7 @@ public class SheetsWriteOverview {
             data.add(row);
         }
         return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(SheetsWriteUtils.convertToRowData(data)).
-                setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(32)));
+                setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(45)));
     }
 
 }

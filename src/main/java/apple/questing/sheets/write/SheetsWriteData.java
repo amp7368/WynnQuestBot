@@ -1,27 +1,23 @@
 package apple.questing.sheets.write;
 
 import apple.questing.data.FinalQuestOptions;
-import apple.questing.data.FinalQuestOptionsAll;
 import apple.questing.data.Quest;
 import apple.questing.data.WynncraftClass;
 import apple.questing.data.combo.FinalQuestCombo;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.utils.Pretty;
-import com.google.api.services.sheets.v4.model.GridCoordinate;
-import com.google.api.services.sheets.v4.model.GridRange;
-import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
+import com.google.api.services.sheets.v4.model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static apple.questing.sheets.SheetsRanges.*;
+import static apple.questing.sheets.write.SheetsWriteUtils.makeColor;
+import static apple.questing.sheets.SheetsConstants.BANDS_PER_SHEET;
 
 public class SheetsWriteData {
-    public static Request write(FinalQuestOptions questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String spreadSheetId, SheetName sheetName) throws IOException {
-        int endColumnIndex = 0;
+
+    public static List<Request> write(FinalQuestOptions questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String spreadSheetId, SheetName sheetName, int order) throws IOException {
         Integer sheetId = -1;
         switch (sheetName) {
             case PERC_APT:
@@ -45,93 +41,86 @@ public class SheetsWriteData {
         }
         List<List<String>> data = new ArrayList<>();
         for (FinalQuestCombo questCombo : questOptions.getList()) {
-            List<String> row = new ArrayList<>();
-            row.add("Collection Included");
-            row.add(String.valueOf(questCombo.isIncludeCollection));
-            row.add("");
-            row.add("Quest Name");
             final List<Quest> quests = questCombo.getQuests();
-            for (Quest quest : quests) {
-                row.add(quest.name);
-            }
-            data.add(row);
 
-            row = new ArrayList<>();
+            List<String> row = new ArrayList<>();
+            if (questCombo == null) {
+                row.add("");
+                row.add("Enter more arguments to get this page");
+                continue;
+            }
+            row.add("Collection Included");
             row.add("Xp Desired");
-            row.add(String.valueOf(questCombo.isXpDesired));
-            row.add("");
-            row.add("Total Time");
-            for (Quest quest : quests) {
-                row.add(String.valueOf(quest.time + quest.collectionTime));
-            }
-            data.add(row);
-
-            row = new ArrayList<>();
-            final int questSize = quests.size();
-            endColumnIndex = Math.max(questSize, endColumnIndex);
             row.add("Quest Count");
-            row.add(String.valueOf(questSize));
-            row.add("");
-            row.add("Time");
-            for (Quest quest : quests) {
-                row.add(String.valueOf(quest.time));
-            }
-            data.add(row);
-
-            row = new ArrayList<>();
             row.add("Reward");
-            row.add(questCombo.getAmountPretty());
-            row.add("");
-            row.add("Collection Time");
-            for (Quest quest : quests) {
-                row.add(questCombo.isXpDesired ? Pretty.commas(quest.xp) : Pretty.getMon(quest.emerald));
-            }
-            data.add(row);
-
-            row = new ArrayList<>();
             row.add("Time");
-            row.add(questCombo.getAmountPretty());
-            row.add("");
-            row.add("Emerald");
-            for (Quest quest : quests) {
-                row.add(Pretty.getMon(quest.emerald));
-            }
-            data.add(row);
-
-            row = new ArrayList<>();
             row.add("Reward/Time");
+            data.add(row);
+
+            row = new ArrayList<>();
+            row.add(String.valueOf(questCombo.isIncludeCollection));
+            row.add(String.valueOf(questCombo.isXpDesired));
+            row.add(String.valueOf(quests.size()));
             row.add(questCombo.getAmountPretty());
-            row.add("");
-            row.add("Xp");
-            for (Quest quest : quests) {
-                row.add(Pretty.commas(quest.xp));
-            }
+            row.add(questCombo.getTimePretty());
+            row.add(questCombo.getAmountPerTimePretty());
             data.add(row);
+            data.add(Collections.emptyList());
 
             row = new ArrayList<>();
-            row.add("");
-            row.add("");
-            row.add("");
+            row.add("Quest Name");
+            row.add("Total Time");
+            row.add("Time");
+            row.add("Collection Time");
+            row.add(questCombo.isXpDesired ? "Xp" : "Emerald");
             row.add("Level");
-            for (Quest quest : quests) {
-                row.add(Pretty.commas(quest.levelMinimum));
-            }
+            row.add("Requirements");
             data.add(row);
 
-            row = new ArrayList<>();
-            row.add("");
-            row.add("");
-            row.add("");
-            row.add("Requirements");
             for (Quest quest : quests) {
+                row = new ArrayList<>();
+                row.add(quest.name);
+                row.add((quest.time + quest.collectionTime) + " mins");
+                row.add(quest.time + " mins");
+                row.add(quest.collectionTime + " mins");
+                if (questCombo.isXpDesired) row.add(Pretty.commas(quest.xp));
+                else row.add(Pretty.getMon(quest.emerald));
+                row.add(Pretty.commas(quest.levelMinimum));
                 row.add(String.join(", ", quest.allRequirements));
+                data.add(row);
             }
-            data.add(row);
+            data.add(Collections.emptyList());
             data.add(Collections.emptyList());
         }
 
-        return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(SheetsWriteUtils.convertToRowData(data)).
-                setRange(new GridRange().setSheetId(sheetId).setStartColumnIndex(0).setStartRowIndex(0).setEndRowIndex(36)));
+        List<RowData> rows = SheetsWriteUtils.convertToRowData(data);
+        int i = 0;
+        final Color headerColor = makeColor(255f, 99, 210, 151);
+        for (FinalQuestCombo finalQuestCombo : questOptions.getList()) {
+            SheetsWriteUtils.setRowFormat(rows.get(i++), true, headerColor);
+            SheetsWriteUtils.setRowFormat(rows.get(i), true, headerColor);
+            SheetsWriteUtils.setRowFormat(rows.get(i + 2), true, null);
+            i += finalQuestCombo.getQuests().size() + 5;
+        }
+        List<Request> requests = new ArrayList<>();
+        requests.add(new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(rows).
+                setRange(new GridRange().setSheetId(sheetId).setStartColumnIndex(0).setStartRowIndex(0).setEndRowIndex(rows.size()))));
+
+        int row = 0;
+        int finalQuestComboI = order * BANDS_PER_SHEET;
+        for (FinalQuestCombo finalQuestCombo : questOptions.getList()) {
+            final int size = finalQuestCombo.getQuests().size();
+            System.out.println(finalQuestComboI);
+            requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(finalQuestComboI++).
+                    setRange(new GridRange().setSheetId(sheetId).setStartColumnIndex(0).setEndColumnIndex(7).setStartRowIndex(row + 3).setEndRowIndex(row + size + 4)).
+                    setRowProperties(new BandingProperties().
+                            setHeaderColor(headerColor).
+                            setFirstBandColor(makeColor(255f, 255f, 255f, 255f)).
+                            setSecondBandColor(makeColor(255f, 231, 249, 239))
+                    ))));
+            row += size + 6;
+        }
+        return requests;
     }
 
     public enum SheetName {

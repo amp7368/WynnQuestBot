@@ -2,8 +2,6 @@ package apple.questing.sheets;
 
 import apple.questing.QuestMain;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.player.WynncraftClass;
-import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.sheets.write.SheetsWriteData;
 import apple.questing.sheets.write.SheetsWriteOverview;
 import com.google.api.services.drive.model.Permission;
@@ -18,11 +16,12 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static apple.questing.QuestMain.serviceDrive;
 import static apple.questing.QuestMain.serviceSheets;
 import static apple.questing.sheets.SheetsConstants.BANDS_PER_SHEET;
-import static apple.questing.sheets.SheetsRanges.*;
+import static apple.questing.sheets.SheetsRanges.SheetName.*;
 import static apple.questing.sheets.write.SheetsWriteUtils.makeColor;
 
 public class SheetsWrite {
@@ -49,13 +48,17 @@ public class SheetsWrite {
     private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId) throws IOException {
         List<Request> requests = new ArrayList<>();
         requests.add(SheetsWriteOverview.writeOverview(questOptions));
-        int order = 1;
-        requests.addAll(SheetsWriteData.write(questOptions.answerPercAPT, SheetsWriteData.SheetName.PERC_APT, order++));
-        requests.addAll(SheetsWriteData.write(questOptions.answerPercTime, SheetsWriteData.SheetName.PERC_TIME, order++));
-        requests.addAll(SheetsWriteData.write(questOptions.answerAmountAPT, SheetsWriteData.SheetName.AMOUNT_APT, order++));
-        requests.addAll(SheetsWriteData.write(questOptions.answerAmountTime, SheetsWriteData.SheetName.AMOUNT_TIME, order++));
-        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAPT, SheetsWriteData.SheetName.TIME_APT, order++));
-        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAmount, SheetsWriteData.SheetName.TIME_AMOUNT, order));
+
+        requests.addAll(SheetsWriteData.write(questOptions.answerPercAPT, PERC_APT));
+        requests.addAll(SheetsWriteData.write(questOptions.answerPercTime, PERC_TIME));
+        requests.addAll(SheetsWriteData.write(questOptions.answerAmountAPT, AMOUNT_APT));
+        requests.addAll(SheetsWriteData.write(questOptions.answerAmountTime, AMOUNT_TIME));
+        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAPT, TIME_APT));
+        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAmount, TIME_AMOUNT));
+
+        serviceSheets.spreadsheets().values().batchClear(spreadsheetId, new BatchClearValuesRequest().setRanges(
+                Arrays.stream(values()).map(SheetsRanges.SheetName::getName).collect(Collectors.toList())
+        )).execute();
         List<Request> deleteRequests = new ArrayList<>();
         for (int band = BANDS_PER_SHEET; band < BANDS_PER_SHEET * 7; band++) // 6+1 because there are 6 sheets
             deleteRequests.add(new Request().setDeleteBanding(new DeleteBandingRequest().setBandedRangeId(band)));
@@ -76,17 +79,17 @@ public class SheetsWrite {
                     new Sheet().setProperties(
                             new SheetProperties().setTitle("Overview").setSheetId(0)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("% | Amount/Time").setSheetId(1)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(PERC_APT.getName()).setSheetId(1)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("% | Time").setSheetId(2)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(PERC_TIME.getName()).setSheetId(2)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Amount | Amount/Time").setSheetId(3)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(AMOUNT_APT.getName()).setSheetId(3)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Amount | Time").setSheetId(4)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(AMOUNT_TIME.getName()).setSheetId(4)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Time | Amount/Time").setSheetId(5)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(TIME_APT.getName()).setSheetId(5)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle("Time | Amount").setSheetId(6)
+                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(TIME_AMOUNT.getName()).setSheetId(6)
                     )
                     )
             );
@@ -111,7 +114,7 @@ public class SheetsWrite {
         List<Request> requests = new ArrayList<>();
         for (int i = 0, row = 2; i < 6; i++, row += 7) {
             requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(0).
-                    setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(row).setEndRowIndex(row + 7)).
+                    setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID.getSheetId()).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(row).setEndRowIndex(row + 7)).
                     setRowProperties(new BandingProperties().
                             setHeaderColor(makeColor(255f, 99, 210, 151)).
                             setFirstBandColor(makeColor(255f, 255f, 255f, 255f)).
@@ -121,7 +124,7 @@ public class SheetsWrite {
 
         for (int band = BANDS_PER_SHEET; band < BANDS_PER_SHEET * 7; band++) { // 6+1 because there are 6 sheets
             requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(band).
-                    setRange(new GridRange().setSheetId(PERC_TIME).setStartColumnIndex(0).setEndColumnIndex(1).setStartRowIndex(band).setEndRowIndex(band + 1)).
+                    setRange(new GridRange().setSheetId(PERC_APT.getSheetId()).setStartColumnIndex(0).setEndColumnIndex(1).setStartRowIndex(band).setEndRowIndex(band + 1)).
                     setRowProperties(new BandingProperties().
                             setHeaderColor(makeColor(255f, 99, 210, 151)).
                             setFirstBandColor(makeColor(255f, 255f, 255f, 255f)).

@@ -13,7 +13,7 @@ import java.util.List;
 import static apple.questing.sheets.SheetsRanges.OVERVIEW_SHEET_ID;
 
 public class SheetsWriteOverview {
-    public static Request writeOverview(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String sheetId) throws IOException {
+    public static Request writeOverview(FinalQuestOptionsAll questOptions) {
         List<List<String>> data = new ArrayList<>();
 
         // add the xpIsWanted vs xpIsNotWanted row

@@ -2,19 +2,17 @@ package apple.questing.discord.pageable;
 
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.quest.Quest;
-import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.combo.FinalQuestCombo;
-import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.data.reaction.ChoiceArguments;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class QuestRecommendationMessage implements Pageable {
+public abstract class QuestRecommendationMessage implements Pageable {
 
     private static final int ENTRIES_PER_PAGE = 10;
-    private final WynncraftClass wynncraftClass;
     private final long lastUpdated;
     private final FinalQuestOptionsAll finalQuestOptionsAll;
     private final Message message;
@@ -30,9 +28,8 @@ public class QuestRecommendationMessage implements Pageable {
     private boolean isXpDesired;
     private boolean isCollection;
 
-    public QuestRecommendationMessage(WynncraftClass wynncraftClass, FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ClassChoiceMessage classChoiceMessage) {
+    public QuestRecommendationMessage(FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments classChoiceMessage) {
         this.lastUpdated = System.currentTimeMillis();
-        this.wynncraftClass = wynncraftClass;
         this.finalQuestOptionsAll = finalQuestOptionsAll;
         this.isXpDesired = classChoiceMessage.isXpDesired;
         this.isCollection = classChoiceMessage.isCollection;
@@ -106,19 +103,18 @@ public class QuestRecommendationMessage implements Pageable {
 
 
         // print the results
-        message = channel.sendMessage(makeMessage()).complete();
+        message = channel.sendMessage(makeBodyMessage()).complete();
         PageableMessages.add(this);
         message.addReaction("\u2B05").queue();
         message.addReaction("\u27A1").queue();
         message.addReaction("\u21A9").queue();
     }
 
-    private String makeMessage() {
+    protected String makeBodyMessage() {
         if (answer1 == null || answer2 == null) {
             return "Enter more arguments for this answer";
         }
         StringBuilder messageText = new StringBuilder();
-        messageText.append(String.format("**Options for %s, Lvl: %d/%d, Dungeons: %d**", wynncraftClass.name, wynncraftClass.combatLevel, wynncraftClass.totalLevel, wynncraftClass.dungeonsWon));
         messageText.append("```md\n");
         messageText.append(String.format("#%-56s", "# header"));
         messageText.append(String.format("|%-56s\n", "# header"));
@@ -235,6 +231,8 @@ public class QuestRecommendationMessage implements Pageable {
     public long getLastUpdated() {
         return lastUpdated;
     }
+
+    public abstract String makeMessage();
 
     private enum QuestRequest {
         PERC,

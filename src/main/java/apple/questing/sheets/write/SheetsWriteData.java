@@ -21,7 +21,7 @@ public class SheetsWriteData {
     public static final Color SECOND_BAND_COLOR = makeColor(255f, 231, 249, 239);
     public static final Color HEADER_COLOR = makeColor(255f, 99, 210, 151);
 
-    public static List<Request> write(FinalQuestOptions questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String spreadSheetId, SheetName sheetName, int order) throws IOException {
+    public static List<Request> write(FinalQuestOptions questOptions, SheetName sheetName, int order) {
         Integer sheetId = -1;
         switch (sheetName) {
             case PERC_APT:

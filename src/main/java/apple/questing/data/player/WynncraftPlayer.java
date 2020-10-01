@@ -8,8 +8,10 @@ import java.util.List;
 
 public class WynncraftPlayer {
     public List<WynncraftClass> classes = new ArrayList<>();
+    public String name;
 
-    public WynncraftPlayer(JSONArray classesJson) {
+    public WynncraftPlayer(JSONArray classesJson, String name) {
+        this.name = name;
         for (Object classObject : classesJson) {
             JSONObject classJson = (JSONObject) classObject;
             classes.add(new WynncraftClass(classJson));

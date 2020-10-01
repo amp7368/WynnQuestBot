@@ -14,6 +14,7 @@ import static apple.questing.sheets.SheetsQuery.allQuests;
 import static apple.questing.sheets.SheetsQuery.nameToQuest;
 
 public class SpecificQuestAlgorithm {
+    // todo addQuest only tries one questline
     public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenTime(WynncraftClass playerClass, boolean isXpDesired, long timeToSpend,
                                                                         int classLevel, boolean isIncludeCollection) {
         // if class level is not specified, specify it
@@ -32,23 +33,24 @@ public class SpecificQuestAlgorithm {
             for (String req : quest.immediateRequirements) {
                 QuestLinked questToAddReqMe = nameToQuestLinked.get(req);
                 if (questToAddReqMe != null) {
-                    questToAddReqMe.reqMe.add(quest.quest.name);
+                    questToAddReqMe.reqMe.add(quest.name);
                 }
             }
         }
+
         List<Quest> singletonQuests = new ArrayList<>();
         List<Collection<QuestLinked>> questCombinations = new ArrayList<>();
         // find all quests that start quest chains
         for (QuestLinked quest : nameToQuestLinked.values()) {
             // if I don't require anyone, and at least somebody requires me and this quest isn't too long
             if (quest.immediateRequirements.isEmpty() && !quest.reqMe.isEmpty()) {
-                if (timeToSpend >= (isIncludeCollection ? quest.quest.time + quest.quest.collectionTime : quest.quest.time)) {
+                if (timeToSpend >= (isIncludeCollection ? quest.time + quest.collectionTime : quest.time)) {
                     questCombinations.add(Collections.singletonList(quest));
                 }
             } else if (quest.immediateRequirements.isEmpty()) {
                 // this is a singleton quest
-                if (!isXpDesired && quest.quest.emerald > 0)
-                    singletonQuests.add(quest.quest);
+                if (!isXpDesired && quest.emerald > 0)
+                    singletonQuests.add(quest);
             }
         }
         // sort the singleton quests by order of amount/time
@@ -56,10 +58,10 @@ public class SpecificQuestAlgorithm {
                 (isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time)));
 
         // this is a set of collections of quest names
-        Set<String> finalList = new HashSet<>();
+        Set<String> finalList = new HashSet<>(); //todo Strings are ordered. the string is meant so we don't make repeats, but we're making tons of repeats
         questCombinations.forEach(questsCombo -> {
             Collection<String> questsComboString = new ArrayList<>();
-            questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+            questsCombo.forEach(questLinked -> questsComboString.add(questLinked.name));
             finalList.add(String.join(",", questsComboString));
         });
         addQuestGivenTime(questCombinations, nameToQuestLinked, finalList, timeToSpend, isIncludeCollection);
@@ -141,7 +143,7 @@ public class SpecificQuestAlgorithm {
             for (String req : quest.immediateRequirements) {
                 QuestLinked questToAddReqMe = nameToQuestLinked.get(req);
                 if (questToAddReqMe != null) {
-                    questToAddReqMe.reqMe.add(quest.quest.name);
+                    questToAddReqMe.reqMe.add(quest.name);
                 }
             }
         }
@@ -155,8 +157,8 @@ public class SpecificQuestAlgorithm {
                     questCombinations.add(Collections.singletonList(quest));
                 } else {
                     // this is a singleton quest
-                    if (!isXpDesired && quest.quest.emerald > 0)
-                        singletonQuests.add(quest.quest);
+                    if (!isXpDesired && quest.emerald > 0)
+                        singletonQuests.add(quest);
                 }
             }
         }
@@ -168,10 +170,10 @@ public class SpecificQuestAlgorithm {
         Set<String> finalList = new HashSet<>();
         questCombinations.forEach(questsCombo -> {
             Collection<String> questsComboString = new ArrayList<>();
-            questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+            questsCombo.forEach(questLinked -> questsComboString.add(questLinked.name));
             finalList.add(String.join(",", questsComboString));
         });
-        addQuestGivenAmount(questCombinations, nameToQuestLinked, finalList, amountDesired, isXpDesired, isIncludeCollection);
+        addQuestGivenAmount(questCombinations, nameToQuestLinked, finalList, amountDesired, isXpDesired);
 
         // turn the questCombos into Objects
         List<FinalQuestComboAmount> finalQuestCombos = new ArrayList<>();
@@ -209,13 +211,13 @@ public class SpecificQuestAlgorithm {
         return new Pair<>(bestPerTime, bestUtilization);
     }
 
-    private static void addQuestGivenAmount(List<Collection<QuestLinked>> questCombinations, HashMap<String, QuestLinked> nameToQuestLinked, Set<String> finalList, long amountDesired, boolean isXpDesired, boolean isIncludeCollection) {
+    private static void addQuestGivenAmount(List<Collection<QuestLinked>> questCombinations, HashMap<String, QuestLinked> nameToQuestLinked, Set<String> finalList, long amountDesired, boolean isXpDesired) {
         // for each collection, add a quest as a new combination
         for (Collection<QuestLinked> questCombination : questCombinations) {
             // if we already met out goal with this quest combination, quit adding more
             long amount = 0L;
             for (QuestLinked quest : questCombination) {
-                amount += isXpDesired ? quest.quest.xp : quest.quest.emerald;
+                amount += isXpDesired ? quest.xp : quest.emerald;
             }
             if (amount > amountDesired) {
                 // we're finished with this combination
@@ -239,7 +241,7 @@ public class SpecificQuestAlgorithm {
                 // if the quest already exists in us, continue
                 boolean notHere = true;
                 for (QuestLinked quest : questCombination) {
-                    if (quest.quest.name.equals(req)) {
+                    if (quest.name.equals(req)) {
                         notHere = false;
                         break;
                     }
@@ -258,10 +260,10 @@ public class SpecificQuestAlgorithm {
                 }
             }
             // do the next layer of recursion
-            addQuestGivenAmount(subQuestCombinations, nameToQuestLinked, finalList, amountDesired, isXpDesired, isIncludeCollection);
+            addQuestGivenAmount(subQuestCombinations, nameToQuestLinked, finalList, amountDesired, isXpDesired);
             subQuestCombinations.forEach(questsCombo -> {
                 Collection<String> questsComboString = new ArrayList<>();
-                questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+                questsCombo.forEach(questLinked -> questsComboString.add(questLinked.name));
                 finalList.add(String.join(",", questsComboString));
             });
         }
@@ -287,7 +289,7 @@ public class SpecificQuestAlgorithm {
                 // if the quest already exists in us, continue
                 boolean notHere = true;
                 for (QuestLinked quest : questCombination) {
-                    if (quest.quest.name.equals(req)) {
+                    if (quest.name.equals(req)) {
                         notHere = false;
                         break;
                     }
@@ -302,7 +304,7 @@ public class SpecificQuestAlgorithm {
                         newQuestCombination.add(questToAdd);
                         long time = 0L;
                         for (QuestLinked quest : newQuestCombination) {
-                            time += isIncludeCollection ? quest.quest.time + quest.quest.collectionTime : quest.quest.time;
+                            time += isIncludeCollection ? quest.time + quest.collectionTime : quest.time;
                         }
                         if (time <= timeToSpend)
                             subQuestCombinations.add(newQuestCombination);
@@ -313,7 +315,7 @@ public class SpecificQuestAlgorithm {
             addQuestGivenTime(subQuestCombinations, nameToQuestLinked, finalList, timeToSpend, isIncludeCollection);
             subQuestCombinations.forEach(questsCombo -> {
                 Collection<String> questsComboString = new ArrayList<>();
-                questsCombo.forEach(questLinked -> questsComboString.add(questLinked.quest.name));
+                questsCombo.forEach(questLinked -> questsComboString.add(questLinked.name));
                 finalList.add(String.join(",", questsComboString));
             });
         }

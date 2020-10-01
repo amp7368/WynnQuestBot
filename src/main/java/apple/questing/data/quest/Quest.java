@@ -25,6 +25,18 @@ public class Quest {
         this.emerald = emerald;
     }
 
+    public Quest(Quest quest) {
+        this.name = quest.name;
+        this.immediateRequirements = quest.immediateRequirements;
+        this.allRequirements = quest.allRequirements;
+        this.levelMinimum = quest.levelMinimum;
+        this.length = quest.length;
+        this.time = quest.time;
+        this.collectionTime = quest.collectionTime;
+        this.xp = quest.xp;
+        this.emerald = quest.emerald;
+    }
+
     public enum Length {
         SHORT,
         MEDIUM,

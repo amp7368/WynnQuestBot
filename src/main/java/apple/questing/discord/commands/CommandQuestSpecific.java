@@ -24,7 +24,7 @@ public class CommandQuestSpecific implements DoCommand {
      * -t # - default is not used. this optional argument overrides how much time the player wants to spend doing quests
      * -e # - default is 75% of the max the player can earn
      * <p>
-     * -l # - (only for squest) default is that class's level. overrides what level the player is
+     * -l # - default is that class's level. overrides what level the player is
      *
      * @param event the discord message event
      */

@@ -20,7 +20,7 @@ public class GetPlayerStats {
             return null;
         }
         JSONArray classes = (JSONArray) jsonFull.get("classes");
-        return new WynncraftPlayer(classes);
+        return new WynncraftPlayer(classes, name);
     }
 
     public static JSONObject getRaw(String name) throws IOException {

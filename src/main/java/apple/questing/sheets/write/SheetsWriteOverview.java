@@ -2,18 +2,15 @@ package apple.questing.sheets.write;
 
 import apple.questing.data.answer.FinalQuestOptions;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.player.WynncraftClass;
-import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.sheets.SheetsRanges;
 import com.google.api.services.sheets.v4.model.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static apple.questing.sheets.SheetsRanges.OVERVIEW_SHEET_ID;
 
 public class SheetsWriteOverview {
-    public static Request writeOverview(FinalQuestOptionsAll questOptions, WynncraftClass wynncraftClass, ClassChoiceMessage classChoiceMessage, String sheetId) throws IOException {
+    public static Request writeOverview(FinalQuestOptionsAll questOptions) {
         List<List<String>> data = new ArrayList<>();
 
         // add the xpIsWanted vs xpIsNotWanted row
@@ -147,10 +144,10 @@ public class SheetsWriteOverview {
             data.add(row);
         }
         List<RowData> rows = SheetsWriteUtils.convertToRowData(data);
-        SheetsWriteUtils.setColumnFormat(rows,0,true,null);
-        SheetsWriteUtils.setColumnFormat(rows,1,true,null);
+        SheetsWriteUtils.setColumnFormat(rows, 0, true, null);
+        SheetsWriteUtils.setColumnFormat(rows, 1, true, null);
         return new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(rows).
-                setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(45)));
+                setRange(new GridRange().setSheetId(SheetsRanges.SheetName.OVERVIEW_SHEET_ID.getSheetId()).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(45)));
     }
 
 }

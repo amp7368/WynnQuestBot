@@ -5,14 +5,12 @@ import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
-import apple.questing.discord.pageable.QuestRecommendationMessage;
+import apple.questing.discord.pageable.QuestReccomendationMessageClass;
 import apple.questing.sheets.SheetsWrite;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class ReactionClassChoice implements DoReaction {
-
-    public static final double DEFAULT_PERCENTAGE_AMOUNT = 0.5;
 
     @Override
     public void dealWithReaction(MessageReactionAddEvent event) {
@@ -39,9 +37,9 @@ public class ReactionClassChoice implements DoReaction {
 
             AllReactableClassChoices.removeMessage(event.getMessageId());
             event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
-            FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(classChoiceMessage, wynncraftClass);
-            new QuestRecommendationMessage(wynncraftClass, finalQuestOptionsAll, event.getChannel(), classChoiceMessage);
-            SheetsWrite.writeSheet(finalQuestOptionsAll, wynncraftClass, classChoiceMessage, event.getUserIdLong());
+            FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(classChoiceMessage, wynncraftClass, classChoiceMessage.player.name);
+            new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), classChoiceMessage);
+            SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong());
         } else {
             //todo
         }

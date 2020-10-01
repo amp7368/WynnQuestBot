@@ -34,15 +34,13 @@ public class SheetsWrite {
         SHEET_IDS_FILE_PATH = String.join("/", list.subList(0, list.size() - 1)) + "/data/discordIdToSheet.data";
     }
 
-    public static String writeSheet(FinalQuestOptionsAll questOptions, long discordId) {
+    public static void writeSheet(FinalQuestOptionsAll questOptions, long discordId) {
         try {
             String sheetId = tryAddSheet(discordId);
             writeData(questOptions, sheetId);
-            return sheetId;
         } catch (IOException | ParseException e) {
             e.printStackTrace();// todo deal with error
         }
-        return null;
     }
 
     private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId) throws IOException {
@@ -79,17 +77,17 @@ public class SheetsWrite {
                     new Sheet().setProperties(
                             new SheetProperties().setTitle("Overview").setSheetId(0)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(PERC_APT.getName()).setSheetId(1)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(PERC_APT.getName()).setSheetId(1)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(PERC_TIME.getName()).setSheetId(2)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(PERC_TIME.getName()).setSheetId(2)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(AMOUNT_APT.getName()).setSheetId(3)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(AMOUNT_APT.getName()).setSheetId(3)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(AMOUNT_TIME.getName()).setSheetId(4)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(AMOUNT_TIME.getName()).setSheetId(4)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(TIME_APT.getName()).setSheetId(5)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(TIME_APT.getName()).setSheetId(5)
                     ), new Sheet().setProperties(
-                            new SheetProperties().setGridProperties(new GridProperties().setColumnCount(200)).setTitle(TIME_AMOUNT.getName()).setSheetId(6)
+                            new SheetProperties().setGridProperties(new GridProperties().setRowCount(3000)).setTitle(TIME_AMOUNT.getName()).setSheetId(6)
                     )
                     )
             );

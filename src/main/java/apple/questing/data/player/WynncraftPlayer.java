@@ -17,4 +17,9 @@ public class WynncraftPlayer {
             classes.add(new WynncraftClass(classJson));
         }
     }
+
+    public WynncraftPlayer(List<WynncraftClass> classes, String name) {
+        this.classes = classes;
+        this.name = name;
+    }
 }

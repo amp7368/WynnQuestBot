@@ -54,7 +54,7 @@ public class CommandQuest implements DoCommand {
         }
         ChoiceArguments choiceArguments = new ChoiceArguments(
                 isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player);
-        FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, isXpDesired, isCollection, classLevel, timeToSpend, amountDesired);
+        FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, choiceArguments);
         new QuestRecommendationMessagePlayer(player, finalQuestOptionsAll, event.getChannel(), choiceArguments);
         SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong());
 

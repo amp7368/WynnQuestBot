@@ -12,8 +12,266 @@ import java.util.*;
 import static apple.questing.sheets.SheetsQuery.allQuests;
 
 public class QuestAlgorithm {
+
+
+    public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenPercentageAmount(WynncraftPlayer player, boolean isXpDesired, double percentageDesired, int classLevel, boolean isIncludeCollection) {
+        long rawAmount = 0;
+        for (WynncraftClass playerClass : player.classes) {
+            for (Quest quest : playerClass.questsNotCompleted) {
+                if (quest.levelMinimum <= playerClass.combatLevel)
+                    rawAmount += isXpDesired ? quest.xp : quest.emerald;
+            }
+        }
+        return whichGivenRawAmount(player, rawAmount, isXpDesired, classLevel, isIncludeCollection);
+    }
+
+    public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenRawAmount(WynncraftPlayer player, long amountDesired, boolean isXpDesired, int classLevel, boolean isIncludeCollection) {
+        ReturnSingleComplex returnVal = sortQuestsToComplexSingleton(player, isXpDesired, classLevel, isIncludeCollection);
+        List<QuestLinked> singletonQuests = returnVal.singletonQuests;
+        Set<Set<QuestLinked>> questCombinationsForAll = returnVal.questCombinationsForAll;
+        Map<String, List<QuestLinked>> nameToQuestLinkeds = returnVal.nameToQuestLinkeds;
+
+        // try all quest lines in varying lengths
+        addQuestGivenAmount(questCombinationsForAll, nameToQuestLinkeds, amountDesired, isIncludeCollection);
+
+        List<Set<QuestLinked>> questCombinationsForAllList = new ArrayList<>(questCombinationsForAll);
+        sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, questCombinationsForAllList);
+
+        List<Set<QuestLinked>> finalQuestCombinations = new ArrayList<>();
+        finalQuestCombinations.add(new HashSet<>()); // for no questline
+        // add a questLine at a time, and at each step, save that combo
+        for (Set<QuestLinked> singleQuestCombination : questCombinationsForAllList) {
+            Set<QuestLinked> questCombination = new HashSet<>(finalQuestCombinations.get(finalQuestCombinations.size() - 1));
+            questCombination.addAll(singleQuestCombination);
+            finalQuestCombinations.add(questCombination);
+            if (isReachedAmount(questCombination, amountDesired, isIncludeCollection))
+                break;
+        }
+
+        // add singleton quests
+        for (Set<QuestLinked> questCombination : finalQuestCombinations) {
+            for (QuestLinked singletonQuest : singletonQuests) {
+                Set<QuestLinked> questCombinationWithSingleton = new HashSet<>(questCombination);
+                questCombinationWithSingleton.add(singletonQuest);
+                questCombination.add(singletonQuest);
+                if (isReachedAmount(questCombinationWithSingleton, amountDesired, isIncludeCollection)) {
+                    break;
+                }
+                // move on to the next combination to add singletons to
+            }
+        }
+        finalQuestCombinations.removeIf(Set::isEmpty);
+        sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
+
+        Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
+        finalQuestCombinations.sort((o1, o2) -> {
+            long time1 = 0;
+            long time2 = 0;
+            for (QuestLinked quest : o1) {
+                time1 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
+            }
+            for (QuestLinked quest : o2) {
+                time2 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
+            }
+            return (int) (time2 - time1);
+        });
+        Set<QuestLinked> optimizeTime = finalQuestCombinations.get(0);
+
+        return new Pair<>(new FinalQuestCombo(new ArrayList<>(optimizeAPT), isXpDesired, isIncludeCollection),
+                new FinalQuestCombo(new ArrayList<>(optimizeTime), isXpDesired, isIncludeCollection));
+    }
+
+
     public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenTime(
             WynncraftPlayer player, boolean isXpDesired, long timeToSpend, int classLevel, boolean isIncludeCollection) {
+
+        ReturnSingleComplex returnVal = sortQuestsToComplexSingleton(player, isXpDesired, classLevel, isIncludeCollection);
+        List<QuestLinked> singletonQuests = returnVal.singletonQuests;
+        Set<Set<QuestLinked>> questCombinationsForAll = returnVal.questCombinationsForAll;
+        Map<String, List<QuestLinked>> nameToQuestLinkeds = returnVal.nameToQuestLinkeds;
+
+        // try all quest lines in varying lengths
+        addQuestGivenTime(questCombinationsForAll, nameToQuestLinkeds, timeToSpend, isIncludeCollection);
+
+        List<Set<QuestLinked>> questCombinationsForAllList = new ArrayList<>(questCombinationsForAll);
+        sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, questCombinationsForAllList);
+
+        List<Set<QuestLinked>> finalQuestCombinations = new ArrayList<>();
+        finalQuestCombinations.add(new HashSet<>()); // for no questline
+        // add a questLine at a time, and at each step, save that combo
+        for (Set<QuestLinked> singleQuestCombination : questCombinationsForAllList) {
+            Set<QuestLinked> questCombination = new HashSet<>(finalQuestCombinations.get(finalQuestCombinations.size() - 1));
+            questCombination.addAll(singleQuestCombination);
+            if (isTakesToLong(questCombination, timeToSpend, isIncludeCollection))
+                break;
+            else
+                finalQuestCombinations.add(questCombination);
+        }
+
+        // add singleton quests
+        for (Set<QuestLinked> questCombination : finalQuestCombinations) {
+            for (QuestLinked singletonQuest : singletonQuests) {
+                Set<QuestLinked> questCombinationWithSingleton = new HashSet<>(questCombination);
+                questCombinationWithSingleton.add(singletonQuest);
+                if (!isTakesToLong(questCombinationWithSingleton, timeToSpend, isIncludeCollection)) {
+                    questCombination.add(singletonQuest);
+                }
+                // move on to the next combination to add singletons to
+            }
+        }
+        finalQuestCombinations.removeIf(Set::isEmpty);
+        sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
+
+        Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
+        finalQuestCombinations.sort((o1, o2) -> {
+            long reward1 = 0;
+            long reward2 = 0;
+            for (QuestLinked quest : o1) {
+                reward1 += isXpDesired ? quest.xp : quest.emerald;
+            }
+            for (QuestLinked quest : o2) {
+                reward2 += isXpDesired ? quest.xp : quest.emerald;
+            }
+            return (int) (reward2 - reward1);
+        });
+        Set<QuestLinked> optimizeAmount = finalQuestCombinations.get(0);
+
+        return new Pair<>(new FinalQuestCombo(new ArrayList<>(optimizeAPT), isXpDesired, isIncludeCollection),
+                new FinalQuestCombo(new ArrayList<>(optimizeAmount), isXpDesired, isIncludeCollection));
+    }
+
+    public static void sortQuestCombinationByAPT(boolean isXpDesired, boolean isIncludeCollection, List<Set<QuestLinked>> questCombinationsForAllList) {
+        questCombinationsForAllList.sort((o1, o2) -> {
+            long time1 = 0;
+            long time2 = 0;
+            long reward1 = 0;
+            long reward2 = 0;
+            for (QuestLinked quest : o1) {
+                time1 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
+                reward1 += isXpDesired ? quest.xp : quest.emerald;
+            }
+            for (QuestLinked quest : o2) {
+                time2 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
+                reward2 += isXpDesired ? quest.xp : quest.emerald;
+            }
+            if (time1 == 0) {
+                if (time2 == 0)
+                    return 0;
+                return 1;
+            } else if (time2 == 0)
+                return -1;
+            return (int) (reward2 / time2 - reward1 / time1);
+        });
+    }
+
+    /**
+     * recursively add a single quest to quest lines
+     *
+     * @param finalSet            the final set of combinations of quests that we add to
+     * @param nameToQuestLinkeds  the map of questNames to the questLinks that the name refers to
+     *                            this is a mapping to a list because there may be several Quests to
+     *                            one name because there are multiple classes
+     * @param timeToSpend         the time that we have to spend doing quests
+     * @param isIncludeCollection whether we include collection in our decision
+     */
+    private static void addQuestGivenTime(Set<Set<QuestLinked>> finalSet, Map<String, List<QuestLinked>> nameToQuestLinkeds,
+                                          long timeToSpend, boolean isIncludeCollection) {
+        Set<Set<QuestLinked>> questsToAdd = new HashSet<>();
+
+        // for every combination we have, try to add a new one as a new entry
+        for (Set<QuestLinked> questCombination : finalSet) {
+            // for every quest in the questCombination add all the reqMe's
+            for (QuestLinked questInCombination : questCombination) {
+                for (String reqMe : questInCombination.reqMe) {
+                    // find the corresponding reqMeQuestLinked
+                    List<QuestLinked> questLinkeds = nameToQuestLinkeds.get(reqMe);
+                    if (questLinkeds == null) {
+                        // there is no corresponding reqMeQuestLinked
+                        break;
+                    }
+                    for (QuestLinked questLinked : questLinkeds) {
+                        if (questInCombination.playerClass.name.equals(questLinked.playerClass.name)) {
+                            // add this corresponding reqMeQuestLinked
+                            Set<QuestLinked> newQuestCombination = new HashSet<>(questCombination);
+                            newQuestCombination.add(questLinked);
+                            if (!isTakesToLong(newQuestCombination, timeToSpend, isIncludeCollection) && !finalSet.contains(newQuestCombination)) {
+                                questsToAdd.add(newQuestCombination); // this won't always succeed, and that's the key to keeping the numbers low
+                            }
+                            break;
+                        }
+                    }
+                    // otherwise we didn't find a corresponding reqMeQuestLinked, and that's fine
+                }
+            }
+        }
+        if (questsToAdd.size() == 0)
+            return;
+        addQuestGivenTime(questsToAdd, nameToQuestLinkeds, timeToSpend, isIncludeCollection);
+        finalSet.addAll(questsToAdd);
+    }
+
+    /**
+     * recursively add a single quest to quest lines
+     *
+     * @param finalSet           the final set of combinations of quests that we add to
+     * @param nameToQuestLinkeds the map of questNames to the questLinks that the name refers to
+     *                           this is a mapping to a list because there may be several Quests to
+     *                           one name because there are multiple classes
+     * @param amountDesired      the amounnt that the player wants
+     * @param isXpDesired        whether we want emeralds or xp in our decision
+     */
+    private static void addQuestGivenAmount(Set<Set<QuestLinked>> finalSet, Map<String, List<QuestLinked>> nameToQuestLinkeds, long amountDesired, boolean isXpDesired) {
+        Set<Set<QuestLinked>> questsToAdd = new HashSet<>();
+
+        // for every combination we have, try to add a new one as a new entry
+        for (Set<QuestLinked> questCombination : finalSet) {
+            // for every quest in the questCombination add all the reqMe's
+            for (QuestLinked questInCombination : questCombination) {
+                for (String reqMe : questInCombination.reqMe) {
+                    // find the corresponding reqMeQuestLinked
+                    List<QuestLinked> questLinkeds = nameToQuestLinkeds.get(reqMe);
+                    if (questLinkeds == null) {
+                        // there is no corresponding reqMeQuestLinked
+                        break;
+                    }
+                    for (QuestLinked questLinked : questLinkeds) {
+                        if (questInCombination.playerClass.name.equals(questLinked.playerClass.name)) {
+                            // add this corresponding reqMeQuestLinked
+                            Set<QuestLinked> newQuestCombination = new HashSet<>(questCombination);
+                            newQuestCombination.add(questLinked);
+                            if (!finalSet.contains(newQuestCombination))
+                                questsToAdd.add(newQuestCombination); // this won't always succeed, and that's the key to keeping the numbers low
+                            if (isReachedAmount(newQuestCombination, amountDesired, isXpDesired)) {
+                                break;
+                            }
+                        }
+                    }
+                    // otherwise we didn't find a corresponding reqMeQuestLinked, and that's fine
+                }
+            }
+        }
+        if (questsToAdd.size() == 0)
+            return;
+        addQuestGivenAmount(questsToAdd, nameToQuestLinkeds, amountDesired, isXpDesired);
+        finalSet.addAll(questsToAdd);
+    }
+
+    private static boolean isReachedAmount(Set<QuestLinked> quests, long amountDesired, boolean isXpDesired) {
+        double amount = 0;
+        for (QuestLinked quest : quests)
+            amount += isXpDesired ? quest.xp : quest.emerald;
+        return amount >= amountDesired;
+    }
+
+    private static boolean isTakesToLong(Set<QuestLinked> quests, long timeToSpend, boolean isIncludeCollection) {
+        double timeSpent = 0;
+        for (QuestLinked quest : quests)
+            timeSpent += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
+        return timeSpent > timeToSpend;
+    }
+
+    private static ReturnSingleComplex sortQuestsToComplexSingleton(
+            WynncraftPlayer player, boolean isXpDesired, int classLevel, boolean isIncludeCollection) {
         // if classLevel was overridden
         if (classLevel != -1) {
             // update all the classes to have the overridden classLevel
@@ -67,7 +325,9 @@ public class QuestAlgorithm {
                         questCombinations.add(questCombination);
                     } else {
                         // this is a singleton quest
-                        if (!isXpDesired && quest.emerald > 0)
+                        if (isXpDesired) {
+                            singletonQuests.add(quest);
+                        } else if (quest.emerald > 0)
                             singletonQuests.add(quest);
                     }
                 }
@@ -77,8 +337,8 @@ public class QuestAlgorithm {
 
 
         // sort the singleton quests by order of amount/time
-        singletonQuests.sort((o1, o2) -> (int) Math.round((isXpDesired ? o2.xp : o2.emerald) / (isIncludeCollection ? o2.collectionTime + o2.time : o2.time) -
-                (isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time)));
+        singletonQuests.sort((o1, o2) -> ((int) ((isXpDesired ? o2.xp : o2.emerald) / (isIncludeCollection ? o2.collectionTime + o2.time : o2.time)) -
+                (int) ((isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time))));
 
         // this is a set of sets of quest names
         Set<Set<QuestLinked>> questCombinationsForAll = new HashSet<>();
@@ -103,133 +363,19 @@ public class QuestAlgorithm {
 
             }
         }
-        // try all quest lines in varying lengths
-        addQuestGivenTime(questCombinationsForAll, nameToQuestLinkeds, timeToSpend, isIncludeCollection);
-
-        List<Set<QuestLinked>> questCombinationsForAllList = new ArrayList<>(questCombinationsForAll);
-        questCombinationsForAllList.sort((o1, o2) -> {
-            long time1 = 0;
-            long time2 = 0;
-            long reward1 = 0;
-            long reward2 = 0;
-            for (QuestLinked quest : o1) {
-                time1 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
-                reward1 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            for (QuestLinked quest : o2) {
-                time2 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
-                reward2 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            return (int) (reward2 / time2 - reward1 / time1);
-        });
-
-        List<Set<QuestLinked>> finalQuestCombinations = new ArrayList<>();
-        finalQuestCombinations.add(new HashSet<>()); // for no questline
-        // add a questLine at a time, and at each step, save that combo
-        for (Set<QuestLinked> singleQuestCombination : questCombinationsForAllList) {
-            Set<QuestLinked> questCombination = new HashSet<>(finalQuestCombinations.get(finalQuestCombinations.size() - 1));
-            questCombination.addAll(singleQuestCombination);
-            if (isTakesToLong(questCombination, timeToSpend, isIncludeCollection))
-                break;
-            else
-                finalQuestCombinations.add(questCombination);
-        }
-
-        // add singleton quests
-        for (Set<QuestLinked> questCombination : finalQuestCombinations) {
-            for (QuestLinked singletonQuest : singletonQuests) {
-                Set<QuestLinked> questCombinationWithSingleton = new HashSet<>(questCombination);
-                questCombinationWithSingleton.add(singletonQuest);
-                if (!isTakesToLong(questCombinationWithSingleton, timeToSpend, isIncludeCollection)) {
-                    questCombination.add(singletonQuest);
-                }
-                // move on to the next combination to add singletons to
-            }
-        }
-        finalQuestCombinations.removeIf(Set::isEmpty);
-        finalQuestCombinations.sort((o1, o2) -> {
-            long time1 = 0;
-            long time2 = 0;
-            long reward1 = 0;
-            long reward2 = 0;
-            for (QuestLinked quest : o1) {
-                time1 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
-                reward1 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            for (QuestLinked quest : o2) {
-                time2 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
-                reward2 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            return (int) (reward2 / time2 - reward1 / time1);
-        });
-        Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
-        finalQuestCombinations.sort((o1, o2) -> {
-            long reward1 = 0;
-            long reward2 = 0;
-            for (QuestLinked quest : o1) {
-                reward1 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            for (QuestLinked quest : o2) {
-                reward2 += isXpDesired ? quest.xp : quest.emerald;
-            }
-            return (int) (reward2 - reward1);
-        });
-        Set<QuestLinked> optimizeAmount = finalQuestCombinations.get(0);
-
-        return new Pair<>(new FinalQuestCombo(new ArrayList<>(optimizeAPT), isXpDesired, isIncludeCollection),
-                new FinalQuestCombo(new ArrayList<>(optimizeAmount), isXpDesired, isIncludeCollection));
+        return new ReturnSingleComplex(singletonQuests, questCombinationsForAll, nameToQuestLinkeds);
     }
 
-    /**
-     * recursively add a single quest to quest lines
-     *
-     * @param finalSet            the final set of combinations of quests that we add to
-     * @param nameToQuestLinkeds  the map of questNames to the questLinks that the name refers to
-     *                            this is a mapping to a list because there may be several Quests to
-     *                            one name because there are multiple classes
-     * @param timeToSpend         the time that we have to spend doing quests
-     * @param isIncludeCollection whether we include collection in our decision
-     */
-    private static void addQuestGivenTime(Set<Set<QuestLinked>> finalSet, Map<String, List<QuestLinked>> nameToQuestLinkeds,
-                                          long timeToSpend, boolean isIncludeCollection) {
-        Set<Set<QuestLinked>> questsToAdd = new HashSet<>();
+    private static class ReturnSingleComplex {
+        private final List<QuestLinked> singletonQuests;
+        private final Set<Set<QuestLinked>> questCombinationsForAll;
+        private final Map<String, List<QuestLinked>> nameToQuestLinkeds;
 
-        // for every combination we have, try to add a new one as a new entry
-        for (Set<QuestLinked> questCombination : finalSet) {
-            // for every quest in the questCombination add all the reqMe's
-            for (QuestLinked questInCombination : questCombination) {
-                for (String reqMe : questInCombination.reqMe) {
-                    // find the corresponding reqMeQuestLinked
-                    List<QuestLinked> questLinkeds = nameToQuestLinkeds.get(reqMe);
-                    if (questLinkeds == null) {
-                        // there is no corresponding reqMeQuestLinked
-                        break;
-                    }
-                    for (QuestLinked questLinked : questLinkeds) {
-                        if (questInCombination.playerClass.name.equals(questLinked.playerClass.name)) {
-                            // add this corresponding reqMeQuestLinked
-                            Set<QuestLinked> newQuestCombination = new HashSet<>(questCombination);
-                            newQuestCombination.add(questLinked);
-                            if (!isTakesToLong(newQuestCombination, timeToSpend, isIncludeCollection) && !finalSet.contains(newQuestCombination)) {
-                                questsToAdd.add(newQuestCombination); // this won't always succeed, and that's the key to keeping the numbers low
-                            }
-                            break;
-                        }
-                    }
-                    // otherwise we didn't find a corresponding reqMeQuestLinked, and that's fine
-                }
-            }
+        public ReturnSingleComplex(List<QuestLinked> singletonQuests, Set<Set<QuestLinked>> questCombinationsForAll, Map<String, List<QuestLinked>> nameToQuestLinkeds) {
+            this.singletonQuests = singletonQuests;
+            this.questCombinationsForAll = questCombinationsForAll;
+            this.nameToQuestLinkeds = nameToQuestLinkeds;
         }
-        if (questsToAdd.size() == 0)
-            return;
-        addQuestGivenTime(questsToAdd, nameToQuestLinkeds, timeToSpend, isIncludeCollection);
-        finalSet.addAll(questsToAdd);
-    }
 
-    private static boolean isTakesToLong(Set<QuestLinked> quests, long timeToSpend, boolean isIncludeCollection) {
-        double timeSpent = 0;
-        for (QuestLinked quest : quests)
-            timeSpent += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
-        return timeSpent > timeToSpend;
     }
 }

@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReactionClassChoice implements DoReaction {
 
-    public static final double DEFAULT_PERCENTAGE_AMOUNT = 0.5;
-
     @Override
     public void dealWithReaction(MessageReactionAddEvent event) {
         ClassChoiceMessage classChoiceMessage;
@@ -39,7 +37,7 @@ public class ReactionClassChoice implements DoReaction {
 
             AllReactableClassChoices.removeMessage(event.getMessageId());
             event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
-            FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(classChoiceMessage, wynncraftClass);
+            FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(classChoiceMessage, wynncraftClass, classChoiceMessage.player.name);
             new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), classChoiceMessage);
             SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong());
         } else {

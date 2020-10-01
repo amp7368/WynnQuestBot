@@ -1,8 +1,8 @@
 package apple.questing.sheets.write;
 
-import apple.questing.data.FinalQuestOptions;
-import apple.questing.data.FinalQuestOptionsAll;
-import apple.questing.data.WynncraftClass;
+import apple.questing.data.answer.FinalQuestOptions;
+import apple.questing.data.answer.FinalQuestOptionsAll;
+import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import com.google.api.services.sheets.v4.model.*;
 

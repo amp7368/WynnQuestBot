@@ -1,6 +1,4 @@
-package apple.questing.data;
-
-import apple.questing.data.combo.FinalQuestCombo;
+package apple.questing.data.answer;
 
 import java.util.Arrays;
 import java.util.List;

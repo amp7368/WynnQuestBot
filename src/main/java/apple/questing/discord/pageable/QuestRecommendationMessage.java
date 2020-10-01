@@ -1,8 +1,8 @@
 package apple.questing.discord.pageable;
 
-import apple.questing.data.FinalQuestOptionsAll;
-import apple.questing.data.Quest;
-import apple.questing.data.WynncraftClass;
+import apple.questing.data.answer.FinalQuestOptionsAll;
+import apple.questing.data.quest.Quest;
+import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.combo.FinalQuestCombo;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import net.dv8tion.jda.api.entities.Message;

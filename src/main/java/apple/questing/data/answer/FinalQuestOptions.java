@@ -1,4 +1,4 @@
-package apple.questing.data;
+package apple.questing.data.answer;
 
 import apple.questing.data.combo.FinalQuestCombo;
 

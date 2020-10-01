@@ -1,8 +1,8 @@
 package apple.questing.sheets;
 
 import apple.questing.QuestMain;
-import apple.questing.data.FinalQuestOptionsAll;
-import apple.questing.data.WynncraftClass;
+import apple.questing.data.answer.FinalQuestOptionsAll;
+import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.sheets.write.SheetsWriteData;
 import apple.questing.sheets.write.SheetsWriteOverview;

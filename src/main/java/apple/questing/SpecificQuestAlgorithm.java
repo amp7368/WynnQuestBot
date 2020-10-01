@@ -1,9 +1,11 @@
 package apple.questing;
 
-import apple.questing.data.*;
 import apple.questing.data.combo.FinalQuestCombo;
 import apple.questing.data.combo.FinalQuestComboAmount;
 import apple.questing.data.combo.FinalQuestComboTime;
+import apple.questing.data.player.WynncraftClass;
+import apple.questing.data.quest.Quest;
+import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pair;
 
 import java.util.*;

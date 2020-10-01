@@ -1,6 +1,6 @@
 package apple.questing.data.combo;
 
-import apple.questing.data.Quest;
+import apple.questing.data.quest.Quest;
 import apple.questing.utils.Pretty;
 import org.jetbrains.annotations.NotNull;
 

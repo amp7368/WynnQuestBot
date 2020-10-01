@@ -1,4 +1,4 @@
-package apple.questing.data;
+package apple.questing.data.quest;
 
 
 public class Quest {

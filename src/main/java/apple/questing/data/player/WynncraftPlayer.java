@@ -1,4 +1,4 @@
-package apple.questing.data;
+package apple.questing.data.player;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

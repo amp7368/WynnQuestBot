@@ -1,7 +1,7 @@
 package apple.questing.data.reaction;
 
-import apple.questing.data.WynncraftClass;
-import apple.questing.data.WynncraftPlayer;
+import apple.questing.data.player.WynncraftClass;
+import apple.questing.data.player.WynncraftPlayer;
 
 import java.util.Arrays;
 import java.util.List;

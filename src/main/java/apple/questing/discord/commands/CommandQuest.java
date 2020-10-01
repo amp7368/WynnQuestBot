@@ -1,6 +1,6 @@
 package apple.questing.discord.commands;
 
-import apple.questing.data.WynncraftPlayer;
+import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 

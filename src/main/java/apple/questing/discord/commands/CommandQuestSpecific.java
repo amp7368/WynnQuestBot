@@ -1,7 +1,7 @@
 package apple.questing.discord.commands;
 
-import apple.questing.data.WynncraftClass;
-import apple.questing.data.WynncraftPlayer;
+import apple.questing.data.player.WynncraftClass;
+import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.reaction.AllReactableClassChoices;
 import apple.questing.data.reaction.ClassChoiceMessage;
 import apple.questing.discord.reactions.ReactionClassChoice;

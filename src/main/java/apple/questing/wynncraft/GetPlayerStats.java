@@ -1,7 +1,7 @@
 package apple.questing.wynncraft;
 
 
-import apple.questing.data.WynncraftPlayer;
+import apple.questing.data.player.WynncraftPlayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

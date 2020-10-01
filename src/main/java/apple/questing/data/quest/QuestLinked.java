@@ -1,4 +1,6 @@
-package apple.questing.data;
+package apple.questing.data.quest;
+
+import apple.questing.data.player.WynncraftClass;
 
 import java.util.ArrayList;
 import java.util.Collection;

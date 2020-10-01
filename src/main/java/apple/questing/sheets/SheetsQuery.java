@@ -1,8 +1,6 @@
 package apple.questing.sheets;
 
-import apple.questing.QuestMain;
-import apple.questing.data.Quest;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
+import apple.questing.data.quest.Quest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;

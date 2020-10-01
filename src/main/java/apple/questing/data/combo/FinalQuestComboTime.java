@@ -1,7 +1,7 @@
 package apple.questing.data.combo;
 
 
-import apple.questing.data.Quest;
+import apple.questing.data.quest.Quest;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

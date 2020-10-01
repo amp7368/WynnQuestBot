@@ -1,5 +1,6 @@
-package apple.questing.data;
+package apple.questing.data.player;
 
+import apple.questing.data.quest.Quest;
 import apple.questing.sheets.SheetsQuery;
 import org.json.JSONArray;
 import org.json.JSONObject;

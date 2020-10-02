@@ -23,7 +23,6 @@ public class GetAnswers {
     }
 
     public static FinalQuestOptionsAll getAllFullAnswers(WynncraftPlayer player, ChoiceArguments choiceArguments) {
-        Pair<FinalQuestCombo, FinalQuestCombo> a = QuestAlgorithm.whichGivenTime(player, choiceArguments.isXpDesired, choiceArguments.timeToSpend, choiceArguments.classLevel, choiceArguments.isCollection);
         // get the results
         List<FinalQuestOptions> questOptionsList = new ArrayList<>();
         List<FinalQuestCombo> questComboListAPT = new ArrayList<>();

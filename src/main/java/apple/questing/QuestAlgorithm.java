@@ -19,10 +19,11 @@ public class QuestAlgorithm {
         long rawAmount = 0;
         for (WynncraftClass playerClass : player.classes) {
             for (Quest quest : playerClass.questsNotCompleted) {
-                if (quest.levelMinimum <= playerClass.combatLevel)
+                if (quest.levelMinimum <= ((classLevel == -1) ? playerClass.combatLevel : classLevel))
                     rawAmount += isXpDesired ? quest.xp : quest.emerald;
             }
         }
+        System.out.println(rawAmount);
         return whichGivenRawAmount(player, rawAmount, isXpDesired, classLevel, isIncludeCollection);
     }
 
@@ -33,7 +34,7 @@ public class QuestAlgorithm {
         Map<String, List<QuestLinked>> nameToQuestLinkeds = returnVal.nameToQuestLinkeds;
 
         // try all quest lines in varying lengths
-        addQuestGivenAmount(questCombinationsForAll, nameToQuestLinkeds, amountDesired, isIncludeCollection);
+        addQuestGivenAmount(questCombinationsForAll, nameToQuestLinkeds, amountDesired, isXpDesired);
 
         List<Set<QuestLinked>> questCombinationsForAllList = new ArrayList<>(questCombinationsForAll);
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, questCombinationsForAllList);
@@ -45,7 +46,7 @@ public class QuestAlgorithm {
             Set<QuestLinked> questCombination = new HashSet<>(finalQuestCombinations.get(finalQuestCombinations.size() - 1));
             questCombination.addAll(singleQuestCombination);
             finalQuestCombinations.add(questCombination);
-            if (isReachedAmount(questCombination, amountDesired, isIncludeCollection))
+            if (isReachedAmount(questCombination, amountDesired, isXpDesired))
                 break;
         }
 
@@ -55,13 +56,14 @@ public class QuestAlgorithm {
                 Set<QuestLinked> questCombinationWithSingleton = new HashSet<>(questCombination);
                 questCombinationWithSingleton.add(singletonQuest);
                 questCombination.add(singletonQuest);
-                if (isReachedAmount(questCombinationWithSingleton, amountDesired, isIncludeCollection)) {
+                if (isReachedAmount(questCombinationWithSingleton, amountDesired, isXpDesired)) {
                     break;
                 }
                 // move on to the next combination to add singletons to
             }
         }
         finalQuestCombinations.removeIf(Set::isEmpty);
+        finalQuestCombinations.removeIf(quests -> !isReachedAmount(quests, amountDesired, isXpDesired));
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
 
         Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);

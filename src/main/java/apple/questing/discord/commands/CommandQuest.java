@@ -66,8 +66,8 @@ public class CommandQuest implements DoCommand {
                     emeraldDesiredGivenPerc += quest.emerald;
                 }
             }
-        xpDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
-        emeraldDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+        xpDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+        emeraldDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
 
         FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, choiceArguments);
         new QuestRecommendationMessagePlayer(player, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);

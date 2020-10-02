@@ -4,6 +4,7 @@ import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
+import apple.questing.data.quest.Quest;
 import apple.questing.discord.reactables.class_choice.ChoiceArguments;
 import apple.questing.discord.reactables.reccomendation.QuestRecommendationMessagePlayer;
 import apple.questing.sheets.SheetsWrite;
@@ -54,9 +55,23 @@ public class CommandQuest implements DoCommand {
         }
         ChoiceArguments choiceArguments = new ChoiceArguments(
                 isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player);
+
+
+        long xpDesiredGivenPerc = 0;
+        long emeraldDesiredGivenPerc = 0;
+        for (WynncraftClass wynncraftClass : player.classes)
+            for (Quest quest : wynncraftClass.questsNotCompleted) {
+                if (quest.levelMinimum <= (classLevel == -1 ? wynncraftClass.combatLevel : classLevel)) {
+                    xpDesiredGivenPerc += quest.xp;
+                    emeraldDesiredGivenPerc += quest.emerald;
+                }
+            }
+        xpDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+        emeraldDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+
         FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, choiceArguments);
-        new QuestRecommendationMessagePlayer(player, finalQuestOptionsAll, event.getChannel(), choiceArguments);
-        SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(),true);
+        new QuestRecommendationMessagePlayer(player, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
+        SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(), true);
 
     }
 }

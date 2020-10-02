@@ -4,6 +4,7 @@ import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
+import apple.questing.data.quest.Quest;
 import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.reactables.ReactableMessage;
 import apple.questing.discord.reactables.reccomendation.QuestReccomendationMessageClass;
@@ -61,8 +62,20 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
 
             AllReactables.remove(this.id);
             event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
+
+            long xpDesiredGivenPerc = 0;
+            long emeraldDesiredGivenPerc = 0;
+            for (Quest quest : wynncraftClass.questsNotCompleted) {
+                if (quest.levelMinimum <= (classLevel == -1 ? wynncraftClass.combatLevel : classLevel)) {
+                    xpDesiredGivenPerc += quest.xp;
+                    emeraldDesiredGivenPerc += quest.emerald;
+                }
+            }
+            xpDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+            emeraldDesiredGivenPerc /= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+
             FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(this, wynncraftClass, player.name);
-            new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), this);
+            new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
             SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), false);
         }
     }

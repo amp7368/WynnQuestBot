@@ -59,7 +59,11 @@ public class AllReactables {
         TOP(Collections.singletonList("\u21A9")),
         BASKET(Collections.singletonList("\uD83D\uDC8E")),
         GEM(Collections.singletonList("\uD83E\uDDFA")),
-        CLASS_CHOICE(ClassChoiceMessage.emojiAlphabet);
+        CLASS_CHOICE(ClassChoiceMessage.emojiAlphabet),
+        CLOCK(Collections.singletonList("\uD83D\uDD53")),
+        AMOUNT(Collections.singletonList("\uD83D\uDCB5")),
+        PERCENTAGE(Collections.singletonList("\uD83D\uDD22")),
+        SWITCH(Collections.singletonList("\uD83D\uDD03"));
 
         private List<String> emojis;
 

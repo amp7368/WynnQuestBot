@@ -9,14 +9,15 @@ public class QuestRecommendationMessagePlayer extends QuestRecommendationMessage
 
     private final WynncraftPlayer player;
 
-    public QuestRecommendationMessagePlayer(WynncraftPlayer player, FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments) {
-        super(finalQuestOptionsAll, channel, choiceArguments);
+    public QuestRecommendationMessagePlayer(WynncraftPlayer player, FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments, long xpDesiredGivenPerc, long emeraldDesiredGivenPerc) {
+        super(finalQuestOptionsAll, channel, choiceArguments,  xpDesiredGivenPerc,  emeraldDesiredGivenPerc);
         this.player = player;
+        initialize();
     }
 
     @Override
     public String makeMessage() {
-        return String.format("**Options for %s (All classes)",
+        return String.format("**Options for %s (All classes)**",
                 player.name)
                 + super.makeBodyMessage();
     }

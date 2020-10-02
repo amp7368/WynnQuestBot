@@ -11,6 +11,7 @@ import java.util.Collection;
 public class WynncraftClass {
     public Integer combatLevel;
     public String name;
+    public String namePretty;
     public int totalLevel;
     public int dungeonsWon;
     public Collection<String> questsCompleted = new ArrayList<>();
@@ -20,6 +21,18 @@ public class WynncraftClass {
     public WynncraftClass(JSONObject classJson) {
         combatLevel = (Integer) ((JSONObject) ((JSONObject) classJson.get("professions")).get("combat")).get("level");
         name = classJson.getString("name");
+        char[] nameP = name.toCharArray();
+        nameP[0] = Character.toUpperCase(nameP[0]);
+        StringBuilder pretty = new StringBuilder();
+        for (int i = 0; i < nameP.length; i++) {
+            if (!Character.isAlphabetic(nameP[i]) || nameP[i] == ' ')
+                break;
+            else
+                pretty.append(nameP[i]);
+        }
+        namePretty = pretty.toString();
+
+
         totalLevel = classJson.getInt("level");
         dungeonsWon = (classJson.getJSONObject("dungeons").getInt("completed"));
 

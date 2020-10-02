@@ -17,7 +17,7 @@ public class QuestReccomendationMessageClass extends QuestRecommendationMessage 
     @Override
     public String makeMessage() {
         String messageText = String.format("**Options for %s, Lvl: %d/%d, Dungeons: %d**",
-                wynncraftClass.name, wynncraftClass.combatLevel, wynncraftClass.totalLevel, wynncraftClass.dungeonsWon)
+                wynncraftClass.namePretty, wynncraftClass.combatLevel, wynncraftClass.totalLevel, wynncraftClass.dungeonsWon)
                 + super.makeBodyMessage();
         String[] split = messageText.split("\n");
         for (int i = 0; i < split.length; i++)

@@ -77,11 +77,14 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         message.addReaction(LEFT.getFirstEmoji()).queue();
         message.addReaction(RIGHT.getFirstEmoji()).queue();
         message.addReaction(TOP.getFirstEmoji()).queue();
+        message.addReaction("\u25AA").queue();
         message.addReaction(GEM.getFirstEmoji()).queue();
         message.addReaction(BASKET.getFirstEmoji()).queue();
+        message.addReaction("\u25FC").queue();
         message.addReaction(CLOCK.getFirstEmoji()).queue();
         message.addReaction(AMOUNT.getFirstEmoji()).queue();
         message.addReaction(PERCENTAGE.getFirstEmoji()).queue();
+        message.addReaction("\u2B1B").queue();
         message.addReaction(SWITCH.getFirstEmoji()).queue();
     }
 
@@ -150,36 +153,46 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     protected String makeBodyMessage() {
         StringBuilder messageText = new StringBuilder();
         messageText.append("```md\n");
-        messageText.append("# Options\n");
-        messageText.append(String.format("| [Include Collection][%b]\n", choiceArguments.isCollection));
-        messageText.append(String.format("| [Emeralds Or Xp][%s]\n", choiceArguments.isXpDesired ? "Xp" : "Emeralds"));
-        messageText.append(String.format("| [Request Type][%s]\n", questRequest.getName()));
+        messageText.append(String.format(
+                "# %s | %s\n", isAnswer1 ? "Cycle 1" : "Cycle 2", questRequest.getName()
+        ));
         switch (questRequest) {
             case PERC:
-                if (choiceArguments.isXpDesired) {
-                    messageText.append(String.format("| [Xp Desired][%s]\n", Pretty.commas(xpDesiredGivenPerc)));
-                } else {
-                    messageText.append(String.format("| [Emeralds Desired][%s]\n", Pretty.getMon(emeraldDesiredGivenPerc)));
-                }
                 messageText.append(String.format(
-                        "# Requesting %s will request that you earn %d%% of the emeralds that is possible for you to earn\n",
+                        "[!][Requesting %s will request that you earn %d%% of the emeralds that is possible for you to earn]\n",
                         questRequest.name, (int) (GetAnswers.DEFAULT_PERCENTAGE_AMOUNT * 100)));
                 break;
             case AMOUNT:
-                if (choiceArguments.isXpDesired) {
-                    messageText.append(String.format("| [Xp Desired][%s]\n", Pretty.commas(choiceArguments.amountDesired)));
-                } else {
-                    messageText.append(String.format("| [Emeralds Desired][%s]\n", Pretty.getMon(choiceArguments.amountDesired)));
-                }
                 messageText.append(String.format(
-                        "# Requesting %s will request that you earn the specified amount of the emeralds or xp\n",
+                        "[!][Requesting %s will request that you earn the specified amount of the emeralds or xp]\n",
                         questRequest.name));
                 break;
             case TIME:
-                messageText.append(String.format("| [Time to Spend][%d mins]\n", choiceArguments.timeToSpend));
                 messageText.append(String.format(
-                        "# Requesting %s will request that you earn %d%% of the emeralds that is possible for you to earn\n",
-                        questRequest.name, (int) (GetAnswers.DEFAULT_PERCENTAGE_AMOUNT * 100)));
+                        "[!][Requesting %s will request that you earn as much as possible in the time given]\n",
+                        questRequest.name));
+                break;
+        }
+        messageText.append("\n");
+        messageText.append(String.format("[Include Collection][%b]\n", choiceArguments.isCollection));
+        messageText.append(String.format("[Emeralds Or Xp][%s]\n", choiceArguments.isXpDesired ? "Xp" : "Emeralds"));
+        switch (questRequest) {
+            case PERC:
+                if (choiceArguments.isXpDesired) {
+                    messageText.append(String.format("[Xp Desired][%s]\n", Pretty.commasXp(xpDesiredGivenPerc)));
+                } else {
+                    messageText.append(String.format("[Emeralds Desired][%s]\n", Pretty.getMon(emeraldDesiredGivenPerc)));
+                }
+                break;
+            case AMOUNT:
+                if (choiceArguments.isXpDesired) {
+                    messageText.append(String.format("[Xp Desired][%s]\n", Pretty.commasXp(choiceArguments.amountDesired)));
+                } else {
+                    messageText.append(String.format("[Emeralds Desired][%s]\n", Pretty.getMon(choiceArguments.amountDesired)));
+                }
+                break;
+            case TIME:
+                messageText.append(String.format("[Time to Spend][%s]\n", Pretty.time(choiceArguments.timeToSpend)));
                 break;
         }
         messageText.append("\n");
@@ -188,53 +201,88 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
             messageText.append("# Enter more arguments for this answer\n```");
             return messageText.toString();
         }
-        messageText.append(String.format("#%-56s\n", "# header"));
+        StringBuilder answer1Header = new StringBuilder(String.format("#%-56s\n", " Cycle 1"));
+        StringBuilder answer2Header = new StringBuilder(String.format("#%-56s\n", " Cycle 2"));
+        if (answer1 == null) {
+            answer1Header.append("This results is not available");
+        } else {
+            answer1Header.append(String.format("[Total Amount][%s]",
+                    answer1.getAmountPretty()));
+            answer1Header.append("\n");
 
-        messageText.append(String.format("|%-56s",
-                String.format(" [Total Amount][%s]",
-                        answer.getAmountPretty())));
-        messageText.append("|");
-        messageText.append("\n|");
+            answer1Header.append(String.format("[Total Time][%s]",
+                    answer1.getTimePretty()));
+            answer1Header.append("\n");
 
-        messageText.append(String.format("%-56s",
-                String.format(" [Total Time][%s]",
-                        answer.getTimePretty())));
-        messageText.append("|");
-        messageText.append("\n|");
+            answer1Header.append(String.format("[Total Quests][%d]",
+                    answer1.getQuests().size()));
 
-        messageText.append(String.format("%-56s",
-                String.format(" [Total Quests][%d]",
-                        answer.getQuests().size())));
-        messageText.append("|");
+            answer1Header.append("\n");
 
-        messageText.append("\n|");
+            answer1Header.append(String.format("[Total Amount/minute][%s]",
+                    answer1.getAmountPerTimePretty()));
 
-        messageText.append(String.format("%-56s",
-                String.format(" [Total Amount/minute][%s]",
-                        answer.getAmountPerTimePretty())));
-        messageText.append("|");
+        }
+        if (answer2 == null) {
+            answer2Header.append("This results is not available");
+        } else {
+
+            answer2Header.append(String.format("[Total Amount][%s]",
+                    answer2.getAmountPretty()));
+            answer2Header.append("\n");
+
+            answer2Header.append(String.format("[Total Time][%s]",
+                    answer2.getTimePretty()));
+            answer2Header.append("\n");
+
+            answer2Header.append(String.format("[Total Quests][%d]",
+                    answer2.getQuests().size()));
+
+            answer2Header.append("\n");
+
+            answer2Header.append(String.format("[Total Amount/minute][%s]",
+                    answer2.getAmountPerTimePretty()));
+        }
+        if (isAnswer1) {
+            messageText.append(answer1Header);
+            messageText.append("\n");
+            messageText.append(answer2Header);
+        } else {
+            messageText.append(answer2Header);
+            messageText.append("\n");
+            messageText.append(answer1Header);
+        }
 
         messageText.append("\n\n");
-        messageText.append(String.format("##    %-26s| <Amount>  | %-11s|\n", "Quests to do", "<Time>"));
+        messageText.append(String.format("#     %-26s| <Amount>   | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
 
         List<QuestLinked> quests = answer.getQuests();
         int lower = page * ENTRIES_PER_PAGE;
         for (int i = 0; i < ENTRIES_PER_PAGE; i++) {
-            final Quest quest1 = quests.size() > lower ? quests.get(lower++) : null;
-            if (quest1 == null) {
-                messageText.append(String.format("|%-31s  %-10s  %-11s", "", "", ""));
+            final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
+            if (quest == null) {
+                messageText.append(String.format("|%s", ""));
             } else {
-                final String name = quest1.name;
-                messageText.append(String.format("|%-31s| %-10s| %-11s",
+                final String name = quest.name;
+                messageText.append(String.format("|%-31s| %-11s| %-11s| %-13s| %-10s|",
                         String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
-                        String.format("<%d>", choiceArguments.isXpDesired ? quest1.xp : quest1.emerald),
-                        String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest1.time + quest1.collectionTime : quest1.time)))));
+                        String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald)),
+                        String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time))),
+                        String.format("<%s>", quest.playerClass.namePretty),
+                        String.format("<%d/%d>", quest.playerClass.combatLevel, quest.playerClass.totalLevel)
+                ));
 
             }
-            messageText.append("|");
             messageText.append("\n");
         }
         messageText.append("\n```");
+        messageText.append(BASKET.getFirstEmoji()).append(" **toggle include collection time**\n");
+        messageText.append(GEM.getFirstEmoji()).append(" **toggle xp or emeralds**\n");
+        messageText.append(CLOCK.getFirstEmoji()).append(" **set to time variable**\n");
+        messageText.append(AMOUNT.getFirstEmoji()).append(" **set to percentage variable**\n");
+        messageText.append(PERCENTAGE.getFirstEmoji()).append(" **set to emerald variable**\n");
+        messageText.append(SWITCH.getFirstEmoji()).append(" **cycle answer**\n");
+        System.out.println(messageText.toString().length());
         return messageText.toString();
     }
 
@@ -351,9 +399,9 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     public abstract String makeMessage();
 
     private enum QuestRequest {
-        PERC("Percentage"),
-        AMOUNT("Amount"),
-        TIME("Time");
+        PERC("Percentage Results"),
+        AMOUNT("Amount Results"),
+        TIME("Time Results");
 
         private final String name;
 

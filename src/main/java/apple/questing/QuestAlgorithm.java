@@ -23,7 +23,6 @@ public class QuestAlgorithm {
                     rawAmount += isXpDesired ? quest.xp : quest.emerald;
             }
         }
-        System.out.println(rawAmount);
         return whichGivenRawAmount(player, rawAmount, isXpDesired, classLevel, isIncludeCollection);
     }
 

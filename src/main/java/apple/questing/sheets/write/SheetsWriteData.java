@@ -87,11 +87,11 @@ public class SheetsWriteData {
                 row.add((quest.time + quest.collectionTime) + " mins");
                 row.add(quest.time + " mins");
                 row.add(quest.collectionTime + " mins");
-                if (questCombo.isXpDesired) row.add(Pretty.commas(quest.xp));
+                if (questCombo.isXpDesired) row.add(Pretty.commasXp(quest.xp));
                 else row.add(Pretty.getMon(quest.emerald));
-                row.add(Pretty.commas(quest.levelMinimum));
+                row.add(Pretty.commasXp(quest.levelMinimum));
                 if(isAllClasses){
-                    row.add(quest.playerClass.name);
+                    row.add(quest.playerClass.namePretty);
                     row.add(quest.playerClass.combatLevel +"/"+quest.playerClass.totalLevel);
                     row.add(String.valueOf(quest.playerClass.dungeonsWon));
                 }

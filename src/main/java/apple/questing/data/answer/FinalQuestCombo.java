@@ -80,32 +80,13 @@ public class FinalQuestCombo {
 
     public String getTimePretty() {
         double time = getTime();
-        int hr = (int) (time / 60);
-        int min = (int) Math.ceil(time % 60);
-        StringBuilder timePretty = new StringBuilder();
-        if (hr != 0) {
-            timePretty.append(hr);
-            if (hr == 1)
-                timePretty.append(" hr");
-            else
-                timePretty.append(" hrs");
-            if (min != 0)
-                timePretty.append(' ');
-        }
-        if (min != 0) {
-            timePretty.append(min);
-            if (min == 1)
-                timePretty.append(" min");
-            else
-                timePretty.append(" mins");
-        }
-        return timePretty.toString();
+        return Pretty.time(time);
     }
 
     public String getAmountPretty() {
         long amount = getAmount();
         if (isXpDesired) {
-            return Pretty.commas(amount);
+            return Pretty.commasXp(amount);
         } else {
             return Pretty.getMon(amount);
         }
@@ -114,7 +95,7 @@ public class FinalQuestCombo {
     public String getAmountPerTimePretty() {
         double amountPerTime = amountPerTime();
         if (isXpDesired) {
-            return Pretty.commas((long) amountPerTime);
+            return Pretty.commasXp((long) amountPerTime);
         } else {
             return Pretty.getMon(amountPerTime);
         }

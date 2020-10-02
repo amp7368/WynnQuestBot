@@ -27,15 +27,13 @@ public class AllReactables {
         String reaction = event.getReactionEmote().getName();
         for (Reactable reactable : Reactable.values()) {
             if (reactable.isEmoji(reaction)) {
-                synchronized (mapSyncObject) {
-                    ReactableMessage message = pageableMessages.get(event.getMessageIdLong());
-                    if (message != null) {
-                        message.dealWithReaction(reactable, reaction, event);
-                        trimOldMessages();
-                        return;
-                    }
+                ReactableMessage message = pageableMessages.get(event.getMessageIdLong());
+                if (message != null) {
+                    message.dealWithReaction(reactable, reaction, event);
                     trimOldMessages();
+                    return;
                 }
+                trimOldMessages();
 
             }
         }

@@ -75,8 +75,8 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
             emeraldDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
 
             FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(this, wynncraftClass, player.name);
-            new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
-            SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), false);
+            String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), player.name, false);
+            new QuestReccomendationMessageClass(spreadsheetId, wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
         }
     }
 

@@ -64,7 +64,10 @@ public class QuestAlgorithm {
         finalQuestCombinations.removeIf(Set::isEmpty);
         finalQuestCombinations.removeIf(quests -> !isReachedAmount(quests, amountDesired, isXpDesired));
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
-
+        if (finalQuestCombinations.isEmpty()) {
+            // it's impossible to reach what they want
+            return new Pair<>(null, null);
+        }
         Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
         finalQuestCombinations.sort((o1, o2) -> {
             long time1 = 0;
@@ -123,7 +126,8 @@ public class QuestAlgorithm {
         }
         finalQuestCombinations.removeIf(Set::isEmpty);
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
-
+        if (finalQuestCombinations.isEmpty())
+            return new Pair<>(null, null);
         Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
         finalQuestCombinations.sort((o1, o2) -> {
             long reward1 = 0;

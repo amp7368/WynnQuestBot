@@ -2,7 +2,6 @@ package apple.questing.discord.reactables.reccomendation;
 
 import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.quest.Quest;
 import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.discord.reactables.AllReactables;
@@ -19,12 +18,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static apple.questing.discord.reactables.AllReactables.Reactable.*;
+import static apple.questing.data.answer.FinalQuestOptionsAll.Answer.*;
 
 public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private static final int ENTRIES_PER_PAGE = 10;
     private final long lastUpdated;
     private final FinalQuestOptionsAll finalQuestOptionsAll;
+    protected final String spreadsheetId;
     private Message message;
     private final ChoiceArguments choiceArguments;
     private final MessageChannel channel;
@@ -45,11 +46,13 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
      * creates a QuestRecommendationMessage with a gui to change the results that are shown
      * NOTE: CALL initialize() IMMEDIATELY AFTER SORTING EVERYTHING WITH THE SUBCLASS
      *
+     * @param spreadsheetId
      * @param finalQuestOptionsAll the results from all our queries
      * @param channel              the channel to send the message
      * @param choiceArguments      the arguments the user supplied earlier
      */
-    public QuestRecommendationMessage(FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments, long xpDesiredGivenPerc, long emeraldDesiredGivenPerc) {
+    public QuestRecommendationMessage(String spreadsheetId, FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments, long xpDesiredGivenPerc, long emeraldDesiredGivenPerc) {
+        this.spreadsheetId = String.format("https://docs.google.com/spreadsheets/d/%s/edit?usp=sharing", spreadsheetId);
         this.lastUpdated = System.currentTimeMillis();
         this.finalQuestOptionsAll = finalQuestOptionsAll;
         this.choiceArguments = choiceArguments;
@@ -78,8 +81,8 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         message.addReaction(RIGHT.getFirstEmoji()).queue();
         message.addReaction(TOP.getFirstEmoji()).queue();
         message.addReaction("\u25AA").queue();
-        message.addReaction(GEM.getFirstEmoji()).queue();
         message.addReaction(BASKET.getFirstEmoji()).queue();
+        message.addReaction(GEM.getFirstEmoji()).queue();
         message.addReaction("\u25FC").queue();
         message.addReaction(CLOCK.getFirstEmoji()).queue();
         message.addReaction(AMOUNT.getFirstEmoji()).queue();
@@ -94,57 +97,57 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
             case PERC:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.NCNX);
                     }
                 }
                 break;
             case TIME:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.NCNX);
                     }
                 }
                 break;
             case AMOUNT:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.NCNX);
                     }
                 }
         }
@@ -211,7 +214,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         StringBuilder answer1Header = new StringBuilder(String.format("#%-56s\n", " Cycle 1"));
         StringBuilder answer2Header = new StringBuilder(String.format("#%-56s\n", " Cycle 2"));
         if (answer1 == null) {
-            answer1Header.append("This results is not available");
+            answer1Header.append("This result is not available");
         } else {
             answer1Header.append(String.format("[Total Amount][%s]",
                     answer1.getAmountPretty()));
@@ -231,7 +234,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
         }
         if (answer2 == null) {
-            answer2Header.append("This results is not available");
+            answer2Header.append("This result is not available");
         } else {
 
             answer2Header.append(String.format("[Total Amount][%s]",
@@ -261,17 +264,15 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         }
 
         messageText.append("\n\n");
-        messageText.append(String.format("#     %-26s| <Amount>   | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
+        messageText.append(String.format("#     %-26s| <Amount>    | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
 
         List<QuestLinked> quests = answer.getQuests();
         int lower = page * ENTRIES_PER_PAGE;
         for (int i = 0; i < ENTRIES_PER_PAGE; i++) {
             final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
-            if (quest == null) {
-                messageText.append(String.format("|%s", ""));
-            } else {
+            if (quest != null) {
                 final String name = quest.name;
-                messageText.append(String.format("|%-31s| %-11s| %-11s| %-13s| %-10s|",
+                messageText.append(String.format("|%-31s| %-12s| %-11s| %-13s| %-10s|",
                         String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
                         String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald)),
                         String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time))),

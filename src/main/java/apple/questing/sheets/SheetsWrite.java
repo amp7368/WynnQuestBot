@@ -34,25 +34,27 @@ public class SheetsWrite {
         SHEET_IDS_FILE_PATH = String.join("/", list.subList(0, list.size() - 1)) + "/data/discordIdToSheet.data";
     }
 
-    public static void writeSheet(FinalQuestOptionsAll questOptions, long discordId,boolean isAllClasses) {
+    public static String writeSheet(FinalQuestOptionsAll questOptions, long discordId, String playerName, boolean isAllClasses) {
         try {
             String sheetId = tryAddSheet(discordId);
-            writeData(questOptions, sheetId,isAllClasses);
+            writeData(questOptions, sheetId, playerName, isAllClasses);
+            return sheetId;
         } catch (IOException | ParseException e) {
             e.printStackTrace();// todo deal with error
         }
+        return null;
     }
 
-    private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId, boolean isAllClasses) throws IOException {
+    private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId, String playerName, boolean isAllClasses) throws IOException {
         List<Request> requests = new ArrayList<>();
-        requests.add(SheetsWriteOverview.writeOverview(questOptions));
+        requests.add(SheetsWriteOverview.writeOverview(questOptions, playerName, isAllClasses));
 
-        requests.addAll(SheetsWriteData.write(questOptions.answerPercAPT, PERC_APT,isAllClasses));
-        requests.addAll(SheetsWriteData.write(questOptions.answerPercTime, PERC_TIME,isAllClasses));
-        requests.addAll(SheetsWriteData.write(questOptions.answerAmountAPT, AMOUNT_APT,isAllClasses));
-        requests.addAll(SheetsWriteData.write(questOptions.answerAmountTime, AMOUNT_TIME,isAllClasses));
-        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAPT, TIME_APT,isAllClasses));
-        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAmount, TIME_AMOUNT,isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerPercAPT, PERC_APT, isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerPercTime, PERC_TIME, isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerAmountAPT, AMOUNT_APT, isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerAmountTime, AMOUNT_TIME, isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAPT, TIME_APT, isAllClasses));
+        requests.addAll(SheetsWriteData.write(questOptions.answerTimeAmount, TIME_AMOUNT, isAllClasses));
 
         serviceSheets.spreadsheets().values().batchClear(spreadsheetId, new BatchClearValuesRequest().setRanges(
                 Arrays.stream(values()).map(SheetsRanges.SheetName::getName).collect(Collectors.toList())
@@ -60,9 +62,9 @@ public class SheetsWrite {
         List<Request> deleteRequests = new ArrayList<>();
         for (int band = BANDS_PER_SHEET; band < BANDS_PER_SHEET * 7; band++) // 6+1 because there are 6 sheets
             deleteRequests.add(new Request().setDeleteBanding(new DeleteBandingRequest().setBandedRangeId(band)));
-        try{
+        try {
             serviceSheets.spreadsheets().batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(deleteRequests)).execute();
-        }catch (IOException ignored){
+        } catch (IOException ignored) {
         }
         serviceSheets.spreadsheets().batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
     }
@@ -113,7 +115,14 @@ public class SheetsWrite {
 
     private static void addBanding(String spreadsheetId) throws IOException {
         List<Request> requests = new ArrayList<>();
-        for (int i = 0, row = 2; i < 6; i++, row += 7) {
+        requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(0).
+                setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID.getSheetId()).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(0).setEndRowIndex(1)).
+                setRowProperties(new BandingProperties().
+                        setHeaderColor(makeColor(100f, 164, 194, 244)).
+                        setFirstBandColor(makeColor(255f, 255f, 255f, 255f)).
+                        setSecondBandColor(makeColor(100, 164, 194, 244))
+                ))));
+        for (int i = 0, row = 3; i < 7; i++, row += 7) {
             requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(0).
                     setRange(new GridRange().setSheetId(OVERVIEW_SHEET_ID.getSheetId()).setStartColumnIndex(0).setEndColumnIndex(6).setStartRowIndex(row).setEndRowIndex(row + 7)).
                     setRowProperties(new BandingProperties().

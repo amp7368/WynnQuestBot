@@ -38,6 +38,11 @@ public class CommandQuest implements DoCommand {
         long timeToSpend = DetermineArguments.determineTimeToSpend(contentSplit, event.getTextChannel());
         int classLevel = DetermineArguments.determineClassLevel(contentSplit, event.getTextChannel());
         long amountDesired = DetermineArguments.determineAmountDesired(contentSplit, event.getTextChannel());
+
+        // be done if something bad was found
+        if(timeToSpend == -2 || classLevel==-2 || amountDesired==-2)
+            return;
+
         if (contentSplit.isEmpty()) {
             // user did not specify what player they want
             event.getChannel().sendMessage("Specify what player you want to analyze.").queue();
@@ -70,8 +75,8 @@ public class CommandQuest implements DoCommand {
         emeraldDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
 
         FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, choiceArguments);
-        new QuestRecommendationMessagePlayer(player, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
-        SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(), true);
+        String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(), player.name, true);
+        new QuestRecommendationMessagePlayer(spreadsheetId, player, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
 
     }
 }

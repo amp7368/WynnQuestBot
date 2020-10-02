@@ -6,15 +6,19 @@ import apple.questing.sheets.SheetsRanges;
 import com.google.api.services.sheets.v4.model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class SheetsWriteOverview {
-    public static Request writeOverview(FinalQuestOptionsAll questOptions) {
+    public static Request writeOverview(FinalQuestOptionsAll questOptions, String playerName,boolean isAllClasses) {
         List<List<String>> data = new ArrayList<>();
+        List<String> row = new ArrayList<>();
+        row.add("Results for " + playerName);
+        data.add(row);
 
         // add the xpIsWanted vs xpIsNotWanted row
-        List<String> row = new ArrayList<>();
+        row = new ArrayList<>();
         row.add("");
         row.add("");
         row.add("emeralds wanted");
@@ -104,43 +108,48 @@ public class SheetsWriteOverview {
             }
             if (answer == null) {
                 row.add("");
+                data.add(Collections.emptyList());
                 row.add("Enter more arguments to get this page");
+                data.add(Collections.emptyList());
+                data.add(Collections.emptyList());
+                data.add(Collections.emptyList());
                 continue;
+
             }
             row = new ArrayList<>();
             row.add("");
             row.add("Quest Count");
-            row.add(String.valueOf(answer.cnx.getQuests().size()));
-            row.add(String.valueOf(answer.ncnx.getQuests().size()));
-            row.add(String.valueOf(answer.cx.getQuests().size()));
-            row.add(String.valueOf(answer.ncx.getQuests().size()));
+            row.add(String.valueOf(answer.cnx == null ? "???" : answer.cnx.getQuests().size()));
+            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncnx.getQuests().size()));
+            row.add(String.valueOf(answer.cx == null ? "???" : answer.cx.getQuests().size()));
+            row.add(String.valueOf(answer.ncx == null ? "???" : answer.ncx.getQuests().size()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Reward");
-            row.add(String.valueOf(answer.cnx.getAmountPretty()));
-            row.add(String.valueOf(answer.ncnx.getAmountPretty()));
-            row.add(String.valueOf(answer.cx.getAmountPretty()));
-            row.add(String.valueOf(answer.ncx.getAmountPretty()));
+            row.add(String.valueOf(answer.cnx == null ? "???" : answer.cnx.getAmountPretty()));
+            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncnx.getAmountPretty()));
+            row.add(String.valueOf(answer.cx == null ? "???" : answer.cx.getAmountPretty()));
+            row.add(String.valueOf(answer.ncx == null ? "???" : answer.ncx.getAmountPretty()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Time");
-            row.add(String.valueOf(answer.cnx.getTimePretty()));
-            row.add(String.valueOf(answer.ncnx.getTimePretty()));
-            row.add(String.valueOf(answer.cx.getTimePretty()));
-            row.add(String.valueOf(answer.ncx.getTimePretty()));
+            row.add(String.valueOf(answer.cnx == null ? "???" : answer.cnx.getTimePretty()));
+            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncnx.getTimePretty()));
+            row.add(String.valueOf(answer.cx == null ? "???" : answer.cx.getTimePretty()));
+            row.add(String.valueOf(answer.ncx == null ? "???" : answer.ncx.getTimePretty()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Reward/Time");
-            row.add(String.valueOf(answer.cnx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.ncnx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.cx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.ncx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.cnx == null ? "???" : answer.cnx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.cx == null ? "???" : answer.cx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.ncx == null ? "???" : answer.ncx.getAmountPerTimePretty()));
             data.add(row);
         }
         List<RowData> rows = SheetsWriteUtils.convertToRowData(data);

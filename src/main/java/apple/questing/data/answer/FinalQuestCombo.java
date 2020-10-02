@@ -1,7 +1,9 @@
-package apple.questing.data.combo;
+package apple.questing.data.answer;
 
 import apple.questing.data.quest.Quest;
+import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pretty;
+import apple.questing.utils.Sorting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -9,23 +11,19 @@ import java.util.Collection;
 import java.util.List;
 
 public class FinalQuestCombo {
-    final List<Quest> quests;
+    final List<QuestLinked> quests;
     public final boolean isXpDesired;  // alternative is emerald is desired
     public final boolean isIncludeCollection;
 
 
-    public FinalQuestCombo(@NotNull Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
+    public FinalQuestCombo(@NotNull Collection<QuestLinked> quests, boolean isXpDesired, boolean isIncludeCollection) {
         this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
         // todo sort quests
     }
 
-    public boolean hasQuest(Quest quest) {
-        return quests.contains(quest);
-    }
-
-    public boolean addQuest(Quest quest) {
+    public boolean addQuest(QuestLinked quest) {
         quests.add(quest);
         return false;
     }
@@ -61,12 +59,8 @@ public class FinalQuestCombo {
         return time;
     }
 
-    public boolean isEmpty() {
-        return quests.isEmpty();
-    }
-
     @NotNull
-    public List<Quest> getQuests() {
+    public List<QuestLinked> getQuests() {
         return quests;
     }
 
@@ -86,32 +80,13 @@ public class FinalQuestCombo {
 
     public String getTimePretty() {
         double time = getTime();
-        int hr = (int) (time / 60);
-        int min = (int) Math.ceil(time % 60);
-        StringBuilder timePretty = new StringBuilder();
-        if (hr != 0) {
-            timePretty.append(hr);
-            if (hr == 1)
-                timePretty.append(" hr");
-            else
-                timePretty.append(" hrs");
-            if (min != 0)
-                timePretty.append(' ');
-        }
-        if (min != 0) {
-            timePretty.append(min);
-            if (min == 1)
-                timePretty.append(" min");
-            else
-                timePretty.append(" mins");
-        }
-        return timePretty.toString();
+        return Pretty.time(time);
     }
 
     public String getAmountPretty() {
         long amount = getAmount();
         if (isXpDesired) {
-            return Pretty.commas(amount);
+            return Pretty.commasXp(amount);
         } else {
             return Pretty.getMon(amount);
         }
@@ -120,9 +95,26 @@ public class FinalQuestCombo {
     public String getAmountPerTimePretty() {
         double amountPerTime = amountPerTime();
         if (isXpDesired) {
-            return Pretty.commas((long) amountPerTime);
+            return Pretty.commasXp((long) amountPerTime);
         } else {
             return Pretty.getMon(amountPerTime);
+        }
+    }
+
+    public void sortByAPT() {
+        Sorting.sortQuestsByAPT(isXpDesired, isIncludeCollection, quests);
+        final int size = quests.size();
+        for (int i = 0; i < size; i++) {
+            final QuestLinked questAtI = quests.get(i);
+            for (String quest : (questAtI.allRequirements)) {
+                for (int questsPlace = i + 1; questsPlace < size; questsPlace++) {
+                    final QuestLinked questAtPlaced = quests.get(questsPlace);
+                    if (questAtPlaced.name.equals(quest) && questAtPlaced.playerClass.name.equals(questAtI.playerClass.name)) {
+                        // push this quest to i
+                        quests.add(i++, quests.remove(questsPlace));
+                    }
+                }
+            }
         }
     }
 }

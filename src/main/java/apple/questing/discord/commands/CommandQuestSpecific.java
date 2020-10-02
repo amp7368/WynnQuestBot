@@ -2,9 +2,7 @@ package apple.questing.discord.commands;
 
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
-import apple.questing.data.reaction.AllReactableClassChoices;
-import apple.questing.data.reaction.ClassChoiceMessage;
-import apple.questing.discord.reactions.ReactionClassChoice;
+import apple.questing.discord.reactables.class_choice.ClassChoiceMessage;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -59,7 +57,7 @@ public class CommandQuestSpecific implements DoCommand {
             classes.add(wynncraftClass.name);
             classChoiceDescription.append(ClassChoiceMessage.emojiAlphabet.get(countClass++));
             classChoiceDescription.append('`');
-            classChoiceDescription.append(ReactionClassChoice.getSingleClassMessage(wynncraftClass));
+            classChoiceDescription.append(ClassChoiceMessage.getSingleClassMessage(wynncraftClass));
             classChoiceDescription.append("`\n");
         }
 
@@ -70,18 +68,15 @@ public class CommandQuestSpecific implements DoCommand {
         for (int i = 0; i < countClass; i++)
             message.addReaction(ClassChoiceMessage.emojiAlphabet.get(i)).queue();
 
-        AllReactableClassChoices.addMessage(
-                new ClassChoiceMessage(
-                        message.getId(),
-                        System.currentTimeMillis(),
-                        isXpDesired,
-                        isCollection,
-                        timeToSpend,
-                        amountDesired,
-                        classLevel,
-                        classes,
-                        player
-                )
+        new ClassChoiceMessage(
+                message.getIdLong(),
+                isXpDesired,
+                isCollection,
+                timeToSpend,
+                amountDesired,
+                classLevel,
+                classes,
+                player
         );
     }
 

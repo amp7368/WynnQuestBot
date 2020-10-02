@@ -1,4 +1,4 @@
-package apple.questing.data.reaction;
+package apple.questing.discord.reactables.class_choice;
 
 import apple.questing.data.player.WynncraftPlayer;
 
@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ChoiceArguments {
 
-    public final boolean isXpDesired;
+    public boolean isXpDesired;
     public final boolean isCollection;
     public final long timeToSpend;
     public final long amountDesired;

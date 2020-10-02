@@ -1,11 +1,12 @@
 package apple.questing;
 
-import apple.questing.data.combo.FinalQuestCombo;
+import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.Quest;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pair;
+import apple.questing.utils.Sorting;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class QuestAlgorithm {
         long rawAmount = 0;
         for (WynncraftClass playerClass : player.classes) {
             for (Quest quest : playerClass.questsNotCompleted) {
-                if (quest.levelMinimum <= playerClass.combatLevel)
+                if (quest.levelMinimum <= ((classLevel == -1) ? playerClass.combatLevel : classLevel))
                     rawAmount += isXpDesired ? quest.xp : quest.emerald;
             }
         }
@@ -32,7 +33,7 @@ public class QuestAlgorithm {
         Map<String, List<QuestLinked>> nameToQuestLinkeds = returnVal.nameToQuestLinkeds;
 
         // try all quest lines in varying lengths
-        addQuestGivenAmount(questCombinationsForAll, nameToQuestLinkeds, amountDesired, isIncludeCollection);
+        addQuestGivenAmount(questCombinationsForAll, nameToQuestLinkeds, amountDesired, isXpDesired);
 
         List<Set<QuestLinked>> questCombinationsForAllList = new ArrayList<>(questCombinationsForAll);
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, questCombinationsForAllList);
@@ -44,7 +45,7 @@ public class QuestAlgorithm {
             Set<QuestLinked> questCombination = new HashSet<>(finalQuestCombinations.get(finalQuestCombinations.size() - 1));
             questCombination.addAll(singleQuestCombination);
             finalQuestCombinations.add(questCombination);
-            if (isReachedAmount(questCombination, amountDesired, isIncludeCollection))
+            if (isReachedAmount(questCombination, amountDesired, isXpDesired))
                 break;
         }
 
@@ -54,13 +55,14 @@ public class QuestAlgorithm {
                 Set<QuestLinked> questCombinationWithSingleton = new HashSet<>(questCombination);
                 questCombinationWithSingleton.add(singletonQuest);
                 questCombination.add(singletonQuest);
-                if (isReachedAmount(questCombinationWithSingleton, amountDesired, isIncludeCollection)) {
+                if (isReachedAmount(questCombinationWithSingleton, amountDesired, isXpDesired)) {
                     break;
                 }
                 // move on to the next combination to add singletons to
             }
         }
         finalQuestCombinations.removeIf(Set::isEmpty);
+        finalQuestCombinations.removeIf(quests -> !isReachedAmount(quests, amountDesired, isXpDesired));
         sortQuestCombinationByAPT(isXpDesired, isIncludeCollection, finalQuestCombinations);
 
         Set<QuestLinked> optimizeAPT = finalQuestCombinations.get(0);
@@ -337,8 +339,7 @@ public class QuestAlgorithm {
 
 
         // sort the singleton quests by order of amount/time
-        singletonQuests.sort((o1, o2) -> ((int) ((isXpDesired ? o2.xp : o2.emerald) / (isIncludeCollection ? o2.collectionTime + o2.time : o2.time)) -
-                (int) ((isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time))));
+        Sorting.sortQuestsByAPT(isXpDesired, isIncludeCollection, singletonQuests);
 
         // this is a set of sets of quest names
         Set<Set<QuestLinked>> questCombinationsForAll = new HashSet<>();

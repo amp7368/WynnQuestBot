@@ -1,7 +1,5 @@
 package apple.questing.data.answer;
 
-import apple.questing.data.combo.FinalQuestCombo;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,5 +23,12 @@ public class FinalQuestOptions {
                 ncx,
                 cx
         );
+    }
+
+    public void sortByAPT() {
+        ncnx.sortByAPT();
+        cnx.sortByAPT();
+        ncx.sortByAPT();
+        cx.sortByAPT();
     }
 }

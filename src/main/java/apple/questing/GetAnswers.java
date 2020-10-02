@@ -2,11 +2,11 @@ package apple.questing;
 
 import apple.questing.data.answer.FinalQuestOptions;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.combo.FinalQuestCombo;
+import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
-import apple.questing.data.reaction.ChoiceArguments;
-import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.reactables.class_choice.ChoiceArguments;
+import apple.questing.discord.reactables.class_choice.ClassChoiceMessage;
 import apple.questing.utils.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,6 @@ public class GetAnswers {
     }
 
     public static FinalQuestOptionsAll getAllFullAnswers(WynncraftPlayer player, ChoiceArguments choiceArguments) {
-        Pair<FinalQuestCombo, FinalQuestCombo> a = QuestAlgorithm.whichGivenTime(player, choiceArguments.isXpDesired, choiceArguments.timeToSpend, choiceArguments.classLevel, choiceArguments.isCollection);
         // get the results
         List<FinalQuestOptions> questOptionsList = new ArrayList<>();
         List<FinalQuestCombo> questComboListAPT = new ArrayList<>();
@@ -68,15 +67,15 @@ public class GetAnswers {
 
         // get the amountDesiredResults
         if (choiceArguments.amountDesired != -1) {
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,false,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, false,
                     choiceArguments.classLevel, false);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,false,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, false,
                     choiceArguments.classLevel, true);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,true,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, true,
                     choiceArguments.classLevel, false);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
@@ -143,7 +142,9 @@ public class GetAnswers {
             questOptionsList.add(null);
         }
 
-
+        for (int i = 0; i < 6; i++)
+            if (questOptionsList.get(i) != null)
+                questOptionsList.get(i).sortByAPT();
         return new FinalQuestOptionsAll(
                 questOptionsList.get(0),
                 questOptionsList.get(1),

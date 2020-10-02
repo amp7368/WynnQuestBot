@@ -153,9 +153,16 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     protected String makeBodyMessage() {
         StringBuilder messageText = new StringBuilder();
         messageText.append("```md\n");
-        messageText.append(String.format(
-                "# %s | %s\n", isAnswer1 ? "Cycle 1" : "Cycle 2", questRequest.getName()
-        ));
+        messageText.append("#");
+        messageText.append("=".repeat(30));
+        messageText.append("#\n");
+        messageText.append(String.format("# %-28s #\n",
+                String.format(
+                        "%s | %s", isAnswer1 ? "Cycle 1" : "Cycle 2", questRequest.getName()
+                )));
+        messageText.append("#");
+        messageText.append("=".repeat(30));
+        messageText.append("#\n");
         switch (questRequest) {
             case PERC:
                 messageText.append(String.format(
@@ -282,7 +289,6 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         messageText.append(AMOUNT.getFirstEmoji()).append(" **set to percentage variable**\n");
         messageText.append(PERCENTAGE.getFirstEmoji()).append(" **set to emerald variable**\n");
         messageText.append(SWITCH.getFirstEmoji()).append(" **cycle answer**\n");
-        System.out.println(messageText.toString().length());
         return messageText.toString();
     }
 
@@ -335,7 +341,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private void setQuestRequest(QuestRequest questRequest) {
         this.questRequest = questRequest;
-        isAnswer1 = !isAnswer1;
+        isAnswer1 = true;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
     }

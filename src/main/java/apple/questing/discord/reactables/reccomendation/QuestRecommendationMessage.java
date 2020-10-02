@@ -25,6 +25,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     private static final int ENTRIES_PER_PAGE = 10;
     private final long lastUpdated;
     private final FinalQuestOptionsAll finalQuestOptionsAll;
+    protected final String spreadsheetId;
     private Message message;
     private final ChoiceArguments choiceArguments;
     private final MessageChannel channel;
@@ -45,11 +46,13 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
      * creates a QuestRecommendationMessage with a gui to change the results that are shown
      * NOTE: CALL initialize() IMMEDIATELY AFTER SORTING EVERYTHING WITH THE SUBCLASS
      *
+     * @param spreadsheetId
      * @param finalQuestOptionsAll the results from all our queries
      * @param channel              the channel to send the message
      * @param choiceArguments      the arguments the user supplied earlier
      */
-    public QuestRecommendationMessage(FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments, long xpDesiredGivenPerc, long emeraldDesiredGivenPerc) {
+    public QuestRecommendationMessage(String spreadsheetId, FinalQuestOptionsAll finalQuestOptionsAll, MessageChannel channel, ChoiceArguments choiceArguments, long xpDesiredGivenPerc, long emeraldDesiredGivenPerc) {
+        this.spreadsheetId = String.format("https://docs.google.com/spreadsheets/d/%s/edit?usp=sharing", spreadsheetId);
         this.lastUpdated = System.currentTimeMillis();
         this.finalQuestOptionsAll = finalQuestOptionsAll;
         this.choiceArguments = choiceArguments;
@@ -78,8 +81,8 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         message.addReaction(RIGHT.getFirstEmoji()).queue();
         message.addReaction(TOP.getFirstEmoji()).queue();
         message.addReaction("\u25AA").queue();
-        message.addReaction(GEM.getFirstEmoji()).queue();
         message.addReaction(BASKET.getFirstEmoji()).queue();
+        message.addReaction(GEM.getFirstEmoji()).queue();
         message.addReaction("\u25FC").queue();
         message.addReaction(CLOCK.getFirstEmoji()).queue();
         message.addReaction(AMOUNT.getFirstEmoji()).queue();
@@ -261,17 +264,15 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         }
 
         messageText.append("\n\n");
-        messageText.append(String.format("#     %-26s| <Amount>   | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
+        messageText.append(String.format("#     %-26s| <Amount>    | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
 
         List<QuestLinked> quests = answer.getQuests();
         int lower = page * ENTRIES_PER_PAGE;
         for (int i = 0; i < ENTRIES_PER_PAGE; i++) {
             final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
-            if (quest == null) {
-                messageText.append(String.format("|%s", ""));
-            } else {
+            if (quest != null) {
                 final String name = quest.name;
-                messageText.append(String.format("|%-31s| %-11s| %-11s| %-13s| %-10s|",
+                messageText.append(String.format("|%-31s| %-12s| %-11s| %-13s| %-10s|",
                         String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
                         String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald)),
                         String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time))),

@@ -26,7 +26,12 @@ public class DetermineArguments {
                     contentSplit.remove(i);
                     String amount = contentSplit.remove(i);
                     try {
-                        return Long.parseLong(amount);
+                        long amountFound = Long.parseLong(amount);
+                        if (amountFound <= 0) {
+                            channel.sendMessage(String.format("'%s' is a hard amount to rationalize..", amount)).queue();
+                            return -2;
+                        }
+                        return amountFound;
                     } catch (NumberFormatException e) {
                         // user's -e argument is not a number
                         channel.sendMessage("-e requires a number after it to specify how many emeralds or xp you want from quests\n'" + amount + "' is not a number.").queue();
@@ -59,7 +64,12 @@ public class DetermineArguments {
                     contentSplit.remove(i);
                     String time = contentSplit.remove(i);
                     try {
-                        return Integer.parseInt(time);
+                        final int timeFound = Integer.parseInt(time);
+                        if (timeFound <= 0) {
+                            channel.sendMessage(String.format("'%s' is a hard class level to rationalize..", time)).queue();
+                            return -2;
+                        }
+                        return timeFound;
                     } catch (NumberFormatException e) {
                         // user's -t argument is not a number
                         channel.sendMessage("-l requires a number after it to specify how much time you want to spend doing quests\n'" + time + "' is not a number.").queue();
@@ -92,7 +102,12 @@ public class DetermineArguments {
                     contentSplit.remove(i);
                     String time = contentSplit.remove(i);
                     try {
-                        return Long.parseLong(time);
+                        final long timeFound = Long.parseLong(time);
+                        if (timeFound <= 0) {
+                            channel.sendMessage(String.format("'%s' is a hard time to rationalize..", time)).queue();
+                            return -2;
+                        }
+                        return timeFound;
                     } catch (NumberFormatException e) {
                         // user's -t argument is not a number
                         channel.sendMessage("-t requires a number after it to specify how much time you want to spend doing quests\n'" + time + "' is not a number.").queue();

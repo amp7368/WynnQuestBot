@@ -39,7 +39,7 @@ public class ReactionClassChoice implements DoReaction {
             event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
             FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(classChoiceMessage, wynncraftClass, classChoiceMessage.player.name);
             new QuestReccomendationMessageClass(wynncraftClass, finalQuestOptionsAll, event.getChannel(), classChoiceMessage);
-            SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong());
+            SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(),false);
         } else {
             //todo
         }

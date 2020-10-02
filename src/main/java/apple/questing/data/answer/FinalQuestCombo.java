@@ -1,6 +1,7 @@
-package apple.questing.data.combo;
+package apple.questing.data.answer;
 
 import apple.questing.data.quest.Quest;
+import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pretty;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,23 +10,19 @@ import java.util.Collection;
 import java.util.List;
 
 public class FinalQuestCombo {
-    final List<Quest> quests;
+    final List<QuestLinked> quests;
     public final boolean isXpDesired;  // alternative is emerald is desired
     public final boolean isIncludeCollection;
 
 
-    public FinalQuestCombo(@NotNull Collection<Quest> quests, boolean isXpDesired, boolean isIncludeCollection) {
+    public FinalQuestCombo(@NotNull Collection<QuestLinked> quests, boolean isXpDesired, boolean isIncludeCollection) {
         this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
         // todo sort quests
     }
 
-    public boolean hasQuest(Quest quest) {
-        return quests.contains(quest);
-    }
-
-    public boolean addQuest(Quest quest) {
+    public boolean addQuest(QuestLinked quest) {
         quests.add(quest);
         return false;
     }
@@ -61,12 +58,8 @@ public class FinalQuestCombo {
         return time;
     }
 
-    public boolean isEmpty() {
-        return quests.isEmpty();
-    }
-
     @NotNull
-    public List<Quest> getQuests() {
+    public List<QuestLinked> getQuests() {
         return quests;
     }
 

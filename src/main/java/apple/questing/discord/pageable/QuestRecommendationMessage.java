@@ -2,7 +2,8 @@ package apple.questing.discord.pageable;
 
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.quest.Quest;
-import apple.questing.data.combo.FinalQuestCombo;
+import apple.questing.data.answer.FinalQuestCombo;
+import apple.questing.data.quest.QuestLinked;
 import apple.questing.data.reaction.ChoiceArguments;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -162,8 +163,8 @@ public abstract class QuestRecommendationMessage implements Pageable {
         messageText.append(String.format("##    %-26s| <Amount>  | %-11s|", "Quests to do", "<Time>"));
         messageText.append(String.format("#    %-26s| <Amount>  | %-11s|\n", "Quests to do", "<Time>"));
 
-        List<Quest> quests1 = answer1.getQuests();
-        List<Quest> quests2 = answer2.getQuests();
+        List<QuestLinked> quests1 = answer1.getQuests();
+        List<QuestLinked> quests2 = answer2.getQuests();
         int lower1 = page1 * ENTRIES_PER_PAGE;
         int lower2 = page2 * ENTRIES_PER_PAGE;
         for (int i = 0; i < ENTRIES_PER_PAGE; i++) {

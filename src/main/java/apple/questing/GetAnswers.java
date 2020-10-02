@@ -2,7 +2,7 @@ package apple.questing;
 
 import apple.questing.data.answer.FinalQuestOptions;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.combo.FinalQuestCombo;
+import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.reaction.ChoiceArguments;

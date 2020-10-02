@@ -6,6 +6,7 @@ import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.Quest;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pair;
+import apple.questing.utils.Sorting;
 
 import java.util.*;
 
@@ -337,8 +338,7 @@ public class QuestAlgorithm {
 
 
         // sort the singleton quests by order of amount/time
-        singletonQuests.sort((o1, o2) -> ((int) ((isXpDesired ? o2.xp : o2.emerald) / (isIncludeCollection ? o2.collectionTime + o2.time : o2.time)) -
-                (int) ((isXpDesired ? o1.xp : o1.emerald) / (isIncludeCollection ? o1.collectionTime + o1.time : o1.time))));
+        Sorting.sortQuestsByAPT(isXpDesired, isIncludeCollection, singletonQuests);
 
         // this is a set of sets of quest names
         Set<Set<QuestLinked>> questCombinationsForAll = new HashSet<>();

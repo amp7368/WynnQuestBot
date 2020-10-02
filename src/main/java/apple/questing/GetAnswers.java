@@ -68,15 +68,15 @@ public class GetAnswers {
 
         // get the amountDesiredResults
         if (choiceArguments.amountDesired != -1) {
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,false,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, false,
                     choiceArguments.classLevel, false);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,false,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, false,
                     choiceArguments.classLevel, true);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
-            questOptions = QuestAlgorithm.whichGivenRawAmount(player,  choiceArguments.amountDesired,true,
+            questOptions = QuestAlgorithm.whichGivenRawAmount(player, choiceArguments.amountDesired, true,
                     choiceArguments.classLevel, false);
             questComboListAPT.add(questOptions.getKey());
             questComboListTime.add(questOptions.getValue());
@@ -143,7 +143,9 @@ public class GetAnswers {
             questOptionsList.add(null);
         }
 
-
+        for (int i = 0; i < 6; i++)
+            if (questOptionsList.get(i) != null)
+                questOptionsList.get(i).sortByAPT();
         return new FinalQuestOptionsAll(
                 questOptionsList.get(0),
                 questOptionsList.get(1),

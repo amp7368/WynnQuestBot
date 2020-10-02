@@ -24,4 +24,11 @@ public class FinalQuestOptions {
                 cx
         );
     }
+
+    public void sortByAPT() {
+        ncnx.sortByAPT();
+        cnx.sortByAPT();
+        ncx.sortByAPT();
+        cx.sortByAPT();
+    }
 }

@@ -3,6 +3,7 @@ package apple.questing.data.answer;
 import apple.questing.data.quest.Quest;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.utils.Pretty;
+import apple.questing.utils.Sorting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -116,6 +117,23 @@ public class FinalQuestCombo {
             return Pretty.commas((long) amountPerTime);
         } else {
             return Pretty.getMon(amountPerTime);
+        }
+    }
+
+    public void sortByAPT() {
+        Sorting.sortQuestsByAPT(isXpDesired, isIncludeCollection, quests);
+        final int size = quests.size();
+        for (int i = 0; i < size; i++) {
+            final QuestLinked questAtI = quests.get(i);
+            for (String quest : (questAtI.allRequirements)) {
+                for (int questsPlace = i + 1; questsPlace < size; questsPlace++) {
+                    final QuestLinked questAtPlaced = quests.get(questsPlace);
+                    if (questAtPlaced.name.equals(quest) && questAtPlaced.playerClass.name.equals(questAtI.playerClass.name)) {
+                        // push this quest to i
+                        quests.add(i++, quests.remove(questsPlace));
+                    }
+                }
+            }
         }
     }
 }

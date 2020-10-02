@@ -110,37 +110,37 @@ public class SheetsWriteOverview {
             row = new ArrayList<>();
             row.add("");
             row.add("Quest Count");
-            row.add(String.valueOf(answer.cnx.getQuests().size()));
-            row.add(String.valueOf(answer.ncnx.getQuests().size()));
-            row.add(String.valueOf(answer.cx.getQuests().size()));
-            row.add(String.valueOf(answer.ncx.getQuests().size()));
+            row.add(String.valueOf(answer.cnx==null?"???":answer.cnx.getQuests().size()));
+            row.add(String.valueOf(answer.ncnx==null?"???":answer.ncnx.getQuests().size()));
+            row.add(String.valueOf(answer.cx==null?"???":answer.cx.getQuests().size()));
+            row.add(String.valueOf(answer.ncx==null?"???":answer.ncx.getQuests().size()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Reward");
-            row.add(String.valueOf(answer.cnx.getAmountPretty()));
-            row.add(String.valueOf(answer.ncnx.getAmountPretty()));
-            row.add(String.valueOf(answer.cx.getAmountPretty()));
-            row.add(String.valueOf(answer.ncx.getAmountPretty()));
+            row.add(String.valueOf(answer.cnx==null?"???":answer.cnx.getAmountPretty()));
+            row.add(String.valueOf(answer.ncnx==null?"???":answer.ncnx.getAmountPretty()));
+            row.add(String.valueOf(answer.cx==null?"???":answer.cx.getAmountPretty()));
+            row.add(String.valueOf(answer.ncx==null?"???":answer.ncx.getAmountPretty()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Time");
-            row.add(String.valueOf(answer.cnx.getTimePretty()));
-            row.add(String.valueOf(answer.ncnx.getTimePretty()));
-            row.add(String.valueOf(answer.cx.getTimePretty()));
-            row.add(String.valueOf(answer.ncx.getTimePretty()));
+            row.add(String.valueOf(answer.cnx==null?"???":answer.cnx.getTimePretty()));
+            row.add(String.valueOf(answer.ncnx==null?"???":answer.ncnx.getTimePretty()));
+            row.add(String.valueOf(answer.cx==null?"???":answer.cx.getTimePretty()));
+            row.add(String.valueOf(answer.ncx==null?"???":answer.ncx.getTimePretty()));
             data.add(row);
 
             row = new ArrayList<>();
             row.add("");
             row.add("Reward/Time");
-            row.add(String.valueOf(answer.cnx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.ncnx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.cx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.ncx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.cnx==null?"???":answer.cnx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.ncnx==null?"???":answer.ncx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.cx==null?"???":answer.cx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.ncx==null?"???":answer.ncx.getAmountPerTimePretty()));
             data.add(row);
         }
         List<RowData> rows = SheetsWriteUtils.convertToRowData(data);

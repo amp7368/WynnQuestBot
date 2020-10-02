@@ -26,9 +26,27 @@ public class FinalQuestOptions {
     }
 
     public void sortByAPT() {
-        ncnx.sortByAPT();
-        cnx.sortByAPT();
-        ncx.sortByAPT();
-        cx.sortByAPT();
+        if (ncnx != null)
+            ncnx.sortByAPT();
+        if (cnx != null)
+            cnx.sortByAPT();
+        if (ncx != null)
+            ncx.sortByAPT();
+        if (cx != null)
+            cx.sortByAPT();
+    }
+
+    public FinalQuestCombo get(FinalQuestOptionsAll.Answer.CX cx) {
+        switch (cx) {
+            case CX:
+                return this.cx;
+            case CNX:
+                return this.cnx;
+            case NCX:
+                return this.ncx;
+            case NCNX:
+                return this.ncnx;
+        }
+        return null;
     }
 }

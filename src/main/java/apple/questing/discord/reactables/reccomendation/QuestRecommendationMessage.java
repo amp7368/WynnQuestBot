@@ -2,7 +2,6 @@ package apple.questing.discord.reactables.reccomendation;
 
 import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
-import apple.questing.data.quest.Quest;
 import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.discord.reactables.AllReactables;
@@ -19,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static apple.questing.discord.reactables.AllReactables.Reactable.*;
+import static apple.questing.data.answer.FinalQuestOptionsAll.Answer.*;
 
 public abstract class QuestRecommendationMessage implements ReactableMessage {
 
@@ -94,57 +94,57 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
             case PERC:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerPercAPT == null ? null : finalQuestOptionsAll.answerPercAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerPercTime == null ? null : finalQuestOptionsAll.answerPercTime.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.PERC, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.PERC, Goal.TIME, CX.NCNX);
                     }
                 }
                 break;
             case TIME:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerTimeAPT == null ? null : finalQuestOptionsAll.answerTimeAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerTimeAmount == null ? null : finalQuestOptionsAll.answerTimeAmount.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.TIME, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.TIME, Goal.AMOUNT, CX.NCNX);
                     }
                 }
                 break;
             case AMOUNT:
                 if (choiceArguments.isXpDesired) {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.cx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.cx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.CX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.CX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.ncx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.ncx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.NCX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.NCX);
                     }
                 } else {
                     if (choiceArguments.isCollection) {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.cnx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.cnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.CNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.CNX);
                     } else {
-                        answer1 = finalQuestOptionsAll.answerAmountAPT == null ? null : finalQuestOptionsAll.answerAmountAPT.ncnx;
-                        answer2 = finalQuestOptionsAll.answerAmountTime == null ? null : finalQuestOptionsAll.answerAmountTime.ncnx;
+                        answer1 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.APT, CX.NCNX);
+                        answer2 = finalQuestOptionsAll.get(Desired.AMOUNT, Goal.TIME, CX.NCNX);
                     }
                 }
         }

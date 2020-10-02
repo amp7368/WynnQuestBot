@@ -32,4 +32,49 @@ public class FinalQuestOptionsAll {
                 answerTimeAmount
         );
     }
+
+    public FinalQuestCombo get(Answer.Desired desired, Answer.Goal goal, Answer.CX cx) {
+        switch (desired) {
+            case PERC:
+                if (goal == Answer.Goal.APT) {
+                    return answerPercAPT == null ? null : answerAmountAPT.get(cx);
+                } else {
+                    return answerPercTime == null ? null : answerPercTime.get(cx);
+                }
+            case AMOUNT:
+                if (goal == Answer.Goal.APT) {
+                    return answerAmountAPT == null ? null : answerAmountAPT.get(cx);
+                } else {
+                    return answerAmountTime == null ? null : answerAmountTime.get(cx);
+                }
+            case TIME:
+                if (goal == Answer.Goal.APT) {
+                    return answerTimeAPT == null ? null : answerTimeAPT.get(cx);
+                } else {
+                    return answerTimeAmount == null ? null : answerTimeAmount.get(cx);
+                }
+        }
+        return null;
+    }
+
+    public static class Answer {
+        public enum Desired {
+            PERC,
+            AMOUNT,
+            TIME
+        }
+
+        public enum Goal {
+            APT,
+            TIME,
+            AMOUNT
+        }
+
+        public enum CX {
+            CX,
+            CNX,
+            NCX,
+            NCNX
+        }
+    }
 }

@@ -45,8 +45,6 @@ public class SheetsWriteData {
             return requests;
         }
         for (FinalQuestCombo questCombo : questOptions.getList()) {
-            final List<QuestLinked> quests = questCombo.getQuests();
-
             List<String> row = new ArrayList<>();
             row.add("Collection Included");
             row.add("Xp Desired");
@@ -57,6 +55,36 @@ public class SheetsWriteData {
             data.add(row);
 
             row = new ArrayList<>();
+
+            if (questCombo == null) {
+                row.add("???");
+                row.add("???");
+                row.add("???");
+                row.add("???");
+                row.add("???");
+                row.add("???");
+                data.add(row);
+                data.add(Collections.emptyList());
+                row = new ArrayList<>();
+                row.add("Quest Name");
+                row.add("Total Time");
+                row.add("Time");
+                row.add("Collection Time");
+                row.add("Xp | Emerald");
+                row.add("Level");
+                if (isAllClasses) {
+                    row.add("Class");
+                    row.add("Class' Level");
+                    row.add("Class' Dungeons");
+                }
+                row.add("Requirements");
+                data.add(row);
+                data.add(Collections.emptyList());
+                data.add(Collections.emptyList());
+                continue;
+            }
+
+            final List<QuestLinked> quests = questCombo.getQuests();
             row.add(String.valueOf(questCombo.isIncludeCollection));
             row.add(String.valueOf(questCombo.isXpDesired));
             row.add(String.valueOf(quests.size()));
@@ -73,7 +101,7 @@ public class SheetsWriteData {
             row.add("Collection Time");
             row.add(questCombo.isXpDesired ? "Xp" : "Emerald");
             row.add("Level");
-            if(isAllClasses){
+            if (isAllClasses) {
                 row.add("Class");
                 row.add("Class' Level");
                 row.add("Class' Dungeons");
@@ -90,9 +118,9 @@ public class SheetsWriteData {
                 if (questCombo.isXpDesired) row.add(Pretty.commasXp(quest.xp));
                 else row.add(Pretty.getMon(quest.emerald));
                 row.add(Pretty.commasXp(quest.levelMinimum));
-                if(isAllClasses){
+                if (isAllClasses) {
                     row.add(quest.playerClass.namePretty);
-                    row.add(quest.playerClass.combatLevel +"/"+quest.playerClass.totalLevel);
+                    row.add(quest.playerClass.combatLevel + "/" + quest.playerClass.totalLevel);
                     row.add(String.valueOf(quest.playerClass.dungeonsWon));
                 }
                 row.add(String.join(", ", quest.allRequirements));
@@ -108,7 +136,10 @@ public class SheetsWriteData {
             SheetsWriteUtils.setRowFormat(rows.get(i++), false, HEADER_COLOR);
             SheetsWriteUtils.setRowFormat(rows.get(i), true, HEADER_COLOR);
             SheetsWriteUtils.setRowFormat(rows.get(i + 2), true, null);
-            i += finalQuestCombo.getQuests().size() + 5;
+            if (finalQuestCombo == null)
+                i += 5;
+            else
+                i += finalQuestCombo.getQuests().size() + 5;
         }
         List<Request> requests = new ArrayList<>();
         requests.add(new Request().setUpdateCells(new UpdateCellsRequest().setFields("*").setRows(rows).
@@ -117,7 +148,11 @@ public class SheetsWriteData {
         int row = 0;
         int finalQuestComboI = (sheetName.getSheetId()) * BANDS_PER_SHEET;
         for (FinalQuestCombo finalQuestCombo : questOptions.getList()) {
-            final int size = finalQuestCombo.getQuests().size();
+            int size;
+            if (finalQuestCombo == null) {
+                size = 0;
+            } else
+                size = finalQuestCombo.getQuests().size();
             requests.add(new Request().setAddBanding(new AddBandingRequest().setBandedRange(new BandedRange().setBandedRangeId(finalQuestComboI++).
                     setRange(new GridRange().setSheetId(sheetId).setStartColumnIndex(0).setEndColumnIndex(10).setStartRowIndex(row + 3).setEndRowIndex(row + size + 4)).
                     setRowProperties(new BandingProperties().

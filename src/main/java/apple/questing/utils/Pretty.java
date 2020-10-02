@@ -35,13 +35,14 @@ public class Pretty {
         } else if (le == 0 && eb == 0) {
             mon.append(e);
             mon.append(" e");
-        } else if (le == 0 || eb == 0) {
+        } else if (le == 0 || eb == 0 && e != 0) {
             mon.append(" ");
             mon.append(e);
             mon.append(" e");
         }
         return mon.toString();
     }
+
     @NotNull
     public static String time(double time) {
         int hr = (int) (time / 60);

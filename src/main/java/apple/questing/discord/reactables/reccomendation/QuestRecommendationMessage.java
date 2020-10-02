@@ -211,7 +211,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         StringBuilder answer1Header = new StringBuilder(String.format("#%-56s\n", " Cycle 1"));
         StringBuilder answer2Header = new StringBuilder(String.format("#%-56s\n", " Cycle 2"));
         if (answer1 == null) {
-            answer1Header.append("This results is not available");
+            answer1Header.append("This result is not available");
         } else {
             answer1Header.append(String.format("[Total Amount][%s]",
                     answer1.getAmountPretty()));
@@ -231,7 +231,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
         }
         if (answer2 == null) {
-            answer2Header.append("This results is not available");
+            answer2Header.append("This result is not available");
         } else {
 
             answer2Header.append(String.format("[Total Amount][%s]",

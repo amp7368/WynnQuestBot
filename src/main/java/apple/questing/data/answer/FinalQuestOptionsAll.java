@@ -37,7 +37,7 @@ public class FinalQuestOptionsAll {
         switch (desired) {
             case PERC:
                 if (goal == Answer.Goal.APT) {
-                    return answerPercAPT == null ? null : answerAmountAPT.get(cx);
+                    return answerPercAPT == null ? null : answerPercAPT.get(cx);
                 } else {
                     return answerPercTime == null ? null : answerPercTime.get(cx);
                 }

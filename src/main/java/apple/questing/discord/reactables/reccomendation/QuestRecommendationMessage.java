@@ -1,17 +1,24 @@
-package apple.questing.discord.pageable;
+package apple.questing.discord.reactables.reccomendation;
 
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.quest.Quest;
 import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.quest.QuestLinked;
-import apple.questing.data.reaction.ChoiceArguments;
+import apple.questing.discord.reactables.AllReactables;
+import apple.questing.discord.reactables.ReactableMessage;
+import apple.questing.discord.reactables.class_choice.ChoiceArguments;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class QuestRecommendationMessage implements Pageable {
+import static apple.questing.discord.reactables.AllReactables.Reactable.*;
+
+public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private static final int ENTRIES_PER_PAGE = 10;
     private final long lastUpdated;
@@ -105,10 +112,12 @@ public abstract class QuestRecommendationMessage implements Pageable {
 
         // print the results
         message = channel.sendMessage(makeBodyMessage()).complete();
-        PageableMessages.add(this);
-        message.addReaction("\u2B05").queue();
-        message.addReaction("\u27A1").queue();
-        message.addReaction("\u21A9").queue();
+        AllReactables.add(this); // we need message to be not null before we add it
+        message.addReaction(LEFT.getFirstEmoji()).queue();
+        message.addReaction(RIGHT.getFirstEmoji()).queue();
+        message.addReaction(TOP.getFirstEmoji()).queue();
+        message.addReaction(GEM.getFirstEmoji()).queue();
+        message.addReaction(BASKET.getFirstEmoji()).queue();
     }
 
     protected String makeBodyMessage() {
@@ -197,7 +206,6 @@ public abstract class QuestRecommendationMessage implements Pageable {
         return messageText.toString();
     }
 
-    @Override
     public void forward() {
         if ((page1 + 1) * ENTRIES_PER_PAGE < answer1.getQuests().size() ||
                 (page2 + 1) * ENTRIES_PER_PAGE < answer2.getQuests().size()) {
@@ -207,7 +215,6 @@ public abstract class QuestRecommendationMessage implements Pageable {
         }
     }
 
-    @Override
     public void backward() {
         if (page1 - 1 != -1) {
             --page1;
@@ -216,11 +223,37 @@ public abstract class QuestRecommendationMessage implements Pageable {
         }
     }
 
-    @Override
     public void top() {
         page1 = 0;
         page2 = 0;
         message.editMessage(makeMessage()).queue();
+    }
+
+    @Override
+    public void dealWithReaction(AllReactables.Reactable reaction, String s, @NotNull MessageReactionAddEvent event) {
+        User user = event.getUser();
+        if (user == null) return;
+
+        switch (reaction) {
+            case LEFT:
+                backward();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case RIGHT:
+                forward();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case TOP:
+                top();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case GEM:
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case BASKET:
+                event.getReaction().removeReaction(user).queue();
+                break;
+        }
     }
 
     @Override

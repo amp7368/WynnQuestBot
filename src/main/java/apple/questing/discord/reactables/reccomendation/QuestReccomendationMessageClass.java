@@ -1,8 +1,8 @@
-package apple.questing.discord.pageable;
+package apple.questing.discord.reactables.reccomendation;
 
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
-import apple.questing.data.reaction.ChoiceArguments;
+import apple.questing.discord.reactables.class_choice.ChoiceArguments;
 import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class QuestReccomendationMessageClass extends QuestRecommendationMessage {

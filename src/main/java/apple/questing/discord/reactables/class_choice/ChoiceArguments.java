@@ -1,4 +1,4 @@
-package apple.questing.data.reaction;
+package apple.questing.discord.reactables.class_choice;
 
 import apple.questing.data.player.WynncraftPlayer;
 

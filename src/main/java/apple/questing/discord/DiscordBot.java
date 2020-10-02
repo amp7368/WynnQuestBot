@@ -2,9 +2,8 @@ package apple.questing.discord;
 
 
 import apple.questing.QuestMain;
-import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.commands.*;
-import apple.questing.discord.reactions.*;
 import apple.questing.sheets.SheetsQuery;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,7 +28,6 @@ public class DiscordBot extends ListenerAdapter {
 
 
     private static final HashMap<String, DoCommand> commandMap = new HashMap<>();
-    private static final HashMap<String, DoReaction> reactionMap = new HashMap<>();
     public static String discordToken; // my bot
     public static JDA client;
 
@@ -68,7 +66,7 @@ public class DiscordBot extends ListenerAdapter {
         JDABuilder builder = new JDABuilder(discordToken);
         builder.addEventListeners(this);
         client = builder.build();
-        client.getPresence().setPresence(Activity.playing("Quest bot soon? O.o"),true);
+        client.getPresence().setPresence(Activity.playing("Quest bot soon? O.o"), true);
         client.getPresence().setStatus(OnlineStatus.IDLE);
     }
 
@@ -79,13 +77,6 @@ public class DiscordBot extends ListenerAdapter {
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());
 
-        reactionMap.put("\u2B05", new ReactionLeft());
-        reactionMap.put("\u27A1", new ReactionRight());
-        reactionMap.put("\u21A9",new ReactionTop());
-
-        for (String alphabet : ClassChoiceMessage.emojiAlphabet) {
-            reactionMap.put(alphabet, new ReactionClassChoice());
-        }
         try {
             SheetsQuery.update();
         } catch (IOException e) {
@@ -121,11 +112,6 @@ public class DiscordBot extends ListenerAdapter {
         if (user == null || user.isBot()) {
             return;
         }
-        String emojiName = event.getReactionEmote().getName();
-        for (String reaction : reactionMap.keySet()) {
-            if (emojiName.equals(reaction)) {
-                reactionMap.get(emojiName).dealWithReaction(event);
-            }
-        }
+        AllReactables.dealWithReaction(event);
     }
 }

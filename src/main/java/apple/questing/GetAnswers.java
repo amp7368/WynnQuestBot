@@ -5,8 +5,8 @@ import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.answer.FinalQuestCombo;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
-import apple.questing.data.reaction.ChoiceArguments;
-import apple.questing.data.reaction.ClassChoiceMessage;
+import apple.questing.discord.reactables.class_choice.ChoiceArguments;
+import apple.questing.discord.reactables.class_choice.ClassChoiceMessage;
 import apple.questing.utils.Pair;
 import org.jetbrains.annotations.NotNull;
 

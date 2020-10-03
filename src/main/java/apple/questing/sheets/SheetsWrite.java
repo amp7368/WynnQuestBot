@@ -35,14 +35,32 @@ public class SheetsWrite {
     }
 
     public static String writeSheet(FinalQuestOptionsAll questOptions, long discordId, String playerName, boolean isAllClasses) {
+        String sheetId = null;
         try {
-            String sheetId = tryAddSheet(discordId);
-            writeData(questOptions, sheetId, playerName, isAllClasses);
-            return sheetId;
+            sheetId = tryAddSheet(discordId);
         } catch (IOException | ParseException e) {
-            e.printStackTrace();// todo deal with error
+            try {
+                removeSheetId(discordId);
+                return null;
+            } catch (IOException | ParseException e1) {
+                e1.printStackTrace();
+            }
+            serviceSheets.spreadsheets();
+            return null;
         }
-        return null;
+        try {
+            writeData(questOptions, sheetId, playerName, isAllClasses);
+        } catch (IOException e) {
+            try {
+                removeSheetId(discordId);
+                serviceDrive.files().delete(sheetId).execute();
+                return null;
+            } catch (IOException | ParseException e1) {
+                e1.printStackTrace();
+                return null;
+            }
+        }
+        return sheetId;
     }
 
     private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId, String playerName, boolean isAllClasses) throws IOException {
@@ -154,6 +172,14 @@ public class SheetsWrite {
             }
         }
         return null;
+    }
+
+    private static void removeSheetId(long discordId) throws IOException, ParseException {
+        JSONArray allIds = getSheetIds();
+        allIds.removeIf(o -> ((Long) ((JSONObject) o).get("discord")) == discordId);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(getSheetIdsFile()));
+        allIds.writeJSONString(writer);
+        writer.close();
     }
 
     @NotNull

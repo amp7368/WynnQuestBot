@@ -81,6 +81,7 @@ public class CommandQuest implements DoCommand {
 
         FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllFullAnswers(player, choiceArguments);
         String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(), player.name, true);
+        if (spreadsheetId == null) return;
         new QuestRecommendationMessagePlayer(spreadsheetId, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
 
         event.getMessage().removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();

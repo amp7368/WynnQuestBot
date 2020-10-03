@@ -58,19 +58,18 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
                 }
             }
             if (classDesiredNum >= classNames.size()) {
-                //todo send error message about how they reacted too high
+                event.getChannel().sendMessage("I don't have a class corresponding to that reaction").queue();
                 return;
             }
             String className = classNames.get(classDesiredNum);
             WynncraftClass wynncraftClass = getClassFromName(className);
             if (wynncraftClass == null) {
-                // todo send an error message about how there was an internal error
+                event.getChannel().sendMessage("There was an internal error on ClassChoiceMessage.dealWithReaction").queue();
                 return;
             }
 
             AllReactables.remove(this.id);
             final Message message = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete();
-            message.clearReactions().queue();
 
             // tell the user we're working on the answer
             message.addReaction("\uD83D\uDEE0").complete();
@@ -91,9 +90,12 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
 
                 FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(this, wynncraftClass, player.name);
                 String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), player.name, false);
+                if (spreadsheetId == null) return;
                 new QuestReccomendationMessageClass(spreadsheetId, wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
             }
+            message.clearReactions().queue();
             message.removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();
+
         }
     }
 

@@ -33,6 +33,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static final String PREFIX = "q!";
     public static final String BOOK = "book";
+    public static final String HELP = "help";
     private static final String UPDATE_COMMAND = "update";
     private static final String QUEST_COMMAND = "quest";
     private static final String QUEST_SPECIFIC_COMMAND = "squest";
@@ -73,6 +74,7 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         commandMap.put(PREFIX + BOOK, new CommandQuestBook());
+        commandMap.put(PREFIX + HELP, new CommandHelp());
         commandMap.put(PREFIX + UPDATE_COMMAND, new CommandUpdate());
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());

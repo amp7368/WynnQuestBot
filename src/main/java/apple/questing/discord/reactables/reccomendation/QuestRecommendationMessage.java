@@ -3,7 +3,6 @@ package apple.questing.discord.reactables.reccomendation;
 import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.answer.FinalQuestCombo;
-import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.reactables.ReactableMessage;
@@ -264,7 +263,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         }
 
         messageText.append("\n\n");
-        messageText.append(String.format("#     %-26s| <Amount>    | %-11s| %-13s| %-10s|\n", "Quests to do", "<Time>", "<Class>", "<Level>"));
+        messageText.append(String.format("#     %-26s| %-15s| %-11s| %-13s| %-10s|\n", "Quests to do", choiceArguments.isXpDesired ? "<Xp>" : "<Emeralds>", "<Time>", "<Class>", "<Level>"));
 
         List<QuestLinked> quests = answer.getQuests();
         int lower = page * ENTRIES_PER_PAGE;
@@ -272,7 +271,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
             final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
             if (quest != null) {
                 final String name = quest.name;
-                messageText.append(String.format("|%-31s| %-12s| %-11s| %-13s| %-10s|",
+                messageText.append(String.format("|%-31s| %-15s| %-11s| %-13s| %-10s|",
                         String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
                         String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald)),
                         String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time))),
@@ -334,7 +333,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     }
 
     private void switchIsCollection() {
-        choiceArguments.isXpDesired = !choiceArguments.isXpDesired;
+        choiceArguments.isCollection = !choiceArguments.isCollection;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
         this.lastUpdated = System.currentTimeMillis();

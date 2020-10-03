@@ -41,13 +41,7 @@ public class AllReactables {
 
     private static void trimOldMessages() {
         synchronized (mapSyncObject) {
-            for (Long id : pageableMessages.keySet()) {
-                ReactableMessage message = pageableMessages.get(id);
-                if (System.currentTimeMillis() - message.getLastUpdated() > STOP_WATCHING_DIFFERENCE) {
-                    pageableMessages.remove(id);
-                }
-            }
-
+            pageableMessages.values().removeIf(msg -> System.currentTimeMillis() - msg.getLastUpdated() > STOP_WATCHING_DIFFERENCE);
         }
     }
 

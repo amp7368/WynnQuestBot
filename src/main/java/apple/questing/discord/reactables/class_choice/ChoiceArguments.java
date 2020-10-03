@@ -7,7 +7,7 @@ import java.util.List;
 public class ChoiceArguments {
 
     public boolean isXpDesired;
-    public final boolean isCollection;
+    public boolean isCollection;
     public final long timeToSpend;
     public final long amountDesired;
     public final int classLevel;

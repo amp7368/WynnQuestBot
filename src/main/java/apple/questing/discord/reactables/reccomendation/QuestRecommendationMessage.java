@@ -224,8 +224,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
             messageText.append("[!][Here, I give a description of the constraints and goals of this combination]\n\n");
             messageText.append("# Below is a list of variables considered to give this answer\n");
-            for (int i = 0; i < 3; i++)
-                messageText.append("[Variable][Value]\n");
+            messageText.append("[Variable][Value]\n".repeat(3));
             messageText.append("\n");
 
             messageText.append("# Below is a header with general information about the results of the two answers\n");

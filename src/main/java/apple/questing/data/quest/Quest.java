@@ -2,15 +2,15 @@ package apple.questing.data.quest;
 
 
 public class Quest {
-    public String name;
-    public String[] immediateRequirements;
+    public final String name;
+    public final String[] immediateRequirements;
     public String[] allRequirements;
-    public short levelMinimum;
-    public Length length;
-    public double time;
-    public double collectionTime;
-    public int xp;
-    public int emerald;
+    public final short levelMinimum;
+    public final Length length;
+    public final double time;
+    public final double collectionTime;
+    public final int xp;
+    public final int emerald;
 
     public Quest(String name, String[] immediateRequirements, String[] allRequirements, short levelMinimum,
                  Length length, double time, double collectionTime, int xp, int emerald) {

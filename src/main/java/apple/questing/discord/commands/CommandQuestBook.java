@@ -37,10 +37,8 @@ public class CommandQuestBook implements DoCommand {
 
         EmbedBuilder embedClassChoice = new EmbedBuilder();
         StringBuilder classChoiceDescription = new StringBuilder();
-        List<String> classes = new ArrayList<>();
         int countClass = 0;
         for (WynncraftClass wynncraftClass : player.classes) {
-            classes.add(wynncraftClass.name);
             classChoiceDescription.append(ClassChoiceMessage.emojiAlphabet.get(countClass++));
             classChoiceDescription.append('`');
             classChoiceDescription.append(ClassChoiceMessage.getSingleClassMessage(wynncraftClass));

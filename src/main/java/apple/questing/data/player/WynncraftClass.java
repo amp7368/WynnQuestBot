@@ -10,12 +10,12 @@ import java.util.Collection;
 
 public class WynncraftClass {
     public Integer combatLevel;
-    public String name;
-    public String namePretty;
-    public int totalLevel;
-    public int dungeonsWon;
-    public Collection<String> questsCompleted = new ArrayList<>();
-    public Collection<Quest> questsNotCompleted = new ArrayList<>();
+    public final String name;
+    public final String namePretty;
+    public final int totalLevel;
+    public final int dungeonsWon;
+    public final Collection<String> questsCompleted = new ArrayList<>();
+    public final Collection<Quest> questsNotCompleted = new ArrayList<>();
 
 
     public WynncraftClass(JSONObject classJson) {
@@ -24,11 +24,11 @@ public class WynncraftClass {
         char[] nameP = name.toCharArray();
         nameP[0] = Character.toUpperCase(nameP[0]);
         StringBuilder pretty = new StringBuilder();
-        for (int i = 0; i < nameP.length; i++) {
-            if (!Character.isAlphabetic(nameP[i]) || nameP[i] == ' ')
+        for (char c : nameP) {
+            if (!Character.isAlphabetic(c) || c == ' ')
                 break;
             else
-                pretty.append(nameP[i]);
+                pretty.append(c);
         }
         namePretty = pretty.toString();
 

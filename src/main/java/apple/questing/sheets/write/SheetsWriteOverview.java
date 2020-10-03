@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class SheetsWriteOverview {
-    public static Request writeOverview(FinalQuestOptionsAll questOptions, String playerName,boolean isAllClasses) {
+    public static Request writeOverview(FinalQuestOptionsAll questOptions, String playerName) {
         List<List<String>> data = new ArrayList<>();
         List<String> row = new ArrayList<>();
         row.add("Results for " + playerName);
@@ -147,7 +147,7 @@ public class SheetsWriteOverview {
             row.add("");
             row.add("Reward/Time");
             row.add(String.valueOf(answer.cnx == null ? "???" : answer.cnx.getAmountPerTimePretty()));
-            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncx.getAmountPerTimePretty()));
+            row.add(String.valueOf(answer.ncnx == null ? "???" : answer.ncnx.getAmountPerTimePretty()));
             row.add(String.valueOf(answer.cx == null ? "???" : answer.cx.getAmountPerTimePretty()));
             row.add(String.valueOf(answer.ncx == null ? "???" : answer.ncx.getAmountPerTimePretty()));
             data.add(row);

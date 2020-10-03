@@ -58,7 +58,7 @@ public class AllReactables {
         SWITCH(Collections.singletonList("\uD83D\uDD03")),
         HELP(Collections.singletonList("\u2753"));
 
-        private List<String> emojis;
+        private final List<String> emojis;
 
         Reactable(List<String> emojis) {
             this.emojis = emojis;

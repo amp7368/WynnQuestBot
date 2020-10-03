@@ -5,7 +5,6 @@ import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.Quest;
-import apple.questing.data.quest.QuestLinked;
 import apple.questing.discord.DiscordBot;
 import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.reactables.ReactableMessage;
@@ -16,9 +15,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 public class ClassChoiceMessage extends ChoiceArguments implements ReactableMessage {
@@ -27,7 +24,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
     public final static List<String> emojiAlphabet = Arrays.asList("\uD83C\uDDE6", "\uD83C\uDDE7", "\uD83C\uDDE8", "\uD83C\uDDE9", "\uD83C\uDDEA", "\uD83C\uDDEB", "\uD83C\uDDEC", "\uD83C\uDDED",
             "\uD83C\uDDEE", "\uD83C\uDDEF", "\uD83C\uDDF0", "\uD83C\uDDF1", "\uD83C\uDDF2", "\uD83C\uDDF3", "\uD83C\uDDF4", "\uD83C\uDDF5", "\uD83C\uDDF6", "\uD83C\uDDF7", "\uD83C\uDDF8", "\uD83C\uDDF9", "\uD83C\uDDFA"
             , "\uD83C\uDDFB", "\uD83C\uDDFC", "\uD83C\uDDFD", "\uD83C\uDDFE", "\uD83C\uDDFF");
-    private ChoiceMessageType choiceMessageType;
+    private final ChoiceMessageType choiceMessageType;
 
     public ClassChoiceMessage(long id, boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired,
                               int classLevel, List<String> classNames, WynncraftPlayer player, ChoiceMessageType choiceMessageType) {

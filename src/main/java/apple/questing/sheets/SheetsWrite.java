@@ -35,7 +35,7 @@ public class SheetsWrite {
     }
 
     public static String writeSheet(FinalQuestOptionsAll questOptions, long discordId, String playerName, boolean isAllClasses) {
-        String sheetId = null;
+        String sheetId;
         try {
             sheetId = tryAddSheet(discordId);
         } catch (IOException | ParseException e) {
@@ -65,7 +65,7 @@ public class SheetsWrite {
 
     private static void writeData(FinalQuestOptionsAll questOptions, String spreadsheetId, String playerName, boolean isAllClasses) throws IOException {
         List<Request> requests = new ArrayList<>();
-        requests.add(SheetsWriteOverview.writeOverview(questOptions, playerName, isAllClasses));
+        requests.add(SheetsWriteOverview.writeOverview(questOptions, playerName));
 
         requests.addAll(SheetsWriteData.write(questOptions.answerPercAPT, PERC_APT, isAllClasses));
         requests.addAll(SheetsWriteData.write(questOptions.answerPercTime, PERC_TIME, isAllClasses));
@@ -87,6 +87,7 @@ public class SheetsWrite {
         serviceSheets.spreadsheets().batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests)).execute();
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     private static String tryAddSheet(long discordId) throws IOException, ParseException {
         synchronized (syncObject) {
@@ -176,6 +177,7 @@ public class SheetsWrite {
 
     private static void removeSheetId(long discordId) throws IOException, ParseException {
         JSONArray allIds = getSheetIds();
+        //noinspection unchecked
         allIds.removeIf(o -> ((Long) ((JSONObject) o).get("discord")) == discordId);
         BufferedWriter writer = new BufferedWriter(new FileWriter(getSheetIdsFile()));
         allIds.writeJSONString(writer);
@@ -190,8 +192,7 @@ public class SheetsWrite {
         if (!(allIdsObject instanceof JSONArray))
             throw new ParseException(1, allIdsObject);
         reader.close();
-        JSONArray allIds = (JSONArray) allIdsObject;
-        return allIds;
+        return (JSONArray) allIdsObject;
     }
 
     @NotNull

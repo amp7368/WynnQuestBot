@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static apple.questing.discord.reactables.AllReactables.Reactable.*;
@@ -24,7 +23,7 @@ public class QuestBookMessage implements ReactableMessage {
     private final long id;
     private long lastUpdated;
     private int page = 0;
-    private List<Quest> quests = new ArrayList<>();
+    private final List<Quest> quests = new ArrayList<>();
     private final WynncraftPlayer player;
     private final WynncraftClass wynncraftClass;
     private boolean isCollection;

@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FinalQuestOptionsAll {
-    public FinalQuestOptions answerPercAPT;
-    public FinalQuestOptions answerPercTime;
-    public FinalQuestOptions answerAmountAPT;
-    public FinalQuestOptions answerAmountTime;
-    public FinalQuestOptions answerTimeAPT;
-    public FinalQuestOptions answerTimeAmount;
+    public final FinalQuestOptions answerPercAPT;
+    public final FinalQuestOptions answerPercTime;
+    public final FinalQuestOptions answerAmountAPT;
+    public final FinalQuestOptions answerAmountTime;
+    public final FinalQuestOptions answerTimeAPT;
+    public final FinalQuestOptions answerTimeAmount;
 
     public FinalQuestOptionsAll(FinalQuestOptions answerPercAPT, FinalQuestOptions answerPercTime,
                                 FinalQuestOptions answerAmountAPT, FinalQuestOptions answerAmountTime,

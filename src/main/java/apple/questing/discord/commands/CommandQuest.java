@@ -57,7 +57,7 @@ public class CommandQuest implements DoCommand {
         }
 
         // tell the user we're working on the answer
-        event.getMessage().addReaction("\uD83D\uDEE0").complete();
+        event.getMessage().addReaction("\uD83D\uDEE0").queue();
 
         List<String> classNames = new ArrayList<>();
         for (WynncraftClass playerClass : player.classes) {
@@ -84,6 +84,6 @@ public class CommandQuest implements DoCommand {
         if (spreadsheetId == null) return;
         new QuestRecommendationMessagePlayer(spreadsheetId, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
 
-        event.getMessage().removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();
+        event.getMessage().removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).queue();
     }
 }

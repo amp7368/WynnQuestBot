@@ -25,6 +25,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
             "\uD83C\uDDEE", "\uD83C\uDDEF", "\uD83C\uDDF0", "\uD83C\uDDF1", "\uD83C\uDDF2", "\uD83C\uDDF3", "\uD83C\uDDF4", "\uD83C\uDDF5", "\uD83C\uDDF6", "\uD83C\uDDF7", "\uD83C\uDDF8", "\uD83C\uDDF9", "\uD83C\uDDFA"
             , "\uD83C\uDDFB", "\uD83C\uDDFC", "\uD83C\uDDFD", "\uD83C\uDDFE", "\uD83C\uDDFF");
     private final ChoiceMessageType choiceMessageType;
+    private final long lastUpdated = System.currentTimeMillis();
 
     public ClassChoiceMessage(long id, boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired,
                               int classLevel, List<String> classNames, WynncraftPlayer player, ChoiceMessageType choiceMessageType) {
@@ -69,7 +70,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
             final Message message = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete();
 
             // tell the user we're working on the answer
-            message.addReaction("\uD83D\uDEE0").complete();
+            message.addReaction("\uD83D\uDEE0").queue();
 
             if (choiceMessageType == ChoiceMessageType.BOOK) {
                 new QuestBookMessage(player, wynncraftClass, event.getChannel(), classLevel, isCollection);
@@ -91,7 +92,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
                 new QuestReccomendationMessageClass(spreadsheetId, wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
             }
             message.clearReactions().queue();
-            message.removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();
+            message.removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).queue();
 
         }
     }
@@ -103,7 +104,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
 
     @Override
     public long getLastUpdated() {
-        return 0;
+        return lastUpdated;
     }
 
     @NotNull

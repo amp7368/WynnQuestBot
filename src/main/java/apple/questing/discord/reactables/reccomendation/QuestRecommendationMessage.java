@@ -3,6 +3,7 @@ package apple.questing.discord.reactables.reccomendation;
 import apple.questing.GetAnswers;
 import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.answer.FinalQuestCombo;
+import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.QuestLinked;
 import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.reactables.ReactableMessage;
@@ -23,11 +24,11 @@ import static apple.questing.data.answer.FinalQuestOptionsAll.Answer.*;
 public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private static final int ENTRIES_PER_PAGE = 10;
-    private final long lastUpdated;
+    private long lastUpdated;
     private final FinalQuestOptionsAll finalQuestOptionsAll;
     protected final String spreadsheetId;
     private Message message;
-    private final ChoiceArguments choiceArguments;
+    protected final ChoiceArguments choiceArguments;
     private final MessageChannel channel;
 
     @Nullable
@@ -231,7 +232,6 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
             answer1Header.append(String.format("[Total Amount/minute][%s]",
                     answer1.getAmountPerTimePretty()));
-
         }
         if (answer2 == null) {
             answer2Header.append("This result is not available");
@@ -309,35 +309,41 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
                 message.editMessage(makeMessage()).queue();
             }
         }
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     public void backward() {
         if (page - 1 != -1) {
             --page;
             message.editMessage(makeMessage()).queue();
+            this.lastUpdated = System.currentTimeMillis();
         }
     }
 
     public void top() {
         page = 0;
         message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     public void switchIsXpDesired() {
         choiceArguments.isXpDesired = !choiceArguments.isXpDesired;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     private void switchIsCollection() {
         choiceArguments.isXpDesired = !choiceArguments.isXpDesired;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     private void switchIsAnswer1() {
         isAnswer1 = !isAnswer1;
         message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     private void setQuestRequest(QuestRequest questRequest) {
@@ -345,10 +351,11 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         isAnswer1 = true;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     @Override
-    public void dealWithReaction(AllReactables.Reactable reaction, String s, @NotNull MessageReactionAddEvent event) {
+    public void dealWithReaction(AllReactables.Reactable reaction, String emoji, @NotNull MessageReactionAddEvent event) {
         User user = event.getUser();
         if (user == null) return;
 

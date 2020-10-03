@@ -32,7 +32,7 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA client;
 
     public static final String PREFIX = "q!";
-    public static final String TEST = "o/";
+    public static final String BOOK = "book";
     private static final String UPDATE_COMMAND = "update";
     private static final String QUEST_COMMAND = "quest";
     private static final String QUEST_SPECIFIC_COMMAND = "squest";
@@ -72,7 +72,7 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
-        commandMap.put(PREFIX + TEST, new CommandTest());
+        commandMap.put(PREFIX + BOOK, new CommandQuestBook());
         commandMap.put(PREFIX + UPDATE_COMMAND, new CommandUpdate());
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());

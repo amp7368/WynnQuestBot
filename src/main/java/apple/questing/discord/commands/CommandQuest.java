@@ -5,6 +5,7 @@ import apple.questing.data.answer.FinalQuestOptionsAll;
 import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.Quest;
+import apple.questing.discord.DiscordBot;
 import apple.questing.discord.reactables.class_choice.ChoiceArguments;
 import apple.questing.discord.reactables.reccomendation.QuestRecommendationMessagePlayer;
 import apple.questing.sheets.SheetsWrite;
@@ -40,7 +41,7 @@ public class CommandQuest implements DoCommand {
         long amountDesired = DetermineArguments.determineAmountDesired(contentSplit, event.getTextChannel());
 
         // be done if something bad was found
-        if(timeToSpend == -2 || classLevel==-2 || amountDesired==-2)
+        if (timeToSpend == -2 || classLevel == -2 || amountDesired == -2)
             return;
 
         if (contentSplit.isEmpty()) {
@@ -54,12 +55,16 @@ public class CommandQuest implements DoCommand {
             event.getChannel().sendMessage("Either the api is down, or '" + username + "' is not a player.").queue();
             return;
         }
+
+        // tell the user we're working on the answer
+        event.getMessage().addReaction("\uD83D\uDEE0").complete();
+
         List<String> classNames = new ArrayList<>();
         for (WynncraftClass playerClass : player.classes) {
             classNames.add(playerClass.name);
         }
         ChoiceArguments choiceArguments = new ChoiceArguments(
-                isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player);
+                isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player, true);
 
 
         long xpDesiredGivenPerc = 0;
@@ -78,5 +83,6 @@ public class CommandQuest implements DoCommand {
         String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getAuthor().getIdLong(), player.name, true);
         new QuestRecommendationMessagePlayer(spreadsheetId, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
 
+        event.getMessage().removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();
     }
 }

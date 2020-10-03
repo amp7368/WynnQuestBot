@@ -6,11 +6,13 @@ import apple.questing.data.player.WynncraftClass;
 import apple.questing.data.player.WynncraftPlayer;
 import apple.questing.data.quest.Quest;
 import apple.questing.data.quest.QuestLinked;
+import apple.questing.discord.DiscordBot;
 import apple.questing.discord.reactables.AllReactables;
 import apple.questing.discord.reactables.ReactableMessage;
 import apple.questing.discord.reactables.book.QuestBookMessage;
 import apple.questing.discord.reactables.reccomendation.QuestReccomendationMessageClass;
 import apple.questing.sheets.SheetsWrite;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +31,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
 
     public ClassChoiceMessage(long id, boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired,
                               int classLevel, List<String> classNames, WynncraftPlayer player, ChoiceMessageType choiceMessageType) {
-        super(isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player);
+        super(isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player, false);
         this.id = id;
         this.choiceMessageType = choiceMessageType;
         AllReactables.add(this);
@@ -67,7 +69,11 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
             }
 
             AllReactables.remove(this.id);
-            event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().clearReactions().queue();
+            final Message message = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete();
+            message.clearReactions().queue();
+
+            // tell the user we're working on the answer
+            message.addReaction("\uD83D\uDEE0").complete();
 
             if (choiceMessageType == ChoiceMessageType.BOOK) {
                 new QuestBookMessage(player, wynncraftClass, event.getChannel(), classLevel, isCollection);
@@ -87,6 +93,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
                 String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), player.name, false);
                 new QuestReccomendationMessageClass(spreadsheetId, wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
             }
+            message.removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).complete();
         }
     }
 

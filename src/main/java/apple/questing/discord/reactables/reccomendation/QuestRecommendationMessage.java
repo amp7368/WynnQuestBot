@@ -23,12 +23,16 @@ import static apple.questing.data.answer.FinalQuestOptionsAll.Answer.*;
 public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private static final int ENTRIES_PER_PAGE = 10;
+
     private long lastUpdated;
+    private Message message;
+    private final MessageChannel channel;
+
     private final FinalQuestOptionsAll finalQuestOptionsAll;
     protected final String spreadsheetId;
-    private Message message;
     protected final ChoiceArguments choiceArguments;
-    private final MessageChannel channel;
+    private final long xpDesiredGivenPerc;
+    private final long emeraldDesiredGivenPerc;
 
     @Nullable
     private FinalQuestCombo answer1;
@@ -36,17 +40,15 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
     private FinalQuestCombo answer2;
 
     private int page = 0;
-
-    private boolean isAnswer1 = true;
+    private boolean isOnHelp = false;
     private QuestRequest questRequest;
-    private final long xpDesiredGivenPerc;
-    private final long emeraldDesiredGivenPerc;
+    private boolean isAnswer1 = true;
 
     /**
      * creates a QuestRecommendationMessage with a gui to change the results that are shown
      * NOTE: CALL initialize() IMMEDIATELY AFTER SORTING EVERYTHING WITH THE SUBCLASS
      *
-     * @param spreadsheetId
+     * @param spreadsheetId        the id of the spreadsheet with the info
      * @param finalQuestOptionsAll the results from all our queries
      * @param channel              the channel to send the message
      * @param choiceArguments      the arguments the user supplied earlier
@@ -89,7 +91,179 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         message.addReaction(PERCENTAGE.getFirstEmoji()).queue();
         message.addReaction("\u2B1B").queue();
         message.addReaction(SWITCH.getFirstEmoji()).queue();
+        message.addReaction(HELP.getFirstEmoji()).queue();
     }
+
+    @Override
+    public void dealWithReaction(AllReactables.Reactable reaction, String emoji, @NotNull MessageReactionAddEvent event) {
+        User user = event.getUser();
+        if (user == null) return;
+
+        switch (reaction) {
+            case LEFT:
+                backward();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case RIGHT:
+                forward();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case TOP:
+                top();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case GEM:
+                switchIsXpDesired();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case BASKET:
+                switchIsCollection();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case CLOCK:
+                setQuestRequest(QuestRequest.TIME);
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case AMOUNT:
+                setQuestRequest(QuestRequest.AMOUNT);
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case PERCENTAGE:
+                setQuestRequest(QuestRequest.PERC);
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case SWITCH:
+                switchIsAnswer1();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case HELP:
+                help();
+                event.getReaction().removeReaction(user).queue();
+                break;
+        }
+    }
+
+    public void forward() {
+        if (isAnswer1) {
+            if (answer1 == null)
+                return;
+            if ((page + 1) * ENTRIES_PER_PAGE < answer1.getQuests().size()) {
+                ++page;
+                message.editMessage(makeMessage()).queue();
+            }
+        } else {
+            if (answer2 == null)
+                return;
+            if ((page + 1) * ENTRIES_PER_PAGE < answer2.getQuests().size()) {
+                ++page;
+                message.editMessage(makeMessage()).queue();
+            }
+        }
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    public void backward() {
+        if (page - 1 != -1) {
+            --page;
+            message.editMessage(makeMessage()).queue();
+            this.lastUpdated = System.currentTimeMillis();
+        }
+    }
+
+    public void top() {
+        page = 0;
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    public void switchIsXpDesired() {
+        choiceArguments.isXpDesired = !choiceArguments.isXpDesired;
+        updateAnswers();
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void switchIsCollection() {
+        choiceArguments.isCollection = !choiceArguments.isCollection;
+        updateAnswers();
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void switchIsAnswer1() {
+        isAnswer1 = !isAnswer1;
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void setQuestRequest(QuestRequest questRequest) {
+        this.questRequest = questRequest;
+        isAnswer1 = true;
+        updateAnswers();
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void help() {
+        isOnHelp = !isOnHelp;
+        if (isOnHelp) {
+            StringBuilder messageText = new StringBuilder();
+
+            messageText.append("**Help screen**\n");
+            messageText.append("```md\n");
+            messageText.append("#");
+            messageText.append("=".repeat(43));
+            messageText.append("#\n");
+            messageText.append(String.format("# %-41s #\n",
+                    "Here, I give a title"));
+            messageText.append(String.format("# %-41s #\n",
+                    "It tells you which answer I'm showing you"));
+            messageText.append("#");
+            messageText.append("=".repeat(43));
+            messageText.append("#\n");
+
+            messageText.append("[!][Here, I give a description of the constraints and goals of this combination]\n\n");
+            messageText.append("# Below is a list of variables considered to give this answer\n");
+            for (int i = 0; i < 3; i++)
+                messageText.append("[Variable][Value]\n");
+            messageText.append("\n");
+
+            messageText.append("# Below is a header with general information about the results of the two answers\n");
+            messageText.append("# There are two answers for every combination of choices\n");
+            for (int i = 0; i < 2; i++) {
+                messageText.append("# Cycle ");
+                messageText.append(i);
+                messageText.append("\n");
+                messageText.append("[Total Amount][#]\n");
+                messageText.append("[Total Time][#]\n");
+                messageText.append("[Total Quests][#]\n\n");
+            }
+            messageText.append("# Below are the Quests that you should do\n");
+            messageText.append("# They are ordered in Amount/Time with prerequisites always above quests that require them\n");
+            messageText.append("# If you do q!quest, Class and Level will show up to specify which class needs to do that quest\n");
+            messageText.append("#     Quests to do              | <Xp>           | <Time>     | <Class>      | <Level>   |\n");
+            messageText.append("|<1.  Quest Name>               | <1 le 2 eb>    | <9 mins>   | <Shaman>     | <103/104> |\n");
+            messageText.append("|<1.  Quest Name>               | <32 eb 5 e>    | <5 mins>   | <Warrior>    | <20/34>   |\n");
+            messageText.append("```\n");
+
+            messageText.append("*__Reactions__*\n");
+            messageText.append("Any of these reactions can be pressed at any time\n");
+            messageText.append(BASKET.getFirstEmoji()).append(" **toggle include collection time**\n");
+            messageText.append(GEM.getFirstEmoji()).append(" **toggle xp or emeralds**\n");
+            messageText.append(CLOCK.getFirstEmoji()).append(" **set to time variable to maximize amount given a time constraint**\n");
+            messageText.append(AMOUNT.getFirstEmoji()).append(" **set to percentage variable to minimize time when getting a percentage of what is available to earn**\n");
+            messageText.append(PERCENTAGE.getFirstEmoji()).append(" **set to emerald variable to minimize time while achieving the amount specified**\n");
+            messageText.append(SWITCH.getFirstEmoji()).append(" **cycle answer to show the other answer for the variables set**\n");
+            messageText.append(HELP.getFirstEmoji()).append(" **toggle this help message**\n");
+
+            message.editMessage(messageText.toString()).queue();
+        } else {
+            message.editMessage(makeMessage()).queue();
+        }
+
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
 
     public void updateAnswers() {
         // figure out which options the player has
@@ -166,6 +340,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         messageText.append("#");
         messageText.append("=".repeat(30));
         messageText.append("#\n");
+
         switch (questRequest) {
             case PERC:
                 messageText.append(String.format(
@@ -208,7 +383,23 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         messageText.append("\n");
         FinalQuestCombo answer = isAnswer1 ? answer1 : answer2;
         if (answer == null) {
-            messageText.append("# Enter more arguments for this answer\n```");
+            messageText.append("# Enter more arguments for this answer\n");
+            switch (questRequest) {
+                case PERC:
+                    messageText.append("# This should always be available. Perhaps you have done all of the quests.\n");
+                    break;
+                case AMOUNT:
+                    messageText.append("# q!quest username -e #\n");
+                    messageText.append("# the number is the number of emeralds or xp that you want\n");
+                    messageText.append("# keep in mind, you can enter multiple variables\n");
+                    break;
+                case TIME:
+                    messageText.append("# q!quest username -t #\n");
+                    messageText.append("# the number is the minutes you want to spend questing\n");
+                    messageText.append("# keep in mind, you can enter multiple variables\n");
+                    break;
+            }
+            messageText.append("\n```");
             return messageText.toString();
         }
         StringBuilder answer1Header = new StringBuilder(String.format("#%-56s\n", " Cycle 1"));
@@ -216,7 +407,8 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         if (answer1 == null) {
             answer1Header.append("This result is not available");
         } else {
-            answer1Header.append(String.format("[Total Amount][%s]",
+            answer1Header.append(String.format("[%s][%s]",
+                    answer1.isXpDesired ? "Total Xp" : "Total Emeralds",
                     answer1.getAmountPretty()));
             answer1Header.append("\n");
 
@@ -229,14 +421,16 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
             answer1Header.append("\n");
 
-            answer1Header.append(String.format("[Total Amount/minute][%s]",
+            answer1Header.append(String.format("[Total %s/minute][%s]",
+                    answer1.isXpDesired ? "Xp" : "Emeralds",
                     answer1.getAmountPerTimePretty()));
         }
         if (answer2 == null) {
             answer2Header.append("This result is not available");
         } else {
 
-            answer2Header.append(String.format("[Total Amount][%s]",
+            answer2Header.append(String.format("[%s][%s]",
+                    answer1.isXpDesired ? "Total Xp" : "Total Emeralds",
                     answer2.getAmountPretty()));
             answer2Header.append("\n");
 
@@ -249,7 +443,8 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
             answer2Header.append("\n");
 
-            answer2Header.append(String.format("[Total Amount/minute][%s]",
+            answer2Header.append(String.format("[Total %s/minute][%s]",
+                    answer1.isXpDesired ? "Xp" : "Emeralds",
                     answer2.getAmountPerTimePretty()));
         }
         if (isAnswer1) {
@@ -263,141 +458,41 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
         }
 
         messageText.append("\n\n");
-        messageText.append(String.format("#     %-26s| %-15s| %-11s| %-13s| %-10s|\n", "Quests to do", choiceArguments.isXpDesired ? "<Xp>" : "<Emeralds>", "<Time>", "<Class>", "<Level>"));
 
+        if (choiceArguments.isAllClasses)
+            messageText.append(String.format("#     %-26s| %-15s| %-11s| %-13s| %-10s|\n", "Quests to do", choiceArguments.isXpDesired ? "<Xp>" : "<Emeralds>", "<Time>", "<Class>", "<Level>"));
+        else
+            messageText.append(String.format("#     %-26s| %-15s| %-11s|\n", "Quests to do", choiceArguments.isXpDesired ? "<Xp>" : "<Emeralds>", "<Time>"));
         List<QuestLinked> quests = answer.getQuests();
         int lower = page * ENTRIES_PER_PAGE;
         for (int i = 0; i < ENTRIES_PER_PAGE; i++) {
             final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
             if (quest != null) {
                 final String name = quest.name;
-                messageText.append(String.format("|%-31s| %-15s| %-11s| %-13s| %-10s|",
-                        String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
-                        String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald)),
-                        String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time))),
-                        String.format("<%s>", quest.playerClass.namePretty),
-                        String.format("<%d/%d>", quest.playerClass.combatLevel, quest.playerClass.totalLevel)
-                ));
+                final String questToDo = String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name);
+                final String amount = String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald));
+                final String time = String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time)));
+                if (choiceArguments.isAllClasses)
+                    messageText.append(String.format("|%-31s| %-15s| %-11s| %-13s| %-10s|",
+                            questToDo,
+                            amount,
+                            time,
+                            String.format("<%s>", quest.playerClass.namePretty),
+                            String.format("<%d/%d>", quest.playerClass.combatLevel, quest.playerClass.totalLevel)
+                    ));
+                else
+                    messageText.append(String.format("|%-31s| %-15s| %-11s|",
+                            questToDo,
+                            amount,
+                            time
+                    ));
 
             }
             messageText.append("\n");
         }
         messageText.append("\n```");
-        messageText.append(BASKET.getFirstEmoji()).append(" **toggle include collection time**\n");
-        messageText.append(GEM.getFirstEmoji()).append(" **toggle xp or emeralds**\n");
-        messageText.append(CLOCK.getFirstEmoji()).append(" **set to time variable**\n");
-        messageText.append(AMOUNT.getFirstEmoji()).append(" **set to percentage variable**\n");
-        messageText.append(PERCENTAGE.getFirstEmoji()).append(" **set to emerald variable**\n");
-        messageText.append(SWITCH.getFirstEmoji()).append(" **cycle answer**\n");
         return messageText.toString();
     }
-
-    public void forward() {
-        if (isAnswer1) {
-            if (answer1 == null)
-                return;
-            if ((page + 1) * ENTRIES_PER_PAGE < answer1.getQuests().size()) {
-                ++page;
-                message.editMessage(makeMessage()).queue();
-            }
-        } else {
-            if (answer2 == null)
-                return;
-            if ((page + 1) * ENTRIES_PER_PAGE < answer2.getQuests().size()) {
-                ++page;
-                message.editMessage(makeMessage()).queue();
-            }
-        }
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    public void backward() {
-        if (page - 1 != -1) {
-            --page;
-            message.editMessage(makeMessage()).queue();
-            this.lastUpdated = System.currentTimeMillis();
-        }
-    }
-
-    public void top() {
-        page = 0;
-        message.editMessage(makeMessage()).queue();
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    public void switchIsXpDesired() {
-        choiceArguments.isXpDesired = !choiceArguments.isXpDesired;
-        updateAnswers();
-        message.editMessage(makeMessage()).queue();
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    private void switchIsCollection() {
-        choiceArguments.isCollection = !choiceArguments.isCollection;
-        updateAnswers();
-        message.editMessage(makeMessage()).queue();
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    private void switchIsAnswer1() {
-        isAnswer1 = !isAnswer1;
-        message.editMessage(makeMessage()).queue();
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    private void setQuestRequest(QuestRequest questRequest) {
-        this.questRequest = questRequest;
-        isAnswer1 = true;
-        updateAnswers();
-        message.editMessage(makeMessage()).queue();
-        this.lastUpdated = System.currentTimeMillis();
-    }
-
-    @Override
-    public void dealWithReaction(AllReactables.Reactable reaction, String emoji, @NotNull MessageReactionAddEvent event) {
-        User user = event.getUser();
-        if (user == null) return;
-
-        switch (reaction) {
-            case LEFT:
-                backward();
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case RIGHT:
-                forward();
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case TOP:
-                top();
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case GEM:
-                switchIsXpDesired();
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case BASKET:
-                switchIsCollection();
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case CLOCK:
-                setQuestRequest(QuestRequest.TIME);
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case AMOUNT:
-                setQuestRequest(QuestRequest.AMOUNT);
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case PERCENTAGE:
-                setQuestRequest(QuestRequest.PERC);
-                event.getReaction().removeReaction(user).queue();
-                break;
-            case SWITCH:
-                switchIsAnswer1();
-                event.getReaction().removeReaction(user).queue();
-                break;
-        }
-    }
-
 
     @Override
     public Long getId() {

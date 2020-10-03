@@ -55,7 +55,8 @@ public class AllReactables {
         CLOCK(Collections.singletonList("\uD83D\uDD53")),
         AMOUNT(Collections.singletonList("\uD83D\uDCB5")),
         PERCENTAGE(Collections.singletonList("\uD83D\uDD22")),
-        SWITCH(Collections.singletonList("\uD83D\uDD03"));
+        SWITCH(Collections.singletonList("\uD83D\uDD03")),
+        HELP(Collections.singletonList("\u2753"));
 
         private List<String> emojis;
 

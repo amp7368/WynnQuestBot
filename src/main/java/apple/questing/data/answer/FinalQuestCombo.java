@@ -20,12 +20,6 @@ public class FinalQuestCombo {
         this.quests = new ArrayList<>(quests);
         this.isXpDesired = isXpDesired;
         this.isIncludeCollection = isIncludeCollection;
-        // todo sort quests
-    }
-
-    public boolean addQuest(QuestLinked quest) {
-        quests.add(quest);
-        return false;
     }
 
     public double amountPerTime() {

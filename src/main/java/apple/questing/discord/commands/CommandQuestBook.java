@@ -11,36 +11,17 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class CommandQuestSpecific implements DoCommand {
-    /**
-     * q!quest <player_name> [-x] [-c] [-t <how much that wants to be spent questing> | -e <how many emeralds or raw xp that player wants>]
-     * <p>
-     * player_name - name of the player who you're trying to decide which quests to do
-     * -x - optional flag to specify that the player wants to maximize xp from quests
-     * -c - optional flag to specify that the player doesn't want to include collection time
-     * -t # - default is not used. this optional argument overrides how much time the player wants to spend doing quests
-     * -e # - default is 75% of the max the player can earn
-     * <p>
-     * -l # - default is that class's level. overrides what level the player is
-     *
-     * @param event the discord message event
-     */
+public class CommandQuestBook implements DoCommand {
     @Override
     public void dealWithCommand(MessageReceivedEvent event) {
         List<String> contentSplit = new ArrayList<>(Arrays.asList(event.getMessage().getContentStripped().split(" ")));
-
-        // remove the command part of the message
         contentSplit.remove(0);
-        boolean isXpDesired = DetermineArguments.determineIsXpDesired(contentSplit);
-        boolean isCollection = DetermineArguments.determineIsCollection(contentSplit);
-        long timeToSpend = DetermineArguments.determineTimeToSpend(contentSplit, event.getTextChannel());
-        int classLevel = DetermineArguments.determineClassLevel(contentSplit, event.getTextChannel());
-        long amountDesired = DetermineArguments.determineAmountDesired(contentSplit, event.getTextChannel());
 
-        // be done if something bad was found
-        if (timeToSpend == -2 || classLevel == -2 || amountDesired == -2)
-            return;
+        int classLevel = DetermineArguments.determineClassLevel(contentSplit, event.getTextChannel());
+        boolean isCollection = DetermineArguments.determineIsCollection(contentSplit);
+        if (classLevel == -2) return;
 
         if (contentSplit.isEmpty()) {
             // user did not specify what player they want
@@ -56,10 +37,8 @@ public class CommandQuestSpecific implements DoCommand {
 
         EmbedBuilder embedClassChoice = new EmbedBuilder();
         StringBuilder classChoiceDescription = new StringBuilder();
-        List<String> classes = new ArrayList<>();
         int countClass = 0;
         for (WynncraftClass wynncraftClass : player.classes) {
-            classes.add(wynncraftClass.name);
             classChoiceDescription.append(ClassChoiceMessage.emojiAlphabet.get(countClass++));
             classChoiceDescription.append('`');
             classChoiceDescription.append(ClassChoiceMessage.getSingleClassMessage(wynncraftClass));
@@ -75,15 +54,14 @@ public class CommandQuestSpecific implements DoCommand {
 
         new ClassChoiceMessage(
                 message.getIdLong(),
-                isXpDesired,
+                false,
                 isCollection,
-                timeToSpend,
-                amountDesired,
+                -1,
+                -1,
                 classLevel,
-                classes,
+                player.classes.stream().map(wynncraftClass -> wynncraftClass.name).collect(Collectors.toList()),
                 player,
-                ClassChoiceMessage.ChoiceMessageType.SPECIFIC
+                ClassChoiceMessage.ChoiceMessageType.BOOK
         );
     }
-
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class WynncraftPlayer {
     public List<WynncraftClass> classes = new ArrayList<>();
-    public String name;
+    public final String name;
 
     public WynncraftPlayer(JSONArray classesJson, String name) {
         this.name = name;

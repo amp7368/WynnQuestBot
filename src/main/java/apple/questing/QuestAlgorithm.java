@@ -23,6 +23,7 @@ public class QuestAlgorithm {
                     rawAmount += isXpDesired ? quest.xp : quest.emerald;
             }
         }
+        rawAmount *= percentageDesired;
         return whichGivenRawAmount(player, rawAmount, isXpDesired, classLevel, isIncludeCollection);
     }
 
@@ -78,7 +79,7 @@ public class QuestAlgorithm {
             for (QuestLinked quest : o2) {
                 time2 += isIncludeCollection ? quest.collectionTime + quest.time : quest.time;
             }
-            return (int) (time2 - time1);
+            return (int) (time1 - time2);
         });
         Set<QuestLinked> optimizeTime = finalQuestCombinations.get(0);
 

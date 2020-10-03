@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class SheetsQuery {
-    public static Collection<Quest> allQuests = new ArrayList<>();
-    public static Map<String, Quest> nameToQuest = new HashMap<>();
+    public static final Collection<Quest> allQuests = new ArrayList<>();
+    public static final Map<String, Quest> nameToQuest = new HashMap<>();
 
     public static List<Integer> update() throws IOException {
         List<Integer> fails = new ArrayList<>();

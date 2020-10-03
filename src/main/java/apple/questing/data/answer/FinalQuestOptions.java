@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FinalQuestOptions {
-    public FinalQuestCombo ncnx;
-    public FinalQuestCombo cnx;
-    public FinalQuestCombo ncx;
-    public FinalQuestCombo cx;
+    public final FinalQuestCombo ncnx;
+    public final FinalQuestCombo cnx;
+    public final FinalQuestCombo ncx;
+    public final FinalQuestCombo cx;
 
     public FinalQuestOptions(FinalQuestCombo ncnx, FinalQuestCombo cnx, FinalQuestCombo ncx, FinalQuestCombo cx) {
         this.ncnx = ncnx;

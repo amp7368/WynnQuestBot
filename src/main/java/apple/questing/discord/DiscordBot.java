@@ -32,10 +32,11 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA client;
 
     public static final String PREFIX = "q!";
-    public static final String TEST = "o/";
-    private static final String UPDATE_COMMAND = "update";
-    private static final String QUEST_COMMAND = "quest";
-    private static final String QUEST_SPECIFIC_COMMAND = "squest";
+    public static final String BOOK = "book";
+    public static final String HELP = "help";
+    public static final String UPDATE_COMMAND = "update";
+    public static final String QUEST_COMMAND = "quest";
+    public static final String QUEST_SPECIFIC_COMMAND = "squest";
 
     public DiscordBot() {
         List<String> list = Arrays.asList(QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
@@ -44,8 +45,9 @@ public class DiscordBot extends ListenerAdapter {
         File file = new File(BOT_TOKEN_FILE_PATH);
         if (!file.exists()) {
             try {
+                //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
             System.err.println("Please fill in the token for the discord bot in '" + BOT_TOKEN_FILE_PATH + "'");
             System.exit(1);
@@ -72,7 +74,8 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
-        commandMap.put(PREFIX + TEST, new CommandTest());
+        commandMap.put(PREFIX + BOOK, new CommandQuestBook());
+        commandMap.put(PREFIX + HELP, new CommandHelp());
         commandMap.put(PREFIX + UPDATE_COMMAND, new CommandUpdate());
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SheetsConstants {
     public static String spreadsheetId;
-    public static Sheets.Spreadsheets.Values sheets = QuestMain.serviceSheets.spreadsheets().values();
+    public static final Sheets.Spreadsheets.Values sheets = QuestMain.serviceSheets.spreadsheets().values();
     public static final int BANDS_PER_SHEET = 4;
     static {
         List<String> list = Arrays.asList(apple.questing.QuestMain.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("/"));
@@ -20,8 +20,9 @@ public class SheetsConstants {
         File file = new File(SHEET_ID_FILE_PATH);
         if (!file.exists()) {
             try {
+                //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
             System.err.println("Please fill in the id for the sheet in '" + SHEET_ID_FILE_PATH + "'");
             System.exit(1);

@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class QuestLinked extends Quest {
-    public Collection<String> allRequirements = new ArrayList<>();
-    public Collection<String> immediateRequirements = new ArrayList<>();
-    public Collection<String> reqMe = new ArrayList<>();
-    public WynncraftClass playerClass;
+    public final Collection<String> allRequirements = new ArrayList<>();
+    public final Collection<String> immediateRequirements = new ArrayList<>();
+    public final Collection<String> reqMe = new ArrayList<>();
+    public final WynncraftClass playerClass;
 
     public QuestLinked(WynncraftClass wynncraftClass, Quest quest) {
         super(quest);

@@ -198,6 +198,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
 
     private void setQuestRequest(QuestRequest questRequest) {
         this.questRequest = questRequest;
+        this.page = 0;
         isAnswer1 = true;
         updateAnswers();
         message.editMessage(makeMessage()).queue();
@@ -468,7 +469,7 @@ public abstract class QuestRecommendationMessage implements ReactableMessage {
             final QuestLinked quest = quests.size() > lower ? quests.get(lower++) : null;
             if (quest != null) {
                 final String name = quest.name;
-                final String questToDo = String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name);
+                final String questToDo = String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 14) + "..." + name.substring(name.length() - 8) : name);
                 final String amount = String.format("<%s>", choiceArguments.isXpDesired ? Pretty.commasXp(quest.xp) : Pretty.getMon(quest.emerald));
                 final String time = String.format("<%d mins>", (int) (Math.ceil(choiceArguments.isCollection ? quest.time + quest.collectionTime : quest.time)));
                 if (choiceArguments.isAllClasses)

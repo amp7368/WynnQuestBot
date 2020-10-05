@@ -13,7 +13,9 @@ public class CommandUpdate implements DoCommand {
         try {
             List<Integer> failsInt = SheetsQuery.update();
             List<String> fails = new ArrayList<>();
-            failsInt.forEach(integer -> fails.add(String.valueOf(integer)));
+            for (Integer integer : failsInt) {
+                fails.add(String.valueOf(integer));
+            }
             if (fails.isEmpty()) {
                 event.getChannel().sendMessage("Updating was successful").queue();
             } else {

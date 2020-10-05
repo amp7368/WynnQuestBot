@@ -68,7 +68,7 @@ public class DiscordBot extends ListenerAdapter {
         JDABuilder builder = new JDABuilder(discordToken);
         builder.addEventListeners(this);
         client = builder.build();
-        client.getPresence().setPresence(Activity.playing("Quest bot soon? O.o"), true);
+        client.getPresence().setPresence(Activity.playing("q!help"), true);
         client.getPresence().setStatus(OnlineStatus.IDLE);
     }
 

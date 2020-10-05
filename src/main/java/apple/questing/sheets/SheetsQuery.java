@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class SheetsQuery {
-    public static final Collection<Quest> allQuests = new ArrayList<>();
-    public static final Map<String, Quest> nameToQuest = new HashMap<>();
+    public static  Collection<Quest> allQuests = new ArrayList<>();
+    public static  Map<String, Quest> nameToQuest = new HashMap<>();
 
     public static List<Integer> update() throws IOException {
+        allQuests = new ArrayList<>();
+        nameToQuest = new HashMap<>();
         List<Integer> fails = new ArrayList<>();
         ValueRange questValueRange = SheetsConstants.sheets.get(SheetsConstants.spreadsheetId, SheetsRanges.ALL_QUESTS).execute();
         List<List<Object>> questValues = questValueRange.getValues();

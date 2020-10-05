@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ClassChoiceMessage extends ChoiceArguments implements ReactableMessage {
+    public static final String WORKING_EMOJI = "\uD83D\uDEE0";
     public final long id;
 
     public final static List<String> emojiAlphabet = Arrays.asList("\uD83C\uDDE6", "\uD83C\uDDE7", "\uD83C\uDDE8", "\uD83C\uDDE9", "\uD83C\uDDEA", "\uD83C\uDDEB", "\uD83C\uDDEC", "\uD83C\uDDED",
@@ -70,7 +71,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
             final Message message = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete();
 
             // tell the user we're working on the answer
-            message.addReaction("\uD83D\uDEE0").queue();
+            message.addReaction(WORKING_EMOJI).queue();
 
             if (choiceMessageType == ChoiceMessageType.BOOK) {
                 new QuestBookMessage(player, wynncraftClass, event.getChannel(), classLevel, isCollection);
@@ -92,7 +93,7 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
                 new QuestReccomendationMessageClass(spreadsheetId, wynncraftClass, finalQuestOptionsAll, event.getChannel(), this, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
             }
             message.clearReactions().queue();
-            message.removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).queue();
+            message.removeReaction(WORKING_EMOJI, DiscordBot.client.getSelfUser()).queue();
 
         }
     }

@@ -65,7 +65,7 @@ public class QuestBookMessage implements ReactableMessage {
             if (quest != null) {
                 final String name = quest.name;
                 messageText.append(String.format("|%-31s| %-6s| %-14s| %-12s| %-18s|",
-                        String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 22) + "..." : name),
+                 String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 14) + "..." + name.substring(name.length() - 8) : name),
                         String.format("<%s>", quest.levelMinimum),
                         String.format("<%.1f mins>", isCollection ? quest.collectionTime + quest.time : quest.time),
                         String.format("<%s>", Pretty.getMon(quest.emerald)),

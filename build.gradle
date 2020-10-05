@@ -1,10 +1,16 @@
 plugins {
     id 'java'
     id "com.github.johnrengelman.shadow" version "5.2.0"
+    id 'application'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
+
+mainClassName = 'apple.questing.QuestMain'
+sourceCompatibility = 1.13
+targetCompatibility = 1.13
+version = '1.0'
 
 repositories {
     mavenCentral()

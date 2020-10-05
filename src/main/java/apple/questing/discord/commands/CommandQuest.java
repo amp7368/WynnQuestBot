@@ -14,7 +14,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
 
+import static apple.questing.discord.reactables.class_choice.ClassChoiceMessage.WORKING_EMOJI;
+
 public class CommandQuest implements DoCommand {
+
+
     /**
      * q!quest <player_name> [-x] [-c] [-t <how much that wants to be spent questing> | -e <how many emeralds or raw xp that player wants>]
      * <p>
@@ -57,7 +61,7 @@ public class CommandQuest implements DoCommand {
         }
 
         // tell the user we're working on the answer
-        event.getMessage().addReaction("\uD83D\uDEE0").queue();
+        event.getMessage().addReaction(WORKING_EMOJI).queue();
 
         List<String> classNames = new ArrayList<>();
         for (WynncraftClass playerClass : player.classes) {
@@ -84,6 +88,6 @@ public class CommandQuest implements DoCommand {
         if (spreadsheetId == null) return;
         new QuestRecommendationMessagePlayer(spreadsheetId, finalQuestOptionsAll, event.getChannel(), choiceArguments, xpDesiredGivenPerc, emeraldDesiredGivenPerc);
 
-        event.getMessage().removeReaction("\uD83D\uDEE0", DiscordBot.client.getSelfUser()).queue();
+        event.getMessage().removeReaction(WORKING_EMOJI, DiscordBot.client.getSelfUser()).queue();
     }
 }

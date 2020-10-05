@@ -58,6 +58,7 @@ public class CommandQuestBook implements DoCommand {
                 isCollection,
                 -1,
                 -1,
+                -1,
                 classLevel,
                 player.classes.stream().map(wynncraftClass -> wynncraftClass.name).collect(Collectors.toList()),
                 player,

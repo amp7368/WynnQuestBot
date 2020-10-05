@@ -31,19 +31,19 @@ public class GetAnswers {
 
 //         get the percentage results
         Pair<FinalQuestCombo, FinalQuestCombo> questOptions = QuestAlgorithm.whichGivenPercentageAmount(player, false,
-                DEFAULT_PERCENTAGE_AMOUNT, choiceArguments.classLevel, false);
+                choiceArguments.percentageDesired == -1 ? DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired, choiceArguments.classLevel, false);
         questComboListAPT.add(questOptions.getKey());
         questComboListTime.add(questOptions.getValue());
         questOptions = QuestAlgorithm.whichGivenPercentageAmount(player, false,
-                DEFAULT_PERCENTAGE_AMOUNT, choiceArguments.classLevel, true);
+                choiceArguments.percentageDesired == -1 ? DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired, choiceArguments.classLevel, true);
         questComboListAPT.add(questOptions.getKey());
         questComboListTime.add(questOptions.getValue());
         questOptions = QuestAlgorithm.whichGivenPercentageAmount(player, true,
-                DEFAULT_PERCENTAGE_AMOUNT, choiceArguments.classLevel, false);
+                choiceArguments.percentageDesired == -1 ? DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired, choiceArguments.classLevel, false);
         questComboListAPT.add(questOptions.getKey());
         questComboListTime.add(questOptions.getValue());
         questOptions = QuestAlgorithm.whichGivenPercentageAmount(player, true,
-                DEFAULT_PERCENTAGE_AMOUNT, choiceArguments.classLevel, true);
+                choiceArguments.percentageDesired == -1 ? DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired, choiceArguments.classLevel, true);
         questComboListAPT.add(questOptions.getKey());
         questComboListTime.add(questOptions.getValue());
 

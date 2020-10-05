@@ -6,6 +6,7 @@ import apple.questing.discord.reactables.class_choice.ClassChoiceMessage;
 import apple.questing.wynncraft.GetPlayerStats;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
@@ -32,14 +33,17 @@ public class CommandQuestSpecific implements DoCommand {
 
         // remove the command part of the message
         contentSplit.remove(0);
+
+        final TextChannel channel = event.getTextChannel();
         boolean isXpDesired = DetermineArguments.determineIsXpDesired(contentSplit);
         boolean isCollection = DetermineArguments.determineIsCollection(contentSplit);
-        long timeToSpend = DetermineArguments.determineTimeToSpend(contentSplit, event.getTextChannel());
-        int classLevel = DetermineArguments.determineClassLevel(contentSplit, event.getTextChannel());
-        long amountDesired = DetermineArguments.determineAmountDesired(contentSplit, event.getTextChannel());
+        long timeToSpend = DetermineArguments.determineTimeToSpend(contentSplit, channel);
+        int classLevel = DetermineArguments.determineClassLevel(contentSplit, channel);
+        long amountDesired = DetermineArguments.determineAmountDesired(contentSplit, channel);
+        double percentageDesired = DetermineArguments.determinePercentageDesired(contentSplit, channel);
 
         // be done if something bad was found
-        if (timeToSpend == -2 || classLevel == -2 || amountDesired == -2)
+        if (timeToSpend == -2 || classLevel == -2 || amountDesired == -2 || percentageDesired == -2)
             return;
 
         if (contentSplit.isEmpty()) {
@@ -79,6 +83,7 @@ public class CommandQuestSpecific implements DoCommand {
                 isCollection,
                 timeToSpend,
                 amountDesired,
+                percentageDesired,
                 classLevel,
                 classes,
                 player,

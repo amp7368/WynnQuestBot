@@ -1,5 +1,6 @@
 package apple.questing.discord.commands;
 
+import apple.questing.GetAnswers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import static apple.questing.discord.DiscordBot.*;
@@ -23,8 +24,10 @@ public class CommandHelp implements DoCommand {
         messageText.append("[this optional argument specifies how much time the player wants to spend doing quests]\n");
         messageText.append(String.format(".%13s", "[-e #]"));
         messageText.append("[this optional argument specifies how many emeralds/xp that the player wants to earn]\n");
+        messageText.append(String.format(".%13s", "[-p #]"));
+        messageText.append("[default is " + GetAnswers.DEFAULT_PERCENTAGE_AMOUNT + ". Overrides what percentage of the total reward possible]\n");
         messageText.append(String.format(".%13s", "[-l #]"));
-        messageText.append("[default is that class's level. overrides what level the player is]\n\n");
+        messageText.append("[default is that class's level. Overrides what level the player is]\n\n");
         messageText.append("# " + PREFIX + BOOK + " (playerName)\n");
         messageText.append("<. gives the quest book of a player's class>\n\n");
         messageText.append("# " + PREFIX + HELP + "\n");

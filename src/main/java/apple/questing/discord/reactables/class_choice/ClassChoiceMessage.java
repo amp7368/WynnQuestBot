@@ -28,9 +28,9 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
     private final ChoiceMessageType choiceMessageType;
     private final long lastUpdated = System.currentTimeMillis();
 
-    public ClassChoiceMessage(long id, boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired,
+    public ClassChoiceMessage(long id, boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired, double percentageDesired,
                               int classLevel, List<String> classNames, WynncraftPlayer player, ChoiceMessageType choiceMessageType) {
-        super(isXpDesired, isCollection, timeToSpend, amountDesired, classLevel, classNames, player, false);
+        super(isXpDesired, isCollection, timeToSpend, amountDesired,percentageDesired, classLevel, classNames, player, false);
         this.id = id;
         this.choiceMessageType = choiceMessageType;
         AllReactables.add(this);
@@ -84,8 +84,8 @@ public class ClassChoiceMessage extends ChoiceArguments implements ReactableMess
                         emeraldDesiredGivenPerc += quest.emerald;
                     }
                 }
-                xpDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
-                emeraldDesiredGivenPerc *= GetAnswers.DEFAULT_PERCENTAGE_AMOUNT;
+                xpDesiredGivenPerc *= this.percentageDesired==-1? GetAnswers.DEFAULT_PERCENTAGE_AMOUNT:this.percentageDesired;
+                emeraldDesiredGivenPerc *= this.percentageDesired==-1? GetAnswers.DEFAULT_PERCENTAGE_AMOUNT:this.percentageDesired;
 
                 FinalQuestOptionsAll finalQuestOptionsAll = GetAnswers.getAllSpecificAnswers(this, wynncraftClass, player.name);
                 String spreadsheetId = SheetsWrite.writeSheet(finalQuestOptionsAll, event.getUserIdLong(), player.name, false);

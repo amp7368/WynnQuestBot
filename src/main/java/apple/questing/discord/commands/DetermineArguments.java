@@ -120,6 +120,45 @@ public class DetermineArguments {
     }
 
     /**
+     * determines the percentageDesired argument from the arguments given
+     *
+     * @param contentSplit the message split by spaces. this is modified as find arguments
+     * @param channel      the channel to send an error message to if there is one
+     * @return -2 if there was an error | -1 if the argument was not found | percentageDesired, if all was good
+     */
+    public static double determinePercentageDesired(List<String> contentSplit, TextChannel channel) {
+        int size = contentSplit.size();
+        for (int i = 0; i < size; i++) {
+            if (contentSplit.get(i).equals("-p")) {
+                if (size == i + 1) {
+                    // user did -t at the end of their message without an argument
+                    channel.sendMessage("-p requires a percentage after it to specify what percentage of possible rewards you want").queue();
+                    return -2;
+                } else {
+                    // this is fine because if we reach this we exit the loop and return
+                    // noinspection SuspiciousListRemoveInLoop
+                    contentSplit.remove(i);
+                    String percentageDesired = contentSplit.remove(i);
+                    try {
+                        final double percentageFound = Double.parseDouble(percentageDesired);
+                        if (percentageFound <= 0 || percentageFound > 100) {
+                            channel.sendMessage(String.format("'%s' is a hard percentage to rationalize..", percentageFound)).queue();
+                            return -2;
+                        }
+                        return percentageFound / 100;
+                    } catch (NumberFormatException e) {
+                        // user's -t argument is not a number
+                        channel.sendMessage("-p requires a percentage after it to specify what percentage of possible rewards you want\n'"
+                                + percentageDesired + "' is not in the format 45.3").queue();
+                        return -2;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
      * determines the isCollection argument from the arguments given
      *
      * @param contentSplit the message split by spaces. this is modified as find arguments

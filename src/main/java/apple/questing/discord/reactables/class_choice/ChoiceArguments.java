@@ -10,16 +10,18 @@ public class ChoiceArguments {
     public boolean isCollection;
     public final long timeToSpend;
     public final long amountDesired;
+    public final double percentageDesired;
     public final int classLevel;
     public final List<String> classNames;
     public final WynncraftPlayer player;
     public final boolean isAllClasses;
 
-    public ChoiceArguments(boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired, int classLevel, List<String> classNames, WynncraftPlayer player, boolean isAllClasses) {
+    public ChoiceArguments(boolean isXpDesired, boolean isCollection, long timeToSpend, long amountDesired, double percentageDesired, int classLevel, List<String> classNames, WynncraftPlayer player, boolean isAllClasses) {
         this.isXpDesired = isXpDesired;
         this.isCollection = isCollection;
         this.timeToSpend = timeToSpend;
         this.amountDesired = amountDesired;
+        this.percentageDesired = percentageDesired;
         this.classLevel = classLevel;
         this.player = player;
         this.classNames = classNames;

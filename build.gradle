@@ -8,8 +8,8 @@ group 'org.example'
 version '1.0-SNAPSHOT'
 
 mainClassName = 'apple.questing.QuestMain'
-sourceCompatibility = 1.13
-targetCompatibility = 1.13
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 version = '1.0'
 
 repositories {

@@ -63,6 +63,8 @@ public class Pretty {
                 timePretty.append(" min");
             else
                 timePretty.append(" mins");
+        }else if(hr == 0){
+            return "0 mins";
         }
         return timePretty.toString();
     }

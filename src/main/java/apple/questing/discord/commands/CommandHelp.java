@@ -30,6 +30,8 @@ public class CommandHelp implements DoCommand {
         messageText.append("[default is that class's level. Overrides what level the player is]\n\n");
         messageText.append("# " + PREFIX + BOOK + " (playerName)\n");
         messageText.append("<. gives the quest book of a player's class>\n\n");
+        messageText.append("# " + PREFIX + LOOKUP + " (questName)\n");
+        messageText.append("<. gives any quests that contain the name questName>\n\n");
         messageText.append("# " + PREFIX + HELP + "\n");
         messageText.append("<. shows this help message>\n");
         messageText.append("```");

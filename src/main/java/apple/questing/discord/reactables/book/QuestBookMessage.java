@@ -50,6 +50,9 @@ public class QuestBookMessage implements ReactableMessage {
         message.addReaction(RIGHT.getFirstEmoji()).queue();
         message.addReaction(TOP.getFirstEmoji()).queue();
         message.addReaction(BASKET.getFirstEmoji()).queue();
+        message.addReaction(GREEN.getFirstEmoji()).queue();
+        message.addReaction(NUMBER.getFirstEmoji()).queue();
+        message.addReaction(LEVEL.getFirstEmoji()).queue();
         AllReactables.add(this);
     }
 
@@ -65,7 +68,7 @@ public class QuestBookMessage implements ReactableMessage {
             if (quest != null) {
                 final String name = quest.name;
                 messageText.append(String.format("|%-31s| %-6s| %-14s| %-12s| %-18s|",
-                 String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 14) + "..." + name.substring(name.length() - 8) : name),
+                        String.format("<%-3s %s>", lower + ".", name.length() > 25 ? name.substring(0, 14) + "..." + name.substring(name.length() - 8) : name),
                         String.format("<%s>", quest.levelMinimum),
                         String.format("<%.1f mins>", isCollection ? quest.collectionTime + quest.time : quest.time),
                         String.format("<%s>", Pretty.getMon(quest.emerald)),
@@ -101,7 +104,38 @@ public class QuestBookMessage implements ReactableMessage {
                 switchCollection();
                 event.getReaction().removeReaction(user).queue();
                 break;
+            case GREEN:
+                sortByEmerald();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case NUMBER:
+                sortByAPT();
+                event.getReaction().removeReaction(user).queue();
+                break;
+            case LEVEL:
+                sortByLevel();
+                event.getReaction().removeReaction(user).queue();
+                break;
         }
+    }
+
+    private void sortByLevel() {
+        quests.sort(((o1, o2) -> o2.levelMinimum - o1.levelMinimum));
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void sortByAPT() {
+        quests.sort((o1, o2) -> (int) (((double) o2.emerald / (isCollection ? o2.collectionTime + o2.time : o2.time)) -
+                ((double) o1.emerald / (isCollection ? o1.collectionTime + o1.time : o1.time))));
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private void sortByEmerald() {
+        quests.sort((o1, o2) -> (int) (((double) o2.emerald) - ((double) o1.emerald)));
+        message.editMessage(makeMessage()).queue();
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     private void switchCollection() {

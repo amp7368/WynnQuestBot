@@ -29,7 +29,7 @@ public class QuestLookupMessage implements ReactableMessage {
             if (quest.name.toLowerCase().contains(name))
                 quests.add(quest);
         }
-
+        quests.sort((o1, o2) -> o2.levelMinimum - o1.levelMinimum);
         message = channel.sendMessage(makeMessage()).complete();
         this.id = message.getIdLong();
         message.addReaction(AllReactables.Reactable.LEFT.getFirstEmoji()).queue();

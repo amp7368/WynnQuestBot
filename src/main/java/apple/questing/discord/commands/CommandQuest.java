@@ -77,12 +77,13 @@ public class CommandQuest implements DoCommand {
         long xpDesiredGivenPerc = 0;
         long emeraldDesiredGivenPerc = 0;
         for (WynncraftClass wynncraftClass : player.classes)
-            for (Quest quest : wynncraftClass.questsNotCompleted) {
-                if (quest.levelMinimum <= (classLevel == -1 ? wynncraftClass.combatLevel : classLevel)) {
-                    xpDesiredGivenPerc += quest.xp;
-                    emeraldDesiredGivenPerc += quest.emerald;
+            if (!wynncraftClass.isIronMan())
+                for (Quest quest : wynncraftClass.questsNotCompleted) {
+                    if (quest.levelMinimum <= (classLevel == -1 ? wynncraftClass.combatLevel : classLevel)) {
+                        xpDesiredGivenPerc += quest.xp;
+                        emeraldDesiredGivenPerc += quest.emerald;
+                    }
                 }
-            }
         xpDesiredGivenPerc *= choiceArguments.percentageDesired == -1 ? GetAnswers.DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired;
         emeraldDesiredGivenPerc *= choiceArguments.percentageDesired == -1 ? GetAnswers.DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired;
 

@@ -16,6 +16,7 @@ public class WynncraftClass {
     public final int dungeonsWon;
     public final Collection<String> questsCompleted = new ArrayList<>();
     public final Collection<Quest> questsNotCompleted = new ArrayList<>();
+    private final Collection<GameMode> gameModes = new ArrayList<>();
 
 
     public WynncraftClass(JSONObject classJson) {
@@ -31,7 +32,13 @@ public class WynncraftClass {
                 pretty.append(c);
         }
         namePretty = pretty.toString();
-
+        JSONObject gameModeJson = (JSONObject) classJson.get("gamemode");
+        if (gameModeJson.getBoolean("craftsman"))
+            gameModes.add(GameMode.CRAFTSMAN);
+        if (gameModeJson.getBoolean("hardcore"))
+            gameModes.add(GameMode.HARDCORE);
+        if (gameModeJson.getBoolean("ironman"))
+            gameModes.add(GameMode.IRONMAN);
 
         totalLevel = classJson.getInt("level");
         dungeonsWon = (classJson.getJSONObject("dungeons").getInt("completed"));
@@ -42,5 +49,16 @@ public class WynncraftClass {
         SheetsQuery.allQuests.forEach(quest -> {
             if (!questsCompleted.contains(quest.name)) questsNotCompleted.add(quest);
         });
+    }
+
+    public boolean isIronMan() {
+        return gameModes.contains(GameMode.IRONMAN);
+    }
+
+    private enum GameMode {
+        IRONMAN,
+        CRAFTSMAN,
+        HARDCORE,
+        HUNTED
     }
 }

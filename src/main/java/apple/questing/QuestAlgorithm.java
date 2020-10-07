@@ -18,10 +18,11 @@ public class QuestAlgorithm {
     public static Pair<FinalQuestCombo, FinalQuestCombo> whichGivenPercentageAmount(WynncraftPlayer player, boolean isXpDesired, double percentageDesired, int classLevel, boolean isIncludeCollection) {
         long rawAmount = 0;
         for (WynncraftClass playerClass : player.classes) {
-            for (Quest quest : playerClass.questsNotCompleted) {
-                if (quest.levelMinimum <= ((classLevel == -1) ? playerClass.combatLevel : classLevel))
-                    rawAmount += isXpDesired ? quest.xp : quest.emerald;
-            }
+            if (!playerClass.isIronMan())
+                for (Quest quest : playerClass.questsNotCompleted) {
+                    if (quest.levelMinimum <= ((classLevel == -1) ? playerClass.combatLevel : classLevel))
+                        rawAmount += isXpDesired ? quest.xp : quest.emerald;
+                }
         }
         rawAmount *= percentageDesired;
         return whichGivenRawAmount(player, rawAmount, isXpDesired, classLevel, isIncludeCollection);
@@ -290,16 +291,18 @@ public class QuestAlgorithm {
         // make a map of classes to a map of all the quest names to the quest requirements and quests that require itself
         Map<String, Map<String, QuestLinked>> classToNameToQuestLinked = new HashMap<>();
         for (WynncraftClass playerClass : player.classes) {
-            Map<String, QuestLinked> nameToQuestLinked = new HashMap<>();
-            for (Quest quest : allQuests) {
-                // if the player can do this quest
-                if (quest.levelMinimum <= playerClass.combatLevel && !playerClass.questsCompleted.contains(quest.name)) {
-                    // add it to the list
-                    nameToQuestLinked.put(quest.name, new QuestLinked(playerClass, quest));
+            if (!playerClass.isIronMan()) {
+                Map<String, QuestLinked> nameToQuestLinked = new HashMap<>();
+                for (Quest quest : allQuests) {
+                    // if the player can do this quest
+                    if (quest.levelMinimum <= playerClass.combatLevel && !playerClass.questsCompleted.contains(quest.name)) {
+                        // add it to the list
+                        nameToQuestLinked.put(quest.name, new QuestLinked(playerClass, quest));
+                    }
                 }
+                // add the nameToQuestLinked for this class to the map of classesToNameToQuestLinked
+                classToNameToQuestLinked.put(playerClass.name, nameToQuestLinked);
             }
-            // add the nameToQuestLinked for this class to the map of classesToNameToQuestLinked
-            classToNameToQuestLinked.put(playerClass.name, nameToQuestLinked);
         }
 
         classToNameToQuestLinked.forEach((className, nameToQuestLinked) -> {
@@ -321,6 +324,7 @@ public class QuestAlgorithm {
 
         // sort the quests
         for (WynncraftClass playerClass : player.classes) {
+            if (playerClass.isIronMan()) continue;
             List<Set<QuestLinked>> questCombinations = new ArrayList<>();
             // find all quests that start quest chains
             for (QuestLinked quest : classToNameToQuestLinked.get(playerClass.name).values()) {
@@ -349,7 +353,8 @@ public class QuestAlgorithm {
         // this is a set of sets of quest names
         Set<Set<QuestLinked>> questCombinationsForAll = new HashSet<>();
         for (WynncraftClass playerClass : player.classes) {
-            questCombinationsForAll.addAll(classToQuestCombinations.get(playerClass.name));
+            if (!playerClass.isIronMan())
+                questCombinationsForAll.addAll(classToQuestCombinations.get(playerClass.name));
         }
 
         // this is the map of questNames to the questLinks that the name refers to

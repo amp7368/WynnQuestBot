@@ -29,7 +29,7 @@ public class GetAnswers {
         List<FinalQuestCombo> questComboListTime = new ArrayList<>();
         List<FinalQuestCombo> questComboListAmount = new ArrayList<>();
 
-//         get the percentage results
+        // get the percentage results
         Pair<FinalQuestCombo, FinalQuestCombo> questOptions = QuestAlgorithm.whichGivenPercentageAmount(player, false,
                 choiceArguments.percentageDesired == -1 ? DEFAULT_PERCENTAGE_AMOUNT : choiceArguments.percentageDesired, choiceArguments.classLevel, false);
         questComboListAPT.add(questOptions.getKey());

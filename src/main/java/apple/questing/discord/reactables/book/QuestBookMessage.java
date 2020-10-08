@@ -51,7 +51,7 @@ public class QuestBookMessage implements ReactableMessage {
         message.addReaction(TOP.getFirstEmoji()).queue();
         message.addReaction(BASKET.getFirstEmoji()).queue();
         message.addReaction(GREEN.getFirstEmoji()).queue();
-        message.addReaction(NUMBER.getFirstEmoji()).queue();
+        message.addReaction(AMOUNT.getFirstEmoji()).queue();
         message.addReaction(LEVEL.getFirstEmoji()).queue();
         AllReactables.add(this);
     }
@@ -108,7 +108,7 @@ public class QuestBookMessage implements ReactableMessage {
                 sortByEmerald();
                 event.getReaction().removeReaction(user).queue();
                 break;
-            case NUMBER:
+            case AMOUNT:
                 sortByAPT();
                 event.getReaction().removeReaction(user).queue();
                 break;

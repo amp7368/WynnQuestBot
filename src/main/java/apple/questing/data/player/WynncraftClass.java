@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class WynncraftClass {
+    public static final int MAX_LEVEL = 106;
     public Integer combatLevel;
     public final String name;
     public final String namePretty;
@@ -18,6 +19,23 @@ public class WynncraftClass {
     public final Collection<Quest> questsNotCompleted = new ArrayList<>();
     private final Collection<GameMode> gameModes = new ArrayList<>();
 
+    public WynncraftClass(Integer combatLevel, String name, int totalLevel, int dungeonsWon, Collection<Quest> questsNotCompleted) {
+        this.combatLevel = combatLevel;
+        this.name = name;
+        this.totalLevel = totalLevel;
+        this.dungeonsWon = dungeonsWon;
+        this.questsNotCompleted.addAll(questsNotCompleted);
+        char[] nameP = name.toCharArray();
+        nameP[0] = Character.toUpperCase(nameP[0]);
+        StringBuilder pretty = new StringBuilder();
+        for (char c : nameP) {
+            if (!Character.isAlphabetic(c) || c == ' ')
+                break;
+            else
+                pretty.append(c);
+        }
+        namePretty = pretty.toString();
+    }
 
     public WynncraftClass(JSONObject classJson) {
         combatLevel = (Integer) ((JSONObject) ((JSONObject) classJson.get("professions")).get("combat")).get("level");

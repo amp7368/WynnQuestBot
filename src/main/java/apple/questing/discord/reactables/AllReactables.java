@@ -58,8 +58,7 @@ public class AllReactables {
         SWITCH(Collections.singletonList("\uD83D\uDD03")),
         HELP(Collections.singletonList("\u2753")),
         GREEN(Collections.singletonList("\uD83D\uDFE9")),
-        NUMBER(Collections.singletonList("\u0023")),
-        LEVEL(Collections.singletonList("\uD83C\uDDF1"));
+        LEVEL(Collections.singletonList("\uD83D\uDE80"));
 
         private final List<String> emojis;
 

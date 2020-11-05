@@ -14,9 +14,9 @@ public class CommandHelp implements DoCommand {
         messageText.append("<. does a quest analysis on a particular class that a player has>\n\n");
         messageText.append("# " + PREFIX + QUEST_COMMAND + " (playerName) [-x] [-c] [-t (time spent questing)] [-e (amount desired)]\n");
         messageText.append("<. does a quest analysis on all classes that a player has as a whole>\n\n");
-        messageText.append("# " + PREFIX + RANK_COMMAND +"\n");
+        messageText.append("# " + PREFIX + RANK_COMMAND + "\n");
         messageText.append("<. does a quest analysis assuming the player is max level and has one class>\n\n");
-        messageText.append("# arguments for " + PREFIX + QUEST_COMMAND + ", " + PREFIX + QUEST_SPECIFIC_COMMAND +", and " + PREFIX + RANK_COMMAND + "]\n");
+        messageText.append("# arguments for " + PREFIX + QUEST_COMMAND + ", " + PREFIX + QUEST_SPECIFIC_COMMAND + ", and " + PREFIX + RANK_COMMAND + "]\n");
         messageText.append(String.format(".%13s", "[playerName]")).append("[name of the player who you're trying to decide which quests to do]\n");
         messageText.append(String.format(".%13s", "[-x]"));
         messageText.append("[optional flag to specify that the player wants to maximize xp from quests]\n");
@@ -35,7 +35,13 @@ public class CommandHelp implements DoCommand {
         messageText.append("# " + PREFIX + LOOKUP_COMMAND + " (questName)\n");
         messageText.append("<. gives any quests that contain the name questName>\n\n");
         messageText.append("# " + PREFIX + HELP_COMMAND + "\n");
-        messageText.append("<. shows this help message>\n");
+        messageText.append("<. shows this help message>\n\n");
+        messageText.append("# " + PREFIX + INFO_COMMAND + "\n");
+        messageText.append("<. gives info?>\n\n");
+        messageText.append("Tbh, the most useful commands are 'q!quest (playerName)' and 'q!squest (playerName)' without any arguments besides the playerName\n");
+        messageText.append("Also, not all quests are included because of the api saying that literally no one has every done the quests. " +
+                "Yell at Wynncraft until some of the quests (Like Hunger of the Gerts Part 1) are linked in the api D: " +
+                "To know if a quest is included in the api or if it's just me not having timed the quest yet, look at https://wynncraft.com/stats/player/appleptr16\n");
         messageText.append("```");
         event.getChannel().sendMessage(messageText.toString()).queue();
     }

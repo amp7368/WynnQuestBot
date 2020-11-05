@@ -32,6 +32,7 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA client;
 
     public static final String PREFIX = "q!";
+    public static final String INFO_COMMAND = "info";
     public static final String RANK_COMMAND = "rank";
     public static final String BOOK_COMMAND = "book";
     public static final String LOOKUP_COMMAND = "lookup";
@@ -67,7 +68,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public void enableDiscord() throws LoginException {
-        JDABuilder builder = new JDABuilder(discordToken);
+        JDABuilder builder = JDABuilder.createDefault(discordToken);
         builder.addEventListeners(this);
         client = builder.build();
         client.getPresence().setPresence(Activity.playing("q!help"), true);
@@ -83,6 +84,7 @@ public class DiscordBot extends ListenerAdapter {
         commandMap.put(PREFIX + QUEST_COMMAND, new CommandQuest());
         commandMap.put(PREFIX + QUEST_SPECIFIC_COMMAND, new CommandQuestSpecific());
         commandMap.put(PREFIX + LOOKUP_COMMAND, new CommandLookup());
+        commandMap.put(PREFIX + INFO_COMMAND, new CommandInfo());
 
         try {
             SheetsQuery.update();

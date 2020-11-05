@@ -16,6 +16,7 @@ public class Pretty {
 
     @NotNull
     public static String getMon(double amount) {
+        amount = Math.floor(amount);
         int le = (int) (amount / 4096);
         int eb = (int) ((amount / 64) % 64);
         int e = (int) (amount % 64);
@@ -45,8 +46,9 @@ public class Pretty {
 
     @NotNull
     public static String time(double time) {
+        time = Math.ceil(time);
         int hr = (int) (time / 60);
-        int min = (int) Math.ceil(time % 60);
+        int min = (int) (time % 60);
         StringBuilder timePretty = new StringBuilder();
         if (hr != 0) {
             timePretty.append(hr);
@@ -63,7 +65,7 @@ public class Pretty {
                 timePretty.append(" min");
             else
                 timePretty.append(" mins");
-        }else if(hr == 0){
+        } else if (hr == 0) {
             return "0 mins";
         }
         return timePretty.toString();

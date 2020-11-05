@@ -117,7 +117,7 @@ public class SheetsWriteData {
                 row.add(quest.collectionTime + " mins");
                 if (questCombo.isXpDesired) row.add(Pretty.commasXp(quest.xp));
                 else row.add(Pretty.getMon(quest.emerald));
-                row.add(Pretty.commasXp(quest.levelMinimum));
+                row.add(String.valueOf(quest.levelMinimum));
                 if (isAllClasses) {
                     row.add(quest.playerClass.namePretty);
                     row.add(quest.playerClass.combatLevel + "/" + quest.playerClass.totalLevel);

@@ -8,7 +8,7 @@ public class CommandLookup implements DoCommand {
 
     @Override
     public void dealWithCommand(MessageReceivedEvent event) {
-        String[] contentSplit = event.getMessage().getContentStripped().split(" ");
+        String[] contentSplit = event.getMessage().getContentRaw().split(" ");
         if (contentSplit.length < 2)
             event.getChannel().sendMessage("Please enter the questName to lookup a quest.").queue();
         new QuestLookupMessage(contentSplit[1], event.getTextChannel());

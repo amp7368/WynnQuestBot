@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class CommandQuestBook implements DoCommand {
     @Override
     public void dealWithCommand(MessageReceivedEvent event) {
-        List<String> contentSplit = new ArrayList<>(Arrays.asList(event.getMessage().getContentStripped().split(" ")));
+        List<String> contentSplit = new ArrayList<>(Arrays.asList(event.getMessage().getContentRaw().split(" ")));
         contentSplit.remove(0);
 
         int classLevel = DetermineArguments.determineClassLevel(contentSplit, event.getTextChannel());

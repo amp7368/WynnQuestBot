@@ -38,7 +38,7 @@ public class CommandRank implements DoCommand {
      */
     @Override
     public void dealWithCommand(MessageReceivedEvent event) {
-        List<String> contentSplit = new ArrayList<>(Arrays.asList(event.getMessage().getContentStripped().split(" ")));
+        List<String> contentSplit = new ArrayList<>(Arrays.asList(event.getMessage().getContentRaw().split(" ")));
 
         // remove the command part of the message
         contentSplit.remove(0);

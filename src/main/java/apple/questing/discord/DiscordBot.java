@@ -102,7 +102,7 @@ public class DiscordBot extends ListenerAdapter {
         }
         // the author is not a bot
 
-        String messageContent = event.getMessage().getContentStripped();
+        String messageContent = event.getMessage().getContentRaw();
         final Member member = event.getMember();
         if (member == null) return;
 
